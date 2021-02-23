@@ -1,0 +1,10 @@
+fn main() {
+	println('Hello world !')
+	println('This is correct !')
+	println("It's okay")
+	println('This is "too"')
+	println("I'm correctly formatted")
+	println('"Everything on the internet is true" - Albert Einstein, 1965')
+	println('I\'m out of idea "_"')
+	println('Definitely out ":\'("')
+}
