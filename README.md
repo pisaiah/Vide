@@ -17,4 +17,10 @@ A simple IDE for [V](https://vlang.io/).
 The main UI is currently written in Swing as VUI is not fully complete, and I am more familiar with Java.
 Dialogs are written in V.
 
-<img src="./screenshot.png" width="512px">
+
+
+Screenshots:
+
+<img src="./screenshots/screenshot.png" width="512px"><br><br>
+<img src="./screenshots/new-project.png" width="200px">&nbsp;
+<img src="./screenshots/new-file.png" width="273px">

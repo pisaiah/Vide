@@ -74,12 +74,13 @@ public class TabContent {
                 last = ar.getText();
                 try {
                     Files.write(file.toPath(), ar.getText().getBytes());
-                    barea.setText( VCmdRunner.runV(file.getAbsolutePath()) );
-                } catch (IOException e){}
+                    barea.setText( VCmdRunner.runV(file.getAbsolutePath())
+                            .replace(file.getAbsoluteFile().getParentFile().getAbsolutePath(), "") );
+                } catch (IOException e){e.printStackTrace();}
             }
         };
         Timer timer = new Timer("V Compile Thread " + Math.random());
-        timer.schedule(task, 1000, 1000);
+        timer.schedule(task, 1500, 1000);
     }
 
     public static void saveCurrent(JTabbedPane tb) {
