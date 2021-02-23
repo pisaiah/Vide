@@ -85,7 +85,7 @@ public class Vide {
         exportResource("AboutDialog.v", null, home);
         exportResource("NewProjectDialog.v", null, home);
         exportResource("NewFileDialog.v", null, home);
-        exportResource("TermDialogTest.v", null, home);
+        exportResource("TerminalDialog.v", null, home);
         exportResource("icons/logo.png", "logo.png", home);
 
         MyFile mf = new MyFile(file.getAbsoluteFile().getParentFile().getParentFile());
@@ -98,7 +98,7 @@ public class Vide {
         fileM.add(new JMenuItem("New File..")).addActionListener(l -> VCmdRunner.runInternal("NewFileDialog.v"));
         fileM.add(new JMenuItem("Run..")).addActionListener(l -> System.out.println(VCmdRunner.runV_NOE("run", file.getAbsolutePath())));
         fileM.add(new JMenuItem("Build..")).addActionListener(l -> { System.out.println(VCmdRunner.runV_NOE(file.getAbsolutePath())); Vide.model.reload();});
-        fileM.add(new JMenuItem("Open Terminal")).addActionListener(l -> VCmdRunner.runInternal("TermDialogTest.v"));
+        fileM.add(new JMenuItem("Open Terminal")).addActionListener(l -> VCmdRunner.runInternal("TerminalDialog.v"));
         JMenu helpM = bar.add(new JMenu("Help"));
         helpM.add(new JMenuItem("V Documentation")).addActionListener(l -> {
             try {

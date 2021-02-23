@@ -25,8 +25,8 @@
 import ui
 
 const (
-	win_width  = 350
-	win_height = 350
+	win_width  = 710
+	win_height = 400
 )
 
 struct App {
@@ -40,44 +40,61 @@ mut:
 fn main() {
 	mut app := &App{}
 	app.group = ui.label(
-				text: &app.project_name
-			)
+		text: &app.project_name
+	)
 	app.window = ui.window({
 		width: win_width
 		height: win_height
-		title: 'New Project'
+		title: 'Command'
 		state: app
 	}, [
-		ui.group({
-			x: 10
-			y: 10
-			title: ' '
+		ui.row({
+			margin: (
+				left: 8, 
+				right: 8
+				bottom: 8,
+				top:8
+			)
 		}, [
 			
 			ui.textbox(
 				max_len: 100
-				width: 300
+				width: 250
 				placeholder: 'command'
 				text: &app.project_description
 			),
-			ui.button(
-				text: 'Send command'
-				onclick: btn_change_title
-			),
-		]),
-		ui.group({
-				x:10
-				y:78
-				title: 'Test'
-			}, [
-				app.group
+			ui.column({
+				margin: (
+					left: 4, 
+					right: 4,
+					bottom: 0,
+					top:0
+				)
+			},[
+				ui.button(
+					width: 134
+					text: 'Send command'
+					onclick: btn_change_title
+				) 
 			]),
+		]),
+		ui.label(text: '\n')
+		ui.column({
+			margin: (
+				left: 16
+				right: 16
+				bottom: 8
+				top: 60
+			)
+		}, [
+			app.group
+		]),
 	])
 	ui.run(app.window)
 }
 
-fn btn_change_title(mut app App, btn &ui.Button) {
+fn btn_change_title(mut app App, e &ui.Button) {
 	mut s := exec(app.project_description) or { return }
-	mut st := s.output
+	mut st := s.output.replace('\r', '')
 	app.group.set_text( st )
 }
