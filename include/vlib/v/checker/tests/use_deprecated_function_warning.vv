@@ -1,4 +1,0 @@
-import os
-fn main() {
-	os.cp_r('./aa', './bb', true)
-}

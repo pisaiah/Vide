@@ -1,7 +1,0 @@
-fn concatenation_of_strings() {
-_ := 'Simple'   +    'Concat'
-	_ := 'Hello'
-		+ ' ' +
-		'World' + '!'
-		_ := 'There' + ' ' + 'so' + ' ' + 'many' + ' ' + 'words' + ' ' + 'they' + ' ' + "don't" + ' ' + 'fit' + ' ' + 'in' + ' ' + 'one' + ' ' + 'line'
-}

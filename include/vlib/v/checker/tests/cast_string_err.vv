@@ -1,4 +1,0 @@
-fn main() {
-	a := string(1)
-	println(a)
-}
