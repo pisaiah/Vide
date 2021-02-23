@@ -41,23 +41,22 @@ public class TabContent {
             @Override
             public void keyPressed(KeyEvent ev) {
                 if (ev.getKeyCode() == KeyEvent.VK_S && ev.isControlDown()) {
-                    System.out.println("SAVED!");
                     saveCurrent(tb);
                     Vide.saver.setSelected(false);
-                    Vide.saver.setIcon(new ImageIcon(Vide.getImage("icons/save2.png",16,16, 250)));
+                    Vide.saver.setIcon(new ImageIcon(Vide.getImage("save2.png",16,16, 250)));
                     b = true;
                 }
             }
 
             @Override
             public void keyTyped(KeyEvent ev) {
-                if (!b) Vide.saver.setIcon(new ImageIcon(Vide.getImage("icons/save.png",16,16, 250)));
+                if (!b) Vide.saver.setIcon(new ImageIcon(Vide.getImage("save.png",16,16, 250)));
                 b = false;
             }
         });
 
         JScrollPane sp = new JScrollPane(ar);
-        TextLineNumber tln = new TextLineNumber(ar);
+        TextLineNumber tln = new TextLineNumber(ar,3);
         sp.setRowHeaderView( tln );
         sp.setName(file.getAbsoluteFile().getAbsolutePath());
 

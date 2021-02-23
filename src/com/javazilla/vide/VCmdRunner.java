@@ -14,8 +14,7 @@ public class VCmdRunner {
         b.directory(v.getParentFile());
         String[] argu = new String[args.length+1];
         argu[0] = v.getAbsolutePath();
-        for (int i = 0; i < args.length; i++)
-            argu[i+1] = args[i];
+        for (int i = 0; i < args.length; i++) argu[i+1] = args[i];
         b.command(argu);
 
         if (args[0].equalsIgnoreCase("run")) {
@@ -24,12 +23,9 @@ public class VCmdRunner {
                 InputStream is = pro.getInputStream();
                 int i = 0;
                 try {
-                    while ((i = is.read()) != -1) {
+                    while ((i = is.read()) != -1)
                         Vide.barea.append(new String(new byte[] {(byte)i}));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                } catch (IOException e) {}
                 Vide.model.reload();
             }).start();
             return "running"; // Don't freeze while running
@@ -46,15 +42,13 @@ public class VCmdRunner {
         return result;
     }
 
-    public static String runInternal(String... args) {
+    public static void runInternal(String file) {
         File v = new File("include", "v.exe");
 
         ProcessBuilder b = new ProcessBuilder();
         b.directory(v.getParentFile());
-        String[] argu = new String[args.length+1];
-        argu[0] = v.getAbsolutePath();
-        for (int i = 0; i < args.length; i++)
-            argu[i+1] = args[i];
+        String[] argu = {v.getAbsolutePath(), "run", new File(new File(System.getProperty("user.home"), "Vide"), file)
+                .getAbsoluteFile().getAbsolutePath()};
         b.command(argu);
 
         try {
@@ -69,7 +63,6 @@ public class VCmdRunner {
                 Vide.model.reload();
             }).start();
         } catch (IOException e1) {}
-        return "running"; // Don't freeze while running
     }
 
     public static String runV_NOE(String...args) {

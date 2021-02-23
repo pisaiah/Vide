@@ -37,6 +37,8 @@ mut:
 }
 
 fn main() {
+	mut home := os.home_dir()
+	mut vide_logo := home + '/Vide/logo.png'
 	mut app := &State{
 	}
 	window := ui.window({
@@ -63,10 +65,21 @@ fn main() {
 				ui.picture(
 					width: 250
 					height: 100
-					path: os.resource_abs_path('logo.png')
+					path: vide_logo
 				),
-				ui.label(text : '\nVIDE - The IDE for V\n'),
-				ui.label(text: 'Version 0.1\n\nCopyright (C) 2021')
+				ui.label(
+					text: '\nVIDE - The IDE for V\n'
+				),
+				ui.label(
+					text: 'Version 0.1\n\nCopyright (C) 2021. MIT Licenced.\n'
+				),
+				ui.label(
+					text: 'V Version: ' + @VHASH + '\n'
+				),
+				ui.label(
+					text: 'Path to VEXE: \n' 
+							+ @VEXE
+				)
 			]),
 		]),
 	])

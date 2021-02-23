@@ -51,7 +51,9 @@ fn main() {
 			y: 50
 			title: 'New Project'
 		}, [
-			ui.label(text: ' \n'),
+			ui.label(
+				text: ' \n'
+			),
 			ui.textbox(
 				max_len: 20
 				width: 200
@@ -64,7 +66,9 @@ fn main() {
 				placeholder: 'Description...'
 				text: &app.project_description
 			),
-			ui.label(text: ' \n'),
+			ui.label(
+				text: ' \n'
+			),
 			ui.button(
 				text: 'Create project ...'
 				onclick: btn_change_title
@@ -75,7 +79,6 @@ fn main() {
 }
 
 fn btn_change_title(mut app App, btn &ui.Button) {
-	println('vide_new_project_command=' + app.project_name + ", " + app.project_description)
 	mut home := os.home_dir()
 	os.mkdir(home + '/Vide/projects/' + app.project_name)
 	mut vfile := home + '/Vide/projects/' +app.project_name + '/' + app.project_name + '.v'
