@@ -86,6 +86,8 @@ public class Vide {
         exportResource("NewProjectDialog.v", null, home);
         exportResource("NewFileDialog.v", null, home);
         exportResource("TerminalDialog.v", null, home);
+        exportResource("VpmDialog.v", null, home);
+        exportResource("icons/vpm.png", "vpm.png", home);
         exportResource("icons/logo.png", "logo.png", home);
 
         MyFile mf = new MyFile(file.getAbsoluteFile().getParentFile().getParentFile());
@@ -99,6 +101,7 @@ public class Vide {
         fileM.add(new JMenuItem("Run..")).addActionListener(l -> System.out.println(VCmdRunner.runV_NOE("run", file.getAbsolutePath())));
         fileM.add(new JMenuItem("Build..")).addActionListener(l -> { System.out.println(VCmdRunner.runV_NOE(file.getAbsolutePath())); Vide.model.reload();});
         fileM.add(new JMenuItem("Open Terminal")).addActionListener(l -> VCmdRunner.runInternal("TerminalDialog.v"));
+        fileM.add(new JMenuItem("Open VPM GUI")).addActionListener(l -> VCmdRunner.runInternal("VpmDialog.v"));
         JMenu helpM = bar.add(new JMenu("Help"));
         helpM.add(new JMenuItem("V Documentation")).addActionListener(l -> {
             try {
@@ -140,11 +143,18 @@ public class Vide {
                 nf.setSelected(false);
             }
         });
-
-
-        helpM.add(new JMenuItem("About VIDE")).addActionListener(l -> {
-            VCmdRunner.runV_NOE("run", new File(home, "AboutDialog.v").getAbsolutePath());
+        
+        JMenu bd = bar.add(new JMenu(""));
+        bd.setIcon(new ImageIcon(getImage("build.png",16,16,250)));
+        bd.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                System.out.println(VCmdRunner.runV_NOE(file.getAbsolutePath())); Vide.model.reload();
+                bd.setSelected(false);
+            }
         });
+
+        helpM.add(new JMenuItem("About VIDE")).addActionListener(l -> 
+                VCmdRunner.runV_NOE("run", new File(home, "AboutDialog.v").getAbsolutePath()));
         f.setJMenuBar(bar);
         for (Component c : fileM.getMenuComponents()) ((JComponent)c).setBorder(BorderFactory.createEmptyBorder(7,9,7,9));
         for (Component c : helpM.getMenuComponents()) ((JComponent)c).setBorder(BorderFactory.createEmptyBorder(7,9,7,9));

@@ -18,7 +18,7 @@ public class MyFileTree extends JTree {
     private static final long serialVersionUID = 1L;
     public static boolean init = false;
     private ImageIcon icon = new ImageIcon(Vide.getImage("vlogo.png",16,16,250));
-    private ImageIcon git = new ImageIcon(Vide.getImage("git.png",16,16,200));
+    private ImageIcon git = new ImageIcon(Vide.getImage("git.png",16,16,150));
 
     public MyFileTree(TreeModel m, File open) {
         super(m);

@@ -67,20 +67,26 @@ public class TabContent {
         barea.setBackground(Vide.DARK ? new Color(40,50,60) : new Color(240,240,240)); // light gray
         if (Vide.DARK) barea.setForeground(new Color(200,200,200));
 
+        File tmp = new File(new File(System.getProperty("java.io.tmpdir"), "vide"), (int)(Math.random()*1000) + "tmp-" + file.getName());
+        tmp.getParentFile().mkdirs();
+        tmp.deleteOnExit();
         TimerTask task = new TimerTask() {
             public String last = "";
             public void run() {
                 if (last.equals(ar.getText())) return;
                 last = ar.getText();
                 try {
-                    Files.write(file.toPath(), ar.getText().getBytes());
-                    barea.setText( VCmdRunner.runV(file.getAbsolutePath())
-                            .replace(file.getAbsoluteFile().getParentFile().getAbsolutePath(), "") );
+                    Files.write(tmp.toPath(), ar.getText().getBytes());
+                    String s = VCmdRunner.runV(tmp.getAbsolutePath())
+                            .replace(tmp.getAbsoluteFile().getParentFile().getAbsolutePath(), "");
+                    if (s.indexOf("tmp-") != -1) s = s.split("tmp-")[1];
+                    barea.setText(s);
+                    for (File f : tmp.getParentFile().listFiles()) f.deleteOnExit();
                 } catch (IOException e){e.printStackTrace();}
             }
         };
         Timer timer = new Timer("V Compile Thread " + Math.random());
-        timer.schedule(task, 1500, 1000);
+        timer.schedule(task, 2000, 1000);
     }
 
     public static void saveCurrent(JTabbedPane tb) {
