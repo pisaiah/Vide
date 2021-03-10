@@ -1,8 +1,7 @@
-// tips4java.wordpress.com/2009/05/23/text-component-line-number
+// tips4java.wordpress.com/2009/05/23/text-com-line-number
 package com.javazilla.vide;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -10,13 +9,9 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -24,46 +19,32 @@ import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Utilities;
 
-public class TextLineNumber extends JPanel implements CaretListener, DocumentListener, PropertyChangeListener {
+public class TextLineNumber extends JPanel implements DocumentListener {
 
     private static final long serialVersionUID = 1L;
-    private JTextComponent component;
+    private JTextComponent com;
     private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
-    private boolean updateFont;
-    private float digitAlignment;
-    private int minimumDisplayDigits;
     private int lastDigits;
     private int lastHeight;
-    private int lastLine;
 
-    public TextLineNumber(JTextComponent component, int minimumDisplayDigits) {
-        this.component = component;
+    public TextLineNumber(JTextComponent com) {
+        this.com = com;
 
         setBorder(new EmptyBorder(0,4,0,4));
         lastDigits = 0;
-        this.minimumDisplayDigits = minimumDisplayDigits;
         setPreferredWidth();
 
-        component.getDocument().addDocumentListener(this);
-        component.addCaretListener(this);
-        component.addPropertyChangeListener("font", this);
+        com.getDocument().addDocumentListener(this);
     }
 
     private void setPreferredWidth() {
-        Element root = component.getDocument().getDefaultRootElement();
-        int lines = root.getElementCount();
-        int digits = Math.max(String.valueOf(lines).length(), minimumDisplayDigits);
+        int digits = Math.max(String.valueOf(com.getDocument().getDefaultRootElement().getElementCount()).length(), 3);
 
         if (lastDigits != digits) {
             lastDigits = digits;
-            FontMetrics fontMetrics = getFontMetrics(getFont());
-            int width = fontMetrics.charWidth('0') * digits;
-            Insets insets = getInsets();
-            int preferredWidth = insets.left + insets.right + width;
-
-            Dimension d = getPreferredSize();
-            d.setSize(preferredWidth, HEIGHT);
+            Insets in = getInsets();
+            Dimension d = new Dimension(in.left+in.right+ (getFontMetrics(getFont()).charWidth('0') * digits), HEIGHT);
             setPreferredSize(d);
             setSize(d);
         }
@@ -74,97 +55,49 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
         super.paintComponent(g);
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        FontMetrics fontMetrics = component.getFontMetrics(component.getFont());
         Insets insets = getInsets();
-        int availableWidth = getSize().width - insets.left - insets.right;
 
         Rectangle clip = g.getClipBounds();
-        int rowStartOffset = component.viewToModel(new Point(0, clip.y));
-        int endOffset = component.viewToModel(new Point(0, clip.y + clip.height));
+        int rsOffset = com.viewToModel(new Point(0, clip.y));
+        int endOffset = com.viewToModel(new Point(0, clip.y + clip.height));
 
-        while (rowStartOffset <= endOffset) {
+        while (rsOffset <= endOffset) {
             try {
                 g.setColor(getForeground());
-                String lineNumber = getTextLineNumber(rowStartOffset);
-                int stringWidth = fontMetrics.stringWidth(lineNumber);
-                int x = (int)((availableWidth - stringWidth) * digitAlignment) + insets.left;
-                int y = getOffsetY(rowStartOffset, fontMetrics);
-                g.drawString(lineNumber, x, y);
+                String lineNumber = getTextLineNumber(rsOffset);
+                g.drawString(lineNumber, insets.left, getOffsetY(rsOffset, com.getFontMetrics(com.getFont())));
 
-                rowStartOffset = Utilities.getRowEnd(component, rowStartOffset) + 1;
+                rsOffset = Utilities.getRowEnd(com, rsOffset) + 1;
             }catch(Exception e) {break;}
         }
     }
 
-    private String getTextLineNumber(int rowStartOffset) {
-        Element root = component.getDocument().getDefaultRootElement();
-        int index = root.getElementIndex(rowStartOffset);
-        Element line = root.getElement(index);
-
-        return (line.getStartOffset() == rowStartOffset) ? String.valueOf(index + 1) : "";
+    private String getTextLineNumber(int rsoffset) {
+        Element root = com.getDocument().getDefaultRootElement();
+        int index = root.getElementIndex(rsoffset);
+        return (root.getElement(index).getStartOffset() == rsoffset) ? String.valueOf(index + 1) : "";
     }
 
-    private int getOffsetY(int rowStartOffset, FontMetrics fontMetrics) throws BadLocationException {
-        Rectangle r = component.modelToView( rowStartOffset );
-        int lineHeight = fontMetrics.getHeight();
-        int y = r.y + r.height;
-        int descent = (r.height == lineHeight) ? fontMetrics.getDescent() : 0;
-
-        return y - descent;
+    private int getOffsetY(int rowStartOffset, FontMetrics fm) throws BadLocationException {
+        Rectangle r = com.modelToView(rowStartOffset);
+        return (r.y + r.height) - ((r.height == fm.getHeight()) ? fm.getDescent() : 0);
     }
 
-    @Override
-    public void caretUpdate(CaretEvent e) {
-        int currentLine = component.getDocument().getDefaultRootElement().getElementIndex(component.getCaretPosition());
-        if (lastLine != currentLine){
-            repaint();
-            lastLine = currentLine;
-        }
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e){
-        documentChanged();
-    }
-
-    @Override
-    public void insertUpdate(DocumentEvent e){
-        documentChanged();
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e){
-        documentChanged();
-    }
+    public void changedUpdate(DocumentEvent e){ documentChanged();}
+    public void insertUpdate(DocumentEvent e){ documentChanged(); }
+    public void removeUpdate(DocumentEvent e){ documentChanged(); }
 
     private void documentChanged() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    int endPos = component.getDocument().getLength();
-                    Rectangle rect = component.modelToView(endPos);
-
-                    if (rect != null && rect.y != lastHeight) {
-                        setPreferredWidth();
-                        repaint();
-                        lastHeight = rect.y;
-                    }
-                } catch (BadLocationException ignore) {}
-            }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Rectangle rect = com.modelToView(com.getDocument().getLength());
+                if (rect != null && rect.y != lastHeight) {
+                    setPreferredWidth();
+                    repaint();
+                    lastHeight = rect.y;
+                }
+            } catch (BadLocationException ignore) {}
         });
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getNewValue() instanceof Font) {
-            if (updateFont) {
-                Font newFont = (Font) evt.getNewValue();
-                setFont(newFont);
-                lastDigits = 0;
-                setPreferredWidth();
-            } else repaint();
-        }
     }
 
 }

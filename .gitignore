@@ -4,3 +4,9 @@ bin/
 *.exe
 include/
 1include/
+src/pure-v-test/*.dll
+src/pure-v-test/*.a
+src/pure-v-test/include/*.h
+*.dll
+*.a
+*.h

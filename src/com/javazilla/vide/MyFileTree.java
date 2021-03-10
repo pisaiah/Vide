@@ -17,8 +17,8 @@ public class MyFileTree extends JTree {
 
     private static final long serialVersionUID = 1L;
     public static boolean init = false;
-    private ImageIcon icon = new ImageIcon(Vide.getImage("vlogo.png",16,16,250));
-    private ImageIcon git = new ImageIcon(Vide.getImage("git.png",16,16,150));
+    private ImageIcon icon = Vide.getImage("vlogo.png",16,16);
+    private ImageIcon git = Vide.getImage("git.png",16,16);
 
     public MyFileTree(TreeModel m, File open) {
         super(m);
@@ -31,7 +31,7 @@ public class MyFileTree extends JTree {
             public Component getTreeCellRendererComponent(JTree tree, Object val, boolean sl, boolean ex, boolean lef, int rw, boolean fc) {
                 Component c = super.getTreeCellRendererComponent(tree, val, selected, ex, lef, rw, fc);
 
-                if ( !init && ((MyFile)val).getFile().getAbsolutePath().equalsIgnoreCase(open.getParentFile().getAbsolutePath()) ){
+                if ( !init && ((MyFile)val).getFile().getAbsolutePath().equalsIgnoreCase(open.getParentFile().getAbsolutePath())){
                     init = true;
                     tree.expandPath(tree.getPathForRow(rw));
                     return c;
@@ -57,7 +57,7 @@ public class MyFileTree extends JTree {
                 if (!s.getFile().isDirectory()) {
                     try {
                         Desktop.getDesktop().open(s.getFile());
-                    } catch (IOException e) {}
+                    } catch (IOException e){}
                 }
             }
         }

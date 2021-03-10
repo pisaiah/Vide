@@ -26,8 +26,8 @@ import os
 import gx
 
 const (
-	win_width   = 270
-	win_height  = 255
+	win_width   = 320
+	win_height  = 260
 )
 
 

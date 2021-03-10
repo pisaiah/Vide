@@ -1,5 +1,7 @@
 package com.javazilla.vide;
 
+import static com.javazilla.vide.Vide.barea;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -11,21 +13,19 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
-import static com.javazilla.vide.Vide.barea;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import static javax.swing.text.StyleConstants.Foreground;
+import javax.swing.text.StyleContext;
 
 public class TabContent {
 
     public static void createTab(JTabbedPane tb, File file) {
-        for (int i = 0; i< tb.getTabCount(); i++) {
-            String title = tb.getTitleAt(i);
-            if (title.equals(file.getName())) return;
-        }
-
-        JTextPane ar = new JTextPane(Vide.setupStyle());
+        JTextPane ar = new JTextPane(setupStyle());
 
         try {
             for (String s : Files.readAllLines(file.toPath()))
@@ -43,23 +43,27 @@ public class TabContent {
                 if (ev.getKeyCode() == KeyEvent.VK_S && ev.isControlDown()) {
                     saveCurrent(tb);
                     Vide.saver.setSelected(false);
-                    Vide.saver.setIcon(new ImageIcon(Vide.getImage("save2.png",16,16, 250)));
+                    Vide.saver.setIcon(Vide.save2);
                     b = true;
                 }
             }
 
             @Override
             public void keyTyped(KeyEvent ev) {
-                if (!b) Vide.saver.setIcon(new ImageIcon(Vide.getImage("save.png",16,16, 250)));
+                if (!b) Vide.saver.setIcon(Vide.save1);
                 b = false;
             }
         });
 
         JScrollPane sp = new JScrollPane(ar);
-        TextLineNumber tln = new TextLineNumber(ar,3);
-        sp.setRowHeaderView( tln );
+        TextLineNumber tln = new TextLineNumber(ar);
+        sp.setRowHeaderView(tln);
         sp.setName(file.getAbsoluteFile().getAbsolutePath());
 
+        if (Vide.DARK) {
+            tb.setOpaque(true);
+            tb.setBackground(new Color(70, 75, 80));
+        }
         tb.addTab(file.getName(), sp);
 
         barea.setEditable(false);
@@ -77,7 +81,7 @@ public class TabContent {
                 last = ar.getText();
                 try {
                     Files.write(tmp.toPath(), ar.getText().getBytes());
-                    String s = VCmdRunner.runV(tmp.getAbsolutePath())
+                    String s = VCmdRunner.v(tmp.getAbsolutePath())
                             .replace(tmp.getAbsoluteFile().getParentFile().getAbsolutePath(), "");
                     if (s.indexOf("tmp-") != -1) s = s.split("tmp-")[1];
                     barea.setText(s);
@@ -85,17 +89,80 @@ public class TabContent {
                 } catch (IOException e){e.printStackTrace();}
             }
         };
-        Timer timer = new Timer("V Compile Thread " + Math.random());
+        Timer timer = new Timer("VThread " + Math.random());
         timer.schedule(task, 2000, 1000);
     }
 
+    public static File file(JTabbedPane tb) {
+        return new File(tb.getSelectedComponent().getName());
+    }
+
     public static void saveCurrent(JTabbedPane tb) {
-        JScrollPane sp = (JScrollPane) tb.getSelectedComponent();
-        JTextPane tp = (JTextPane) sp.getViewport().getComponents()[0];
-        File file = new File(sp.getName());
+        JTextPane tp = (JTextPane) ((JScrollPane) tb.getSelectedComponent()).getViewport().getComponents()[0];
         try {
-            Files.write(file.toPath(), tp.getText().getBytes());
-        } catch (IOException e) {}
+            Files.write(file(tb).toPath(), tp.getText().getBytes());
+        } catch (IOException e){}
+    }
+
+    public static DefaultStyledDocument setupStyle() {
+        final StyleContext cont = StyleContext.getDefaultStyleContext();
+        final AttributeSet att = cont.addAttribute(cont.getEmptySet(), Foreground, Vide.DARK ? new Color(255,26,156) : new Color(150,0,85));
+        final AttributeSet attNum = cont.addAttribute(cont.getEmptySet(), Foreground, new Color(240,170,0));
+        final AttributeSet attBl = cont.addAttribute(cont.getEmptySet(), Foreground, Vide.DARK ? new Color(200,200,200) : Color.BLACK);
+
+        @SuppressWarnings("serial")
+        DefaultStyledDocument doc = new DefaultStyledDocument() {
+            String s = "(\\W)*(pub|struct|fn|const|mut|import)";
+
+            public void insertString (int b, String str, AttributeSet a) throws BadLocationException {
+                super.insertString(b, str, a);
+
+                String txt = getText(0, getLength());
+                int be = findNonWordChar(txt, b, true);
+                int af = findNonWordChar(txt, b + str.length(),false);
+                int wL = be;
+                int wR = be;
+
+                while (wR <= af) {
+                    if (wR == af || String.valueOf(txt.charAt(wR)).matches("\\W")) {
+                        setCharacterAttributes(wL, wR-wL, txt.substring(wL,wR).matches(s) ? att : attBl, true);
+                        wL = wR;
+                    }
+                    wR++;
+                }
+                refresh(txt);
+            }
+
+            public boolean refresh(String txt) {
+                boolean r = false;
+                for (int z = 0; z < txt.length(); z++) {
+                    int c = (int)txt.substring(z,z+1).charAt(0);
+                    if (c >= 48 && c <= 57) {
+                        setCharacterAttributes(z, 1, attNum, true);
+                        r = true;
+                    }
+                }
+                return r;
+            }
+
+            public void remove(int b, int len) throws BadLocationException {
+                super.remove(b, len);
+
+                String txt = getText(0, getLength());
+                int be = findNonWordChar(txt, b, true);
+                int af = findNonWordChar(txt, b, false);
+
+                setCharacterAttributes(be, af-be, txt.substring(be,af).matches(s) ? att : attBl, false);
+                refresh(txt);
+            }
+        };
+        return doc;
+    }
+
+    private static int findNonWordChar(String text, int index, boolean l) {
+        while (l ? --index >= 0 : index++ < text.length())
+            if (String.valueOf(text.charAt(index)).matches("\\W"))  break;
+        return l ? Math.max(0,index) : index-1;
     }
 
 }

@@ -6,8 +6,7 @@ import java.io.InputStream;
 
 public class VCmdRunner {
 
-
-    public static String runV(String... args) throws IOException {
+    public static String v(String... args) throws IOException {
         File v = new File("include", "v.exe");
 
         ProcessBuilder b = new ProcessBuilder();
@@ -42,12 +41,12 @@ public class VCmdRunner {
         return result;
     }
 
-    public static void runInternal(String file) {
+    public static void run(String file) {
         File v = new File("include", "v.exe");
 
         ProcessBuilder b = new ProcessBuilder();
         b.directory(v.getParentFile());
-        String[] argu = {v.getAbsolutePath(), "run", new File(new File(System.getProperty("user.home"), "Vide"), file)
+        String[] argu = {v.getAbsolutePath(), "run", new File(new File(System.getProperty("user.home"), "Vide"), file + ".v")
                 .getAbsoluteFile().getAbsolutePath()};
         b.command(argu);
 
@@ -65,12 +64,11 @@ public class VCmdRunner {
         } catch (IOException e1) {}
     }
 
-    public static String runV_NOE(String...args) {
+    public static void runV(String...args) {
         try {
-            return runV(args);
+            System.out.println(v(args));
         } catch (IOException e) {
             e.printStackTrace();
-            return e.getMessage();
         }
     }
 
