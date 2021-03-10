@@ -22,8 +22,20 @@ public class VCmdRunner {
                 InputStream is = pro.getInputStream();
                 int i = 0;
                 try {
-                    while ((i = is.read()) != -1)
+                    int z = 0;
+                    while ((i = is.read()) != -1) {
                         Vide.barea.append(new String(new byte[] {(byte)i}));
+                        if (Vide.barea.getText().contains("vide_font_change=")) {
+                            if (z > 2) {
+                                String s = Vide.barea.getText().substring(Vide.barea.getText().length()-3).trim();
+                                try {
+                                    TabContent.font(Vide.tb, Integer.valueOf(s));
+                                } catch (Exception e) {}
+                                z = 0;
+                            }
+                            z++;
+                        }
+                    }
                 } catch (IOException e) {}
                 Vide.model.reload();
             }).start();

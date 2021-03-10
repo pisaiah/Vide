@@ -83,10 +83,10 @@ fn main() {
 
 fn btn_change_title(mut app App, btn &ui.Button) {
 	mut home := os.home_dir()
-	os.mkdir(home + '/Vide/projects/' + app.project_name)
+	os.mkdir(home + '/Vide/projects/' + app.project_name) or { println('Error creating folder') }
 	mut vfile := home + '/Vide/projects/' + app.project_name + '/' + app.project_description
 	if !os.is_file(vfile) {
-		os.write_file(vfile, 'module main\n\nfn main() {\n\tprintln("Hello World!")\n}')
+		os.write_file(vfile, 'module main\n\nfn main() {\n\tprintln("Hello World!")\n}') or { println('Error writing file') }
 		ui.message_box('File created!')
 	} else {
 		ui.message_box('File already exists!')

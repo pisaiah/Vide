@@ -33,7 +33,7 @@ public class TabContent {
             ar.setText(ar.getText().substring(1));
         } catch (IOException e1) {}
 
-        ar.setFont(ar.getFont().deriveFont(12f));
+        ar.setFont(ar.getFont().deriveFont(Vide.FONT + 0f));
         ar.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
         ar.addKeyListener(new KeyAdapter() {
             private boolean b;
@@ -62,7 +62,7 @@ public class TabContent {
 
         if (Vide.DARK) {
             tb.setOpaque(true);
-            tb.setBackground(new Color(70, 75, 80));
+            tb.setBackground(new Color(70, 74, 80));
         }
         tb.addTab(file.getName(), sp);
 
@@ -95,6 +95,11 @@ public class TabContent {
 
     public static File file(JTabbedPane tb) {
         return new File(tb.getSelectedComponent().getName());
+    }
+
+    public static void font(JTabbedPane tb, float f) {
+        JTextPane tp = (JTextPane) ((JScrollPane) tb.getSelectedComponent()).getViewport().getComponents()[0];
+        tp.setFont(tp.getFont().deriveFont(f));
     }
 
     public static void saveCurrent(JTabbedPane tb) {

@@ -49,12 +49,7 @@ fn main() {
 		state: app
 	}, [
 		ui.row({
-			margin: (
-				left: 8, 
-				right: 8
-				bottom: 8,
-				top:8
-			)
+			
 		}, [
 			
 			ui.textbox(
@@ -64,12 +59,7 @@ fn main() {
 				text: &app.project_description
 			),
 			ui.column({
-				margin: (
-					left: 4, 
-					right: 4,
-					bottom: 0,
-					top:0
-				)
+				
 			},[
 				ui.button(
 					width: 134
@@ -80,12 +70,7 @@ fn main() {
 		]),
 		ui.label(text: '\n')
 		ui.column({
-			margin: (
-				left: 16
-				right: 16
-				bottom: 8
-				top: 60
-			)
+			
 		}, [
 			app.group
 		]),

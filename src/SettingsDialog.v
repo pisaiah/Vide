@@ -24,11 +24,11 @@
 
 import ui
 import os
-
+import math
 
 const (
 	win_width  = 460
-	win_height = 370
+	win_height = 385
 )
 
 struct App {
@@ -36,6 +36,9 @@ mut:
 	window     &ui.Window = 0
 	group        &ui.Group = 0
 	cb_dark     &ui.CheckBox = 0
+	font_slider &ui.Slider =0
+	font_label &ui.Label = 0
+	font_size_value string = '\n'
 	path_to_vexe string = @VEXE
 	path_to_project_workspace  string = @FILE
 }
@@ -44,6 +47,20 @@ fn main() {
 	mut app := &App{}
 	app.cb_dark = ui.checkbox(
 		text: 'Dark Theme'
+	)
+
+	app.font_label = ui.label(
+		text: &app.font_size_value
+	)
+
+	app.font_slider = ui.slider(
+		min: 6
+		max: 50
+		height: 24
+		width: 150
+		orientation: ui.Orientation.horizontal
+		thumb_in_track: true
+		on_value_changed: slider_change
 	)
 
 	mut home := os.home_dir()
@@ -89,7 +106,12 @@ fn main() {
 			),
 			app.cb_dark,
 			ui.label(
-				text: ' \n'
+				text: ''
+			),
+			app.font_label,
+			app.font_slider,
+			ui.label(
+				text: '\n'
 			),
 			ui.button(
 				text: 'Save settings'
@@ -116,6 +138,14 @@ fn load_settings(mut app App) {
 	mut vexe := (splitted[2].split('=')[1])
 	mut workspace := (splitted[3].split('=')[1])
 
+	if splitted.len > 4 {
+		mut font :=  (splitted[4].split('=')[1])
+		app.font_size_value = font
+		app.font_slider.val = f32( font.int() ) - 2
+		app.font_size_value = font.str()
+		app.font_label.set_text( 'Font size: '  + font.str() )
+	}
+
 	app.cb_dark.checked = dark
 	app.path_to_vexe = vexe
 	app.path_to_project_workspace = workspace
@@ -128,7 +158,8 @@ fn btn_save_settings(mut app App, btn &ui.Button) {
 	mut con := '# Vide Settings\n'
 		+ 'dark=$app.cb_dark.checked\n' 
 		+ 'vexe=' + app.path_to_vexe + '\n' 
-		+ 'workspace=' + app.path_to_project_workspace
+		+ 'workspace=' + app.path_to_project_workspace + '\n'
+		+ 'font=' + app.font_size_value
 
 
 	if !os.is_file(app.path_to_vexe) {
@@ -138,4 +169,30 @@ fn btn_save_settings(mut app App, btn &ui.Button) {
 		ui.message_box('Settings saved!')
 		exit(1)
 	}
+}
+
+fn dd_change(mut app App, dd &ui.Dropdown) {
+	println(dd.selected().text)
+}
+
+fn slider_change(mut app App, mut dd &ui.Slider) {
+	mut amount_to_snap := 2
+	mut value_snapped := int( (math.round(dd.val) + 2) ) / amount_to_snap
+	if value_snapped <= 4 {
+		value_snapped = 5
+	}
+	dd.val = ((value_snapped) * amount_to_snap) - 2
+	app.font_size_value = (value_snapped * amount_to_snap).str()
+	app.font_label.set_text( 'Font size: '  + (value_snapped * amount_to_snap).str() )
+	println('vide_font_change=' + app.font_size_value)
+
+    // Save
+	mut home := os.home_dir()
+	os.mkdir(home + '/Vide/') or {}
+	mut vfile := home + '/Vide/settings.txt'
+	mut con := '# Vide Settings\n'
+		+ 'dark=$app.cb_dark.checked\n' 
+		+ 'vexe=' + app.path_to_vexe + '\n' 
+		+ 'workspace=' + app.path_to_project_workspace + '\n'
+		+ 'font=' + app.font_size_value
 }

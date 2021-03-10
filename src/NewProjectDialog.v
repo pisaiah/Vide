@@ -80,12 +80,13 @@ fn main() {
 
 fn btn_change_title(mut app App, btn &ui.Button) {
 	mut home := os.home_dir()
-	os.mkdir(home + '/Vide/projects/' + app.project_name)
+	os.mkdir(home + '/Vide/projects/' + app.project_name) or { println('error creating directory') }
 	mut vfile := home + '/Vide/projects/' +app.project_name + '/' + app.project_name + '.v'
 	mut vmod := home + '/Vide/projects/' +app.project_name + '/v.mod'
 	if !os.is_file(vfile) {
-		os.write_file(vfile, 'module main\n\nfn main() {\n\tprintln("Hello World!")\n}')
-		os.write_file(vmod, "Module {\n\tname: '" + app.project_name + "'\n\tdescription: '" + app.project_description + "'\n\tversion: '0.0.0'\n\tdependencies: []\n}")
+		os.write_file(vfile, 'module main\n\nfn main() {\n\tprintln("Hello World!")\n}') or { println('Error while writing file') }
+		os.write_file(vmod, "Module {\n\tname: '" + app.project_name + "'\n\tdescription: '" + app.project_description +
+        		"'\n\tversion: '0.0.0'\n\tdependencies: []\n}") or { println('Error while writing file') }
 		ui.message_box('Project created!')
 	} else {
 		ui.message_box('Project already exists!')

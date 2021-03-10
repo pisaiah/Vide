@@ -28,14 +28,15 @@ public class TextLineNumber extends JPanel implements DocumentListener {
     private int lastDigits;
     private int lastHeight;
 
-    public TextLineNumber(JTextComponent com) {
-        this.com = com;
+    public TextLineNumber(JTextComponent c) {
+        this.com = c;
 
         setBorder(new EmptyBorder(0,4,0,4));
         lastDigits = 0;
+        setFont(c.getFont());
         setPreferredWidth();
 
-        com.getDocument().addDocumentListener(this);
+        c.getDocument().addDocumentListener(this);
     }
 
     private void setPreferredWidth() {

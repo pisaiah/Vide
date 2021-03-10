@@ -54,6 +54,7 @@ public class Vide {
     public static ImageIcon save2 = getImage("save2.png",16);
 
     public static boolean DARK = false;
+    public static int FONT = 12;
 
     public static void main(String[] args) throws IOException {
         JFrame f = new JFrame("VIDE " + VERSION);
@@ -71,6 +72,7 @@ public class Vide {
         if (li.size() > 0) {
             file = new File(li.get(3).split("=")[1], "MyProject\\MyProject.v");
             DARK = li.get(1).equals("dark=true");
+            FONT = Integer.valueOf(li.get(4).substring(5));
         }
 
         try {
@@ -205,9 +207,7 @@ public class Vide {
             for (int y = 0; y < i.getHeight(); y++) {
                 Color c = new Color(i.getRGB(x, y));
                 int z = 250;
-                if (c.getRed() > z && c.getGreen() > z && c.getBlue() > z)
-                    //System.out.println(new Color(0,0,0,0).getRGB());
-                    i.setRGB(x, y, 0);
+                if (c.getRed()>z && c.getGreen()>z && c.getBlue()>z) i.setRGB(x,y,0);
             }
         }
         return new ImageIcon(i.getScaledInstance(a[0],a[a.length-1], 4));
