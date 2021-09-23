@@ -1,16 +1,12 @@
-<div align="center">
-<p>
-    <img src="https://svgur.com/i/UMo.svg" width="256px">
-</p>
-<h1>A simple IDE made for Vlang</h1>
+# VIDE: Simple IDE for V <img src="https://svgur.com/i/UMo.svg" width="228px" style="float:right" align="left"> 
 
-![licence](https://img.shields.io/badge/licence-MIT-blue)
-![GitHub all releases](https://img.shields.io/github/downloads/IsaiahPatton/VIDE/total)
-![vlang](https://img.shields.io/badge/V-0.2.2%2046cdf4f-%236d8fc5)
-![GitHub repo size](https://img.shields.io/github/repo-size/IsaiahPatton/vide)
-![platform](https://img.shields.io/badge/platform-windows%20%7C%20mac%20%7C%20linux-lightgray)
+![licence](https://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/CardboardPowered/PaperAPI-releases/total?style=for-the-badge)
+![vlang](https://img.shields.io/badge/V-0.2.2%202021.38-%236d8fc5?style=for-the-badge) 
+    </h1>
 
-</div>
+<div></div>
+<br>
 
 A simple IDE for [V](https://vlang.io/).
 
