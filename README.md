@@ -1,7 +1,7 @@
 # VIDE: Simple IDE for V <img src="https://svgur.com/i/UMo.svg" width="228px" style="float:right" align="left"> 
 
 ![licence](https://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/CardboardPowered/PaperAPI-releases/total?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)
 ![vlang](https://img.shields.io/badge/V-0.2.2%202021.38-%236d8fc5?style=for-the-badge) 
     </h1>
 
