@@ -10,6 +10,7 @@
 
 A simple IDE for [V](https://vlang.io/) made in V.
 
+**Note:** Alpha software, will include bugs. 
 
 Screenshots:
 
