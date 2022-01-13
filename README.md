@@ -2,20 +2,18 @@
 
 ![licence](https://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)
-![vlang](https://img.shields.io/badge/V-0.2.2%202021.38-%236d8fc5?style=for-the-badge) 
+![vlang](https://img.shields.io/badge/V-0.2.4%2008766da-%236d8fc5?style=for-the-badge) 
     </h1>
 
 <div></div>
 <br>
 
-A simple IDE for [V](https://vlang.io/).
-
-The main UI is currently written in Swing as VUI is not fully complete, and I am more familiar with Java.
-Dialogs are written in V.
+A simple IDE for [V](https://vlang.io/) made in V.
 
 
 
-Screenshots:
+
+(OLD) Screenshots:
 
 <img src="./screenshots/screenshot.png" width="512px"><br><br>
 <img src="./screenshots/new-project.png" width="200px">&nbsp;
