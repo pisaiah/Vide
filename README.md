@@ -11,10 +11,6 @@
 A simple IDE for [V](https://vlang.io/) made in V.
 
 
+Screenshots:
 
-
-(OLD) Screenshots:
-
-<img src="./screenshots/screenshot.png" width="512px"><br><br>
-<img src="./screenshots/new-project.png" width="200px">&nbsp;
-<img src="./screenshots/new-file.png" width="273px">
+<img src="./screenshots/preview-1.png" width="512px">&nbsp;<img src="./screenshots/preview-2.png" width="512px"><br><br>
