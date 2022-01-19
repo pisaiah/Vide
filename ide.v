@@ -27,6 +27,9 @@ fn main() {
 	// our custom config
 	mut conf := config(mut window)
 
+	// Set Saved Theme
+	set_theme_from_save(mut window)
+
 	// Setup Menubar and items
 	window.bar = ui.menubar(window, window.theme)
 

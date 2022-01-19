@@ -7,8 +7,20 @@ const (
 	vide_png = $embed_file('assets/logo.png')
 )
 
+fn set_theme_from_save(mut win ui.Window) {
+	mut conf := get_config(mut win)
+	name := conf.get_or_default('theme')
+	if name.len > 1 {
+		theme := ui.theme_by_name(name)
+		win.set_theme(theme)
+	}
+}
+
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	theme := ui.theme_by_name(com.text)
+	mut conf := get_config(mut win)
+	conf.set('theme', com.text)
+	conf.save()
 	win.set_theme(theme)
 }
 
