@@ -135,7 +135,7 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 Note: Currently alpha software!\n\nVersion:\n    VIDE' +
 		"\n    Isaiah's Widget Toolkit")
 
-	tbtn1.set_pos(1, 90)
+	tbtn1.set_pos(10, 90)
 	tbtn1.pack()
 
 	mut ver_lbl := ui.label(window, 'version ' + version + '\nversion ' + ui.version)

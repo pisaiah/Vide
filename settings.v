@@ -6,12 +6,6 @@ import os
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'Settings (TODO)')
 
-	/*mut up_v := ui.button(win, "Run 'v up'")
-	up_v.set_pos(100, 10)
-	up_v.set_click(vup_click)
-	up_v.pack()
-	modal.add_child(up_v)*/
-
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.set_bounds(20, 10, 300, 30)
 	work_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
@@ -55,6 +49,27 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(skip_unused)
 	modal.add_child(gc)
 
+	mut fs_lbl := ui.label(win, 'Font size:')
+	fs_lbl.set_bounds(20, 160, 300, 20)
+	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		lbl.text = 'Font Size (' + win.font_size.str() + '):'
+		lbl.width = ui.text_width(win, lbl.text)
+	}
+
+	mut fs_dec := ui.button(win, ' - ')
+	fs_dec.set_click(fs_dec_click)
+	fs_dec.set_bounds(20, 180, 30, 20)
+	fs_dec.pack()
+
+	mut fs_inc := ui.button(win, ' + ')
+	fs_inc.set_click(fs_inc_click)
+	fs_inc.set_bounds(57, 180, 30, 20)
+	fs_inc.pack()
+
+	modal.add_child(fs_lbl) 
+	modal.add_child(fs_dec)
+	modal.add_child(fs_inc)
+
 	modal.needs_init = false
 	mut close := ui.button(win, 'Save & Done')
 	close.set_bounds(25 + 50, 300 - 45, 145, 25)
@@ -89,6 +104,22 @@ fn check_click(mut win ui.Window, box ui.Checkbox) {
 	conf.set('v_flags', valu.trim_space())
 }
 
-fn vup_click(mut win ui.Window, com ui.Button) {
+fn fs_inc_click(mut win ui.Window, com ui.Button) {
 	ui.debug('btn click')
+	fs := win.font_size+1
+	if fs > 20 {
+		return
+	}
+	win.font_size = fs
+	win.gg.set_cfg(size:fs)
+}
+
+fn fs_dec_click(mut win ui.Window, com ui.Button) {
+	ui.debug('btn click')
+	fs := win.font_size-1
+	if fs < 4 {
+		return
+	}
+	win.font_size = fs
+	win.gg.set_cfg(size:fs)
 }
