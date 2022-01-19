@@ -23,6 +23,13 @@ fn make_tree(mut window ui.Window, fold string, mut tree ui.Tree) ui.Tree {
 	return tree
 }
 
+// Refresh Tree list
+fn refresh_tree(mut window ui.Window, fold string, mut tree ui.Tree) ui.Tree {
+	// TODO: Remember open-trees
+	tree.childs.clear()
+	return make_tree(mut window, fold, mut tree)
+}
+
 // If file is .v open in new tab
 fn tree_click(mut win ui.Window, tree ui.Tree) {
 	txt := tree.text
