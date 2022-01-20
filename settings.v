@@ -4,7 +4,7 @@ import iui as ui
 import os
 
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'Settings (TODO)')
+	mut modal := ui.modal(win, 'Settings')
 
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.set_bounds(20, 10, 300, 30)
@@ -94,18 +94,15 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 fn check_click(mut win ui.Window, box ui.Checkbox) {
 	mut conf := get_config(mut win)
 	mut valu := conf.get_or_default('v_flags')
-	if box.is_selected {
-		if valu.contains(box.text) {
-			valu = valu.replace(box.text, '')
-		} else {
-			valu = valu + " " + box.text
-		}
+	if valu.contains(box.text) {
+		valu = valu.replace(box.text, '')
+	} else {
+		valu = valu + " " + box.text
 	}
 	conf.set('v_flags', valu.trim_space())
 }
 
 fn fs_inc_click(mut win ui.Window, com ui.Button) {
-	ui.debug('btn click')
 	fs := win.font_size+1
 	if fs > 20 {
 		return
@@ -115,9 +112,8 @@ fn fs_inc_click(mut win ui.Window, com ui.Button) {
 }
 
 fn fs_dec_click(mut win ui.Window, com ui.Button) {
-	ui.debug('btn click')
 	fs := win.font_size-1
-	if fs < 4 {
+	if fs < 10 {
 		return
 	}
 	win.font_size = fs

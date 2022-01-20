@@ -42,6 +42,10 @@ fn main() {
 	new_proj.set_click(new_project_click)
 	file_menu.add_child(new_proj)
 
+	mut new_file := ui.menuitem('New File...')
+	new_file.set_click(new_file_click)
+	file_menu.add_child(new_file)
+
 	mut save := ui.menuitem('Save')
 	save.set_click(save_click)
 	file_menu.add_child(save)
