@@ -7,10 +7,12 @@ import gg
 fn on_box_draw(mut win ui.Window, mut tb ui.Component) {
 	mut x_off := 0
 	mut y_off := 0
+	mut ty := 0
 	for mut com in win.components {
 		if mut com is ui.Tabbox {
 			x_off = com.x
 			y_off = com.height - 28
+			ty = com.y
 			break
 		}
 	}
@@ -21,6 +23,10 @@ fn on_box_draw(mut win ui.Window, mut tb ui.Component) {
 
 	if tb.width != width {
 		tb.width = width
+	}
+
+	if mut tb is ui.Textbox {
+		on_box_draw_1(mut win, mut tb, x_off, ty)
 	}
 }
 

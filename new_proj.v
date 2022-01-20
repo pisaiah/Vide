@@ -1,7 +1,6 @@
 module main
 
 import iui as ui
-import os
 
 fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
