@@ -46,7 +46,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	vlib.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
 		mut conf := get_config(mut win)
-		conf.set('v_dir', work.text.replace(os.home_dir().replace('\\', '/'), '{user_home}'))
+		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '{user_home}'))
 	}
 	vlib.multiline = false
 	modal.add_child(vlib)

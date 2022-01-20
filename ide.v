@@ -322,7 +322,7 @@ fn get_v_exe(mut win ui.Window) string {
 	mut conf  := get_config(mut win)
 	mut saved := conf.get_or_default('v_exe')
 		.replace('{user_home}', os.home_dir().replace('\\', '/'))
-
+	println('saveD: ' + saved)
 	if saved.len <= 0 {
 		mut vexe := 'v'
 		$if windows {
