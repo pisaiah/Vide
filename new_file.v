@@ -52,8 +52,8 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 		name := win.extra_map['nf-name']
 		pdir := win.extra_map['nf-dir']
 		mut conf := get_config(mut win)
-		dir := conf.get_or_default('workspace_dir')
-			.replace('{user_home}', os.home_dir().replace('\\', '/'))
+		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.home_dir().replace('\\',
+			'/'))
 
 		os.write_file(pdir + '/' + name, '') or {}
 

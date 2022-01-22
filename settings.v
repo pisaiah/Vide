@@ -15,8 +15,8 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(work_lbl)
 
 	mut conf := get_config(mut win)
-	folder := conf.get_or_default('workspace_dir')
-		.replace('{user_home}', os.home_dir().replace('\\', '/'))
+	folder := conf.get_or_default('workspace_dir').replace('{user_home}', os.home_dir().replace('\\',
+		'/'))
 
 	mut work := ui.textbox(win, folder)
 	work.set_bounds(20, 40, 300, ui.text_height(win, 'A{'))
@@ -26,7 +26,8 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	work.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
 		mut conf := get_config(mut win)
-		conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'), '{user_home}'))
+		conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
+			'{user_home}'))
 	}
 	work.multiline = false
 	modal.add_child(work)
@@ -58,19 +59,19 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	mut skip_unused := ui.checkbox(win, '-skip-unused')
 	skip_unused.is_selected = conf.get_or_default('v_flags').contains('-skip-unused')
-	skip_unused.set_bounds(20, 160, 300, 20)
+	skip_unused.set_bounds(20, 160, 100, 20)
 	skip_unused.set_click(check_click)
 
 	mut gc := ui.checkbox(win, '-gc boehm')
 	gc.is_selected = conf.get_or_default('v_flags').contains('-gc boehm')
-	gc.set_bounds(20, 185, 300, 20)
+	gc.set_bounds(20, 185, 100, 20)
 	gc.set_click(check_click)
 
 	modal.add_child(flag_lbl)
 	modal.add_child(skip_unused)
 	modal.add_child(gc)
 
-	fs_group(mut win, mut modal, 20,240)
+	fs_group(mut win, mut modal, 20, 240)
 
 	modal.needs_init = false
 	mut close := ui.button(win, 'Save & Done')
@@ -103,15 +104,15 @@ fn fs_group(mut win ui.Window, mut modal ui.Modal, x int, y int) {
 
 	mut fs_dec := ui.button(win, ' - ')
 	fs_dec.set_click(fs_dec_click)
-	fs_dec.set_bounds(x, y+20, 30, 20)
+	fs_dec.set_bounds(x, y + 20, 30, 20)
 	fs_dec.pack()
 
 	mut fs_inc := ui.button(win, ' + ')
 	fs_inc.set_click(fs_inc_click)
-	fs_inc.set_bounds(x+33, y+20, 30, 20)
+	fs_inc.set_bounds(x + 33, y + 20, 30, 20)
 	fs_inc.pack()
 
-	modal.add_child(fs_lbl) 
+	modal.add_child(fs_lbl)
 	modal.add_child(fs_dec)
 	modal.add_child(fs_inc)
 }
@@ -122,25 +123,25 @@ fn check_click(mut win ui.Window, box ui.Checkbox) {
 	if valu.contains(box.text) {
 		valu = valu.replace(box.text, '')
 	} else {
-		valu = valu + " " + box.text
+		valu = valu + ' ' + box.text
 	}
 	conf.set('v_flags', valu.trim_space())
 }
 
 fn fs_inc_click(mut win ui.Window, com ui.Button) {
-	fs := win.font_size+1
+	fs := win.font_size + 1
 	if fs > 20 {
 		return
 	}
 	win.font_size = fs
-	win.gg.set_cfg(size:fs)
+	win.gg.set_cfg(size: fs)
 }
 
 fn fs_dec_click(mut win ui.Window, com ui.Button) {
-	fs := win.font_size-1
+	fs := win.font_size - 1
 	if fs < 10 {
 		return
 	}
 	win.font_size = fs
-	win.gg.set_cfg(size:fs)
+	win.gg.set_cfg(size: fs)
 }

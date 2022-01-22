@@ -43,6 +43,10 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn save_click(mut win ui.Window, item ui.MenuItem) {
+	do_save(mut win)
+}
+
+fn do_save(mut win ui.Window) {
 	for mut com in win.components {
 		if mut com is ui.Tabbox {
 			// txt := com.active_tab

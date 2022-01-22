@@ -6,9 +6,9 @@ import time
 
 const (
 	default_config = [
-		'# Vide Configuration'
-		'workspace_dir = {user_home}/vide/workspace'
-		'v_flags = -skip-unused'
+		'# Vide Configuration',
+		'workspace_dir = {user_home}/vide/workspace',
+		'v_flags = -skip-unused',
 	].join_lines()
 )
 
@@ -80,7 +80,7 @@ fn (mut this Config) set(key string, val string) {
 fn (mut this Config) save() {
 	mut con := '# Vide Configuration\n# Last Modified: ' + time.now().str()
 	for key, val in this.conf {
-		con = con + "\n" + key + " = " + val
+		con = con + '\n' + key + ' = ' + val
 	}
 
 	home := os.home_dir()

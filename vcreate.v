@@ -117,7 +117,7 @@ fn (c &Create) create_git_repo(dir string) {
 		res := os.execute('git init $dir')
 		if res.exit_code != 0 {
 			cerror('Unable to create git repo')
-			//exit(4)
+			// exit(4)
 		}
 	}
 	gitignore_path := '$dir/.gitignore'
