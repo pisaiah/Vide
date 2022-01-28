@@ -12,14 +12,39 @@ mut:
 	show  bool
 }
 
+fn module_exists(name string) bool {
+	path := os.vmodules_dir().replace('\\','/') + '/' + name.replace('.','/')
+	exists := os.exists(path)
+	if exists {
+		ls := os.ls(path) or {['']}
+		if ls.len == 1 && ls[0] == '.git' {
+			// 'v remove' does not remove git dir?
+			os.execute('cmd /c "rmdir /S /Q ' + os.real_path(path) + '"')
+			return false
+		}
+	}
+	return exists
+}
+
 fn (mut this Pack) draw() {
 	if this.show {
 		ui.draw_with_offset(mut this.label, this.x, this.y)
 		ui.draw_with_offset(mut this.btn, this.x, this.y)
 
-		this.btn.app.gg.draw_rounded_rect_empty(this.x, this.y, this.width, this.height,
-			2, this.btn.app.theme.menubar_border)
+		this.btn.app.gg.draw_rounded_rect_empty(this.x-4, this.y-1, this.width, this.height+3,
+			2, this.btn.app.theme.scroll_bar_color)
 
+		// Change buttons
+		installed := module_exists(this.label.text)
+		if installed && this.btn.text.contains('Install') {
+			create_cmd_btn(mut this.btn.app, 'remove', this.btn.extra, mut this)
+		} else {
+			if !installed && this.btn.text.contains('Remove') {
+				create_cmd_btn(mut this.btn.app, 'install', this.btn.extra, mut this)
+			} 
+		}
+
+		//println('LT: ' + this.label.text + ', exist?: ' + installed.str())
 		if this.is_mouse_rele {
 			if ui.point_in(mut this.btn, this.btn.app.click_x - this.x, this.btn.app.click_y - this.y) {
 				this.btn.is_mouse_down = false
@@ -51,7 +76,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	}
 
 	mut slbl := ui.label(win, 'Search: ')
-	mut tbox := ui.textbox(win, '')
+	mut tbox := ui.textbox(win, ' ')
 	tbox.multiline = false
 	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
 		box.x = ui.text_width(win, 'Search: ') + 8
@@ -59,7 +84,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		box.height = ui.text_height(win, 'A{0|') + 8
 	}
 	tbox.text_change_event_fn = fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['vpm-search'] = box.text
+		win.extra_map['vpm-search'] = box.text.trim_space()
 	}
 	modal.add_child(slbl)
 	modal.add_child(tbox)
@@ -67,7 +92,6 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	slbl.set_pos(10, 15)
 	tbox.set_bounds(60, 5, 100, 30)
 
-	mut sy := ui.text_height(win, 'A{0|') + 25
 	for i in 0 .. arr.len {
 		mut txt := arr[i]
 		if !txt.contains('[') {
@@ -77,34 +101,20 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		mut pack := &Pack{}
 		name := txt.split('[')[1].split(']')[0]
 
-		// num := txt.split(".")[0]
 		mut lbl := ui.label(win, name)
 		lbl.pack()
 		pack.label = lbl
 
-		th := ui.text_height(win, 'A{0|') + 5
-
+		th := ui.text_height(win, 'A{0|') + 8
 		if name in installed_pack {
-			mut btn := ui.button(win, 'Remove')
-			btn.set_bounds(250, 1, 100, th)
-			pack.btn = btn
+			create_cmd_btn(mut win, 'remove', name, mut pack)
 		} else {
-			mut btn := ui.button(win, 'Install')
-			btn.extra = name
-			btn.set_bounds(250, 1, 100, th)
-			btn.set_click(fn (mut win ui.Window, com ui.Button) {
-				println('install clicked ' + com.extra)
-			})
-			pack.btn = btn
+			create_cmd_btn(mut win, 'install', name, mut pack)
 		}
 		pack.width = 370
 		pack.height = th
 
 		modal.add_child(pack)
-		sy += th + 1
-		if math.mod(sy, 10) == 0 {
-			sy = ui.text_height(win, 'A{0|') + 25
-		}
 	}
 
 	modal.after_draw_event_fn = vpm_modal_draw
@@ -112,12 +122,51 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	win.add_child(modal)
 }
 
+fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack &Pack) {
+	mut btn := ui.button(win, cmd.title())
+	btn.extra = cmd + ' ' + name
+	height := ui.text_height(win, 'A{') + 5
+	btn.set_bounds(250, 1, 100, height)
+	btn.set_click(fn (mut win ui.Window, btn ui.Button) {
+		v := get_v_exe(mut win)
+		res := os.execute(v + ' ' + btn.extra).output
+		println(res)
+		if btn.extra.starts_with('remove ') {
+			// 'v remove' leaves empty .git dir causing the
+			// module to still show as installed in 'v list'
+			path := os.real_path(btn.extra.replace_once('remove ',''))
+			os.execute('cmd /c "rmdir /S /Q "' + path + '"')
+		}
+	})
+	pack.btn = btn
+}
+
+fn draw_scrollbar(mut com ui.Modal, cl int, spl_len int, ep int) {
+	// Calculate postion for scroll
+	ms := ui.text_height(com.window, 'A{0|') + 7
+	hei := com.in_height - (ms*4)
+	y := com.y + com.top_off + 25 + (ms*2) - 5
+	mut sth := int((f32((com.scroll_i)) / f32(spl_len)) * hei)
+	mut enh := int((f32(cl) / f32(spl_len)) * hei) 
+	mut requires_scrollbar := enh < hei
+
+	// Draw Scroll
+	if requires_scrollbar {
+		com.window.draw_bordered_rect(com.x + com.xs + 10, y-1, 15, hei - 1,
+			2, com.window.theme.scroll_track_color, com.window.theme.scroll_bar_color)
+
+		com.window.draw_bordered_rect(com.x + com.xs + 11, y + sth, 13, enh - 2,
+			2, com.window.theme.scroll_bar_color, com.window.theme.scroll_track_color)
+	}
+}
+
 fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 	if mut com is ui.Modal {
 		mut packs := com.children.filter(it is Pack)
 		mut i := 0
 		mut sy := ui.text_height(win, 'A{0|') + 25
-		max_show := 11
+		ms := ui.text_height(win, 'A{0|') + 10
+		max_show := ((400 - sy - (ms * 2)) / ms)
 		if com.scroll_i > (packs.len - max_show) {
 			com.scroll_i = packs.len - max_show
 		}
@@ -132,8 +181,8 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 				}
 				if i >= com.scroll_i && i < (com.scroll_i + max_show) {
 					pack.show = true
-					pack.set_pos(20, sy)
-					sy += ui.text_height(win, 'A{0|') + 7
+					pack.set_pos(30, sy)
+					sy += ms
 				} else {
 					pack.show = false
 				}
@@ -143,5 +192,7 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 		if com.scroll_i > (pl - max_show) && com.scroll_i > max_show {
 			com.scroll_i = pl - max_show
 		}
+		draw_scrollbar(mut com, max_show, pl, max_show * ms)
 	}
+
 }

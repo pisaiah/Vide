@@ -7,7 +7,7 @@ import time
 const (
 	default_config = [
 		'# Vide Configuration',
-		'workspace_dir = {user_home}/vide/workspace',
+		'workspace_dir = ~/vide/workspace',
 		'v_flags = -skip-unused',
 	].join_lines()
 )

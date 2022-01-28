@@ -15,8 +15,10 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(work_lbl)
 
 	mut conf := get_config(mut win)
-	folder := conf.get_or_default('workspace_dir').replace('{user_home}', os.home_dir().replace('\\',
-		'/'))
+
+	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
+		'/')
+	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textbox(win, folder)
 	work.set_bounds(20, 40, 300, ui.text_height(win, 'A{'))
@@ -27,7 +29,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	work.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
 		mut conf := get_config(mut win)
 		conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
-			'{user_home}'))
+			'~'))
 	}
 	work.multiline = false
 	modal.add_child(work)
@@ -39,7 +41,8 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	modal.add_child(lib_lbl)
 
-	mut vlib := ui.textbox(win, get_v_exe(mut win))
+	home := os.home_dir().replace('\\', '/')
+	mut vlib := ui.textbox(win, get_v_exe(mut win).replace(home, '~'))
 	vlib.set_bounds(20, 90, 300, ui.text_height(win, 'A{'))
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(200, ui.text_width(win, work.text + 'a b'))
@@ -47,7 +50,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	vlib.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
 		mut conf := get_config(mut win)
-		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '{user_home}'))
+		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~'))
 	}
 	vlib.multiline = false
 	modal.add_child(vlib)

@@ -6,7 +6,7 @@ import os
 import examples.ide.hc
 
 const (
-	version = '0.0.3'
+	version = '0.0.4-dev'
 )
 
 [console]
@@ -106,8 +106,9 @@ fn main() {
 	savee.set_click(save_click)
 	window.bar.add_child(savee)
 
-	folder := conf.get_or_default('workspace_dir').replace('{user_home}', os.home_dir().replace('\\',
-		'/'))
+	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\', '/')
+	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
+	println(folder)
 
 	window.extra_map['workspace'] = folder
 	os.mkdir_all(folder) or {}
@@ -164,7 +165,7 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 	mut content := ''
 	for mut str in lines {
 		if content.len > 0 {
-			content = content + '\n' + str.replace('\t', ' '.repeat(8))
+			content = content + '\n' + str.replace('\t', ' '.repeat(4))
 		} else {
 			content = content + str.replace('\r', '')
 		}
@@ -191,6 +192,8 @@ fn run_v(dir string, mut win ui.Window) {
 	mut vexe := 'v'
 	if 'VEXE' in os.environ() {
 		vexe = os.environ()['VEXE']
+	} else {
+		vexe = get_v_exe(mut win)
 	}
 
 	mut out := os.execute(vexe + ' run ' + dir)
