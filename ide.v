@@ -135,6 +135,11 @@ fn main() {
 	mut console_box := ui.textbox(window, 'Console Output:')
 	window.add_child(console_box)
 
+	// basic plugin system
+	plugin_dir := os.real_path(os.home_dir() + '/vide/plugins/')
+	os.mkdir_all(plugin_dir) or {}
+	load_plugins(plugin_dir, mut window) or {}
+
 	window.gg.run()
 }
 
