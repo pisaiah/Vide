@@ -29,10 +29,10 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut logo := win.gg.create_image(os.resource_abs_path('assets/vide.png'))
 	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds((300 / 2), 14, 188, 75)
+	logo_im.set_bounds(150, 14, 188, 75)
 
 	mut label := ui.label(win, 'Vide - Small IDE for V made in V.\nVersion: ' + version +
-		'\nUI Version: ' + ui.version + '\n\nCopyright © 2021-2022 Isaiah.\nAll Rights Reserved.')
+		'\nUI Version: ' + ui.version + '\n\nCopyright © 2021-2022 Isaiah.')
 
 	label.set_pos(110, 110)
 	label.pack()

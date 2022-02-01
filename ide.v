@@ -6,7 +6,7 @@ import os
 import examples.ide.hc
 
 const (
-	version = '0.0.4-dev'
+	version = '0.0.5-dev'
 )
 
 [console]
@@ -54,7 +54,7 @@ fn main() {
 	run.set_click(run_click)
 	file_menu.add_child(run)
 
-	mut vpm := ui.menuitem('Vpm List (indev)')
+	mut vpm := ui.menuitem('Vpm UI')
 	vpm.set_click(vpm_click)
 	file_menu.add_child(vpm)
 
@@ -146,22 +146,16 @@ fn main() {
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	mut tbtn1 := ui.label(window,
 		'Welcome to Vide! A simple IDE for V made in V.\n
-Note: Currently alpha software!\n\nVersion:\n    VIDE' +
-		"\n    Isaiah's Widget Toolkit")
+Note: Currently alpha software!\n\nVersion: ' + version + ', UI version: ' + ui.version)
 
 	tbtn1.set_pos(10, 90)
 	tbtn1.pack()
-
-	mut ver_lbl := ui.label(window, 'version ' + version + '\nversion ' + ui.version)
-	ver_lbl.set_pos(220, 155)
-	ver_lbl.pack()
 
 	mut logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
 	mut logo_im := ui.image(window, logo)
 	logo_im.set_bounds(1, 8, 188, 75)
 
 	tb.add_child('Welcome', tbtn1)
-	tb.add_child('Welcome', ver_lbl)
 	tb.add_child('Welcome', logo_im)
 }
 
