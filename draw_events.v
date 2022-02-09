@@ -37,7 +37,7 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	for mut com in win.components {
 		if mut com is ui.Tree {
 			x_off = com.x + com.width
-			y_off = gg.window_size().height - com.y - 12
+			y_off = gg.window_size().height - com.y - 20
 			break
 		}
 	}
@@ -56,8 +56,8 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	for mut com in win.components {
 		if mut com is ui.Textbox {
 			com.x = x_off
-			com.y = y_off + 38
-			com.height = 99
+			com.y = y_off + 32
+			com.height = 110
 			com.width = width
 		}
 	}

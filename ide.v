@@ -182,7 +182,7 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 fn set_console_text(mut win ui.Window, out string) {
 	for mut comm in win.components {
 		if mut comm is ui.Textbox {
-			comm.text = out
+			comm.text = comm.text + out
 		}
 	}
 }
@@ -198,7 +198,11 @@ fn run_v(dir string, mut win ui.Window) {
 	mut out := os.execute(vexe + ' run ' + dir)
 	for mut comm in win.components {
 		if mut comm is ui.Textbox {
-			comm.text = out.output
+            mut is_term := comm.text.trim_space().ends_with('>')
+			comm.text = comm.text + out.output
+            if is_term {
+                comm.text = comm.text + '\n' + win.extra_map['path'] + '>'
+            }
 		}
 	}
 }
