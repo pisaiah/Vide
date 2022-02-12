@@ -7,12 +7,11 @@ import szip
 import time
 
 // Basic plugin system
-
 type FNPlMain = fn (mut a ui.Window)
 
 pub fn load_plugins(dir string, mut win ui.Window) ? {
 	println('Loading plugins...')
-	for file in os.ls(dir) or {['']} {
+	for file in os.ls(dir) or { [''] } {
 		println('Loading plugin "' + file + '"...')
 		library_file_path := os.join_path(dir, file)
 		if os.is_dir(library_file_path) {
@@ -27,7 +26,7 @@ pub fn load_plugins(dir string, mut win ui.Window) ? {
 
 		handle := dl.open_opt(library_file_path, dl.rtld_lazy) ?
 		f := FNPlMain(dl.sym_opt(handle, 'on_load') ?)
-		
+
 		f(mut win)
 	}
 	println('Loaded plugins.')
@@ -42,7 +41,7 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 	pfold := os.real_path(fold + name + '-compile')
 	os.mkdir(pfold) or {}
 	base := os.base(pfold)
-	file_path := os.real_path(pfold + '/') + base.replace('-compile','')
+	file_path := os.real_path(pfold + '/') + base.replace('-compile', '')
 
 	mut need_compile := true
 	println(file_path + dl.get_shared_library_extension())
@@ -61,13 +60,14 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 		println('Compiling addon...')
 		szip.extract_zip_to_dir(file, pfold) or {}
 		vexe := get_v_exe(mut win)
-		cmd := vexe + ' -skip-unused -d no_backtrace -o ' + os.real_path(pfold + '/' + name) + ' -shared ' + os.real_path(pfold + '/') + '.'
+		cmd := vexe + ' -skip-unused -d no_backtrace -o ' + os.real_path(pfold + '/' + name) +
+			' -shared ' + os.real_path(pfold + '/') + '.'
 
 		mut res := os.execute(cmd)
 		if res.exit_code != 0 {
 			res = os.execute(cmd)
 			if res.exit_code != 0 {
-				time.sleep(100 * time.millisecond )
+				time.sleep(100 * time.millisecond)
 				res = os.execute(cmd)
 			}
 			println(res)
@@ -76,6 +76,6 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 
 	handle := dl.open_opt(file_path, dl.rtld_lazy) ?
 	f := FNPlMain(dl.sym_opt(handle, 'on_load') ?)
-		
+
 	f(mut win)
 }

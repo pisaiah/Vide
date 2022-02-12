@@ -16,12 +16,13 @@ fn main() {
 
 	// TODO: Test with other fonts
 	// 		 The Textbox carrot is off with other fonts.
-	mut font := $embed_file('assets/droidsansmono-webfont.ttf')
-	mut font_path := os.temp_dir() + '/VideFont.ttf'
-	os.write_file(font_path, font.to_string()) or {}
+	//mut font := $embed_file('assets/droidsansmono-webfont.ttf')
+	//mut font_path := os.temp_dir() + '/VideFont.ttf'
+    //os.write_file(font_path, font.to_string()) or {}
 
 	// Create Window
-	mut window := ui.window_with_font(ui.get_system_theme(), 'Vide', 800, 500, font_path)
+	//mut window := ui.window_with_font(ui.get_system_theme(), 'Vide', 800, 500, font_path)
+    mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 500)
 
 	// our custom config
 	mut conf := config(mut window)
@@ -106,7 +107,8 @@ fn main() {
 	savee.set_click(save_click)
 	window.bar.add_child(savee)
 
-	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\', '/')
+	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
+		'/')
 	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
 	println(folder)
 
@@ -146,7 +148,8 @@ fn main() {
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	mut tbtn1 := ui.label(window,
 		'Welcome to Vide! A simple IDE for V made in V.\n
-Note: Currently alpha software!\n\nVersion: ' + version + ', UI version: ' + ui.version)
+Note: Currently alpha software!\n\nVersion: ' +
+		version + ', UI version: ' + ui.version)
 
 	tbtn1.set_pos(10, 90)
 	tbtn1.pack()
@@ -198,11 +201,11 @@ fn run_v(dir string, mut win ui.Window) {
 	mut out := os.execute(vexe + ' run ' + dir)
 	for mut comm in win.components {
 		if mut comm is ui.Textbox {
-            mut is_term := comm.text.trim_space().ends_with('>')
+			mut is_term := comm.text.trim_space().ends_with('>')
 			comm.text = comm.text + out.output
-            if is_term {
-                comm.text = comm.text + '\n' + win.extra_map['path'] + '>'
-            }
+			if is_term {
+				comm.text = comm.text + '\n' + win.extra_map['path'] + '>'
+			}
 		}
 	}
 }

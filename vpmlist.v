@@ -13,10 +13,10 @@ mut:
 }
 
 fn module_exists(name string) bool {
-	path := os.vmodules_dir().replace('\\','/') + '/' + name.replace('.','/')
+	path := os.vmodules_dir().replace('\\', '/') + '/' + name.replace('.', '/')
 	exists := os.exists(path)
 	if exists {
-		ls := os.ls(path) or {['']}
+		ls := os.ls(path) or { [''] }
 		if ls.len == 1 && ls[0] == '.git' {
 			// 'v remove' does not remove git dir?
 			os.execute('cmd /c "rmdir /S /Q ' + os.real_path(path) + '"')
@@ -31,7 +31,7 @@ fn (mut this Pack) draw() {
 		ui.draw_with_offset(mut this.label, this.x, this.y)
 		ui.draw_with_offset(mut this.btn, this.x, this.y)
 
-		this.btn.app.gg.draw_rounded_rect_empty(this.x-4, this.y-1, this.width, this.height+3,
+		this.btn.app.gg.draw_rounded_rect_empty(this.x - 4, this.y - 1, this.width, this.height + 3,
 			2, this.btn.app.theme.scroll_bar_color)
 
 		// Change buttons
@@ -41,10 +41,10 @@ fn (mut this Pack) draw() {
 		} else {
 			if !installed && this.btn.text.contains('Remove') {
 				create_cmd_btn(mut this.btn.app, 'install', this.btn.extra, mut this)
-			} 
+			}
 		}
 
-		//println('LT: ' + this.label.text + ', exist?: ' + installed.str())
+		// println('LT: ' + this.label.text + ', exist?: ' + installed.str())
 		if this.is_mouse_rele {
 			if ui.point_in(mut this.btn, this.btn.app.click_x - this.x, this.btn.app.click_y - this.y) {
 				this.btn.is_mouse_down = false
@@ -122,7 +122,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	win.add_child(modal)
 }
 
-fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack &Pack) {
+fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 	mut btn := ui.button(win, cmd.title())
 	btn.extra = cmd + ' ' + name
 	height := ui.text_height(win, 'A{') + 5
@@ -134,7 +134,7 @@ fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack &Pack) {
 		if btn.extra.starts_with('remove ') {
 			// 'v remove' leaves empty .git dir causing the
 			// module to still show as installed in 'v list'
-			path := os.real_path(btn.extra.replace_once('remove ',''))
+			path := os.real_path(btn.extra.replace_once('remove ', ''))
 			os.execute('cmd /c "rmdir /S /Q "' + path + '"')
 		}
 	})
@@ -144,19 +144,19 @@ fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack &Pack) {
 fn draw_scrollbar(mut com ui.Modal, cl int, spl_len int, ep int) {
 	// Calculate postion for scroll
 	ms := ui.text_height(com.window, 'A{0|') + 7
-	hei := com.in_height - (ms*4)
-	y := com.y + com.top_off + 25 + (ms*2) - 5
+	hei := com.in_height - (ms * 4)
+	y := com.y + com.top_off + 25 + (ms * 2) - 5
 	mut sth := int((f32((com.scroll_i)) / f32(spl_len)) * hei)
-	mut enh := int((f32(cl) / f32(spl_len)) * hei) 
+	mut enh := int((f32(cl) / f32(spl_len)) * hei)
 	mut requires_scrollbar := enh < hei
 
 	// Draw Scroll
 	if requires_scrollbar {
-		com.window.draw_bordered_rect(com.x + com.xs + 10, y-1, 15, hei - 1,
-			2, com.window.theme.scroll_track_color, com.window.theme.scroll_bar_color)
+		com.window.draw_bordered_rect(com.x + com.xs + 10, y - 1, 15, hei - 1, 2, com.window.theme.scroll_track_color,
+			com.window.theme.scroll_bar_color)
 
-		com.window.draw_bordered_rect(com.x + com.xs + 11, y + sth, 13, enh - 2,
-			2, com.window.theme.scroll_bar_color, com.window.theme.scroll_track_color)
+		com.window.draw_bordered_rect(com.x + com.xs + 11, y + sth, 13, enh - 2, 2, com.window.theme.scroll_bar_color,
+			com.window.theme.scroll_track_color)
 	}
 }
 
@@ -194,5 +194,4 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 		}
 		draw_scrollbar(mut com, max_show, pl, max_show * ms)
 	}
-
 }
