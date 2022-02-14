@@ -6,7 +6,7 @@ import os
 import examples.ide.hc
 
 const (
-	version = '0.0.5-dev'
+	version = '0.0.6-dev'
 )
 
 [console]
@@ -14,6 +14,7 @@ fn main() {
 	// Hide Console
 	hc.hide_console_win()
 
+	// TODO: Latest UI commit should have fixed this:
 	// TODO: Test with other fonts
 	// 		 The Textbox carrot is off with other fonts.
 	//mut font := $embed_file('assets/droidsansmono-webfont.ttf')

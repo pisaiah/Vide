@@ -7,11 +7,7 @@ import iui as ui
 //
 [export: 'on_load']
 pub fn on_load(mut win ui.Window) {
-	println('"Simple Small" icons by icons8.com')
-
 	for mut item in win.bar.items {
-		println(item.text)
-
 		mut img := $embed_file('assets/icons8-file-24.png')
 		if item.text == 'File' {
 			img = $embed_file('assets/icons8-file-24.png')

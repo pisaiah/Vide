@@ -133,7 +133,7 @@ fn check_click(mut win ui.Window, box ui.Checkbox) {
 
 fn fs_inc_click(mut win ui.Window, com ui.Button) {
 	fs := win.font_size + 1
-	if fs > 20 {
+	if fs > 24 {
 		return
 	}
 	win.font_size = fs
@@ -142,7 +142,7 @@ fn fs_inc_click(mut win ui.Window, com ui.Button) {
 
 fn fs_dec_click(mut win ui.Window, com ui.Button) {
 	fs := win.font_size - 1
-	if fs < 10 {
+	if fs < 8 {
 		return
 	}
 	win.font_size = fs
