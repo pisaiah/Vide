@@ -14,16 +14,8 @@ fn main() {
 	// Hide Console
 	hc.hide_console_win()
 
-	// TODO: Latest UI commit should have fixed this:
-	// TODO: Test with other fonts
-	// 		 The Textbox carrot is off with other fonts.
-	//mut font := $embed_file('assets/droidsansmono-webfont.ttf')
-	//mut font_path := os.temp_dir() + '/VideFont.ttf'
-    //os.write_file(font_path, font.to_string()) or {}
-
 	// Create Window
-	//mut window := ui.window_with_font(ui.get_system_theme(), 'Vide', 800, 500, font_path)
-    mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 500)
+	mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 500)
 
 	// our custom config
 	mut conf := config(mut window)
@@ -118,7 +110,7 @@ fn main() {
 
 	mut tree := ui.tree(window, 'Projects')
 	tree.is_selected = true
-	tree.set_bounds(0, 27, 150, 200)
+	tree.set_bounds(0, 22, 170, 200)
 	tree.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
 		tree.height = gg.window_size().height
 	}
@@ -159,8 +151,24 @@ Note: Currently alpha software!\n\nVersion: ' +
 	mut logo_im := ui.image(window, logo)
 	logo_im.set_bounds(1, 8, 188, 75)
 
+	mut gh := ui.button(window, 'Github')
+	gh.set_pos(190, 53)
+	gh.set_click(fn (mut win ui.Window, com ui.Button) {
+		ui.open_url('https://github.com/isaiahpatton/vide')
+	})
+	gh.pack()
+
+	mut ad := ui.button(window, 'Addons')
+	ad.set_pos(255, 53)
+	ad.set_click(fn (mut win ui.Window, com ui.Button) {
+		ui.open_url('https://github.com/topics/vide-addon')
+	})
+	ad.pack()
+
 	tb.add_child('Welcome', tbtn1)
 	tb.add_child('Welcome', logo_im)
+	tb.add_child('Welcome', gh)
+	tb.add_child('Welcome', ad)
 }
 
 fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {

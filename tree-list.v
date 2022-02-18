@@ -33,7 +33,7 @@ fn refresh_tree(mut window ui.Window, fold string, mut tree ui.Tree) ui.Tree {
 // If file is .v open in new tab
 fn tree_click(mut win ui.Window, tree ui.Tree) {
 	txt := tree.text
-	if txt.ends_with('.v') {
+	if txt.contains('.') {
 		for mut com in win.components {
 			if mut com is ui.Tabbox {
 				new_tab(mut win, txt, mut com)

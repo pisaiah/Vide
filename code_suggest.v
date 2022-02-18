@@ -6,10 +6,12 @@ import os
 import gx
 
 fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
+	mut saved := false
 	if box.ctrl_down {
 		if box.last_letter == 's' {
 			println('SAVE REQUEST!')
 			do_save(mut win)
+			saved = true
 		}
 	}
 
@@ -27,25 +29,29 @@ fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
 
 	// v -check-syntax
 	file := get_tab_name(mut win)
-	go cmd_exec(mut win, file, &box)
+	// println(file)
+	if file.ends_with('.v') && saved {
+		go cmd_exec(mut win, file, &box)
+	}
 }
 
 struct Hovermess {
 	ui.Component_A
 pub mut:
-	win &ui.Window
-	text string
-	num int
+	win   &ui.Window
+	text  string
+	num   int
 	off_y int
-	box &ui.Textbox
+	box   &ui.Textbox
 }
 
 fn (mut this Hovermess) draw() {
-	mut mid  := (this.x + (this.width / 2))
+	mut mid := (this.x + (this.width / 2))
 	mut midy := (this.y + (this.height / 2))
 
 	mut num := this.num - this.box.scroll_i
-	this.y = this.off_y + (ui.text_height(this.win, '1A{') * (num)-1) - (ui.text_height(this.win, '1A{')/2)
+	this.y = this.off_y + (ui.text_height(this.win, '1A{') * num - 1) - (ui.text_height(this.win,
+		'1A{') / 2)
 
 	if this.y < this.off_y {
 		return
@@ -54,7 +60,8 @@ fn (mut this Hovermess) draw() {
 	for mut com in this.win.components {
 		if mut com is ui.Tabbox {
 			if com.kids[com.active_tab].len > 1 {
-				return // Welcome Tab
+				// Welcome Tab
+				return
 			}
 			for mut kid in com.kids[com.active_tab] {
 				if mut kid is ui.Textbox {
@@ -66,41 +73,44 @@ fn (mut this Hovermess) draw() {
 		}
 	}
 
-	mut bg := gx.rgb(255,204,0)
+	mut bg := gx.rgb(255, 204, 0)
 	if this.text.contains('error:') {
-		bg = gx.rgb(204,51,0)
+		bg = gx.rgb(204, 51, 0)
 	}
 
-	this.win.draw_bordered_rect(this.x, this.y, this.width,
-			this.height, 2, bg, this.win.theme.text_color)
+	this.win.draw_bordered_rect(this.x, this.y, this.width, this.height, 2, bg, this.win.theme.text_color)
 
-	if (ui.abs(mid - this.win.mouse_x) < (this.width / 2)) && (ui.abs(midy - this.win.mouse_y) < (this.height / 2)) {
-		this.win.draw_bordered_rect(this.x, this.y, this.width + ui.text_width(this.win, this.text),
-			this.height, 2, this.win.theme.background, this.win.theme.text_color)
-		this.win.gg.draw_text(this.x, this.y, this.text, gx.TextCfg{
-			size: this.win.font_size
-			color: this.win.theme.text_color
-		})
-	} else {
-		twidth := ui.text_width(this.win, this.num.str()) / 2
-		this.win.gg.draw_text(this.x + (this.width/2) - twidth, this.y, this.num.str(), gx.TextCfg{
+	if (ui.abs(mid - this.win.mouse_x) < (this.width / 2))
+		&& (ui.abs(midy - this.win.mouse_y) < (this.height / 2)) {
+		off := 8
+		this.win.draw_bordered_rect(this.x + this.width, this.y,
+			ui.text_width(this.win, this.text) + (2 * off), this.height, 2, this.win.theme.background,
+			this.win.theme.text_color)
+		this.win.gg.draw_text(this.x + this.width + off, this.y, this.text, gx.TextCfg{
 			size: this.win.font_size
 			color: this.win.theme.text_color
 		})
 	}
+
+	twidth := ui.text_width(this.win, this.num.str()) / 2
+	this.win.gg.draw_text(this.x + (this.width / 2) - twidth, this.y, this.num.str(),
+		gx.TextCfg{
+		size: this.win.font_size
+		color: this.win.theme.text_color
+	})
 }
 
 fn hover(mut win ui.Window) Hovermess {
 	return Hovermess{
 		win: win
-		box:0
+		box: 0
 	}
 }
 
 fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
 	vexe := get_v_exe(mut win)
 
-    res := os.execute(vexe + ' -check-syntax ' + file)
+	res := os.execute(vexe + ' -check-syntax ' + file)
 	out := res.output
 
 	lines := out.split_into_lines()
@@ -129,7 +139,7 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
 	}
 
 	for line in l2 {
-		//println(line)
+		// println(line)
 		num := line.split('.v:')[1].split(':')[0]
 		mut hove := hover(mut win)
 		hove.num = num.int()
@@ -138,13 +148,13 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
 		hove.box = tbox
 		csy := 20
 		hove.off_y = ty + csy + box.y
-		hove.y = ty + csy + box.y + (ui.text_height(win, '1A{') * (num.int())-1) - (ui.text_height(win, '1A{')/2)
+		hove.y = ty + csy + box.y + (ui.text_height(win, '1A{') * (num.int()) - 1) - (ui.text_height(win,
+			'1A{') / 2)
 		hove.width = 20
 		hove.height = ui.text_height(win, '1A{')
-		hove.text = line.split('.v')[1]
+		hove.text = line.split('.v:')[1]
 		win.add_child(hove)
 	}
-	
 }
 
 fn get_tab_name(mut win ui.Window) string {

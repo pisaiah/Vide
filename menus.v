@@ -31,13 +31,25 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 	mut logo_im := ui.image(win, logo)
 	logo_im.set_bounds(150, 14, 188, 75)
 
-	mut label := ui.label(win, 'Vide - Small IDE for V made in V.\nVersion: ' + version +
-		'\nUI Version: ' + ui.version + '\n\nCopyright © 2021-2022 Isaiah.')
+	mut title := ui.label(win, 'Vɪᴅᴇ')
+	title.set_pos(110, 14)
+	title.size = 80
+	title.set_config(80, true, true)
+	title.bold = true
+	title.pack()
 
-	label.set_pos(110, 110)
+	mut label := ui.label(win, 'Small IDE for V made in V.\nVersion: ' + version +
+		'\nUI Version: ' + ui.version)
+
+	label.set_pos(120, 110)
 	label.pack()
 
-	modal.add_child(logo_im)
+	mut copy := ui.label(win, 'Copyright © 2021-2022 Isaiah.')
+	copy.set_pos(120, 200)
+	copy.set_config(12, true, false)
+	modal.add_child(copy)
+
+	modal.add_child(title)
 	modal.add_child(label)
 	win.add_child(modal)
 }
@@ -53,7 +65,7 @@ fn do_save(mut win ui.Window) {
 			mut tab := com.kids[com.active_tab]
 			for mut child in tab {
 				if mut child is ui.Textbox {
-					set_console_text(mut win, 'Saved file to ' + com.active_tab)
+					// set_console_text(mut win, 'Saved file')
 					os.write_file(com.active_tab, child.text) or {
 						set_console_text(mut win, 'Unable to save file!')
 					}
