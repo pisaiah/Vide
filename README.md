@@ -2,11 +2,12 @@
 
 ![licence](http://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
 [![GitHub all releases](http://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)](https://github.com/IsaiahPatton/Vide/releases)
-![vlang](http://img.shields.io/badge/V-0.2.4%2008766da-%236d8fc5?style=for-the-badge) 
+![vlang](http://img.shields.io/badge/V-0.2.4-%236d8fc5?style=for-the-badge) 
     </h1>
 
 <div></div>
-<br>
+
+## About
 
 A simple IDE for [V](https://vlang.io/) made in V.
 
@@ -14,17 +15,25 @@ A simple IDE for [V](https://vlang.io/) made in V.
 
 ## Screenshots:
 
-<img src="./screenshots/preview-1.png" width="476px"> <img src="./screenshots/preview-2.png" width="476px"><br><br>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/154627315-7d7651ca-6a92-4e1b-afb4-64c12c06ee5e.png" height="230px"><br>Light Theme</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/154627409-0a7c2d22-0557-4d9d-9cd2-ecc7a4e9be66.png" height="230px"><br>Dark Theme</kbd><br>
+
+
+<kbd><img src="https://user-images.githubusercontent.com/16439221/154629365-4f1f3fa5-f68f-4e7c-85b2-3b967ddc473f.png" height="110px"><br>UI for VPM</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/154628989-01d3d44e-2fd2-443b-9be1-bd7cf6a7b1bf.png" height="110px"><br>Syntax checks</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/154629544-5522f4f0-2066-4cf4-bd32-8bdc8823dbf2.png" height="110px"><br>Autocomplete (Beta)</kbd>
+
+
 
 ## Known Issues
 - Memory Leak (Fine with `-gc boehm`)
-- Bad Textbox.
+- Textbox text editing has a few issues.
 
 ## Resource Requirements
 
 | IDE     | Disk    | RAM     |
 |---------|---------|---------|
 |         |         |         |
-| Vide    | < 2MB   | ~ 50MB  |
-| VS Code | 308MB   | ~ 330MB |
+| Vide    | < 1MB   | ~ 40MB  |
+| VS Code | 308MB   | ~ 300MB |
 |         |         |         |
