@@ -57,18 +57,15 @@ fn (mut this Hovermess) draw() {
 		return
 	}
 
-	for mut com in this.win.components {
-		if mut com is ui.Tabbox {
-			if com.kids[com.active_tab].len > 1 {
-				// Welcome Tab
+	com := &ui.Tabbox(this.win.get_from_id('main-tabs'))
+	if com.kids[com.active_tab].len > 1 {
+		// Welcome Tab
+		return
+	}
+	for mut kid in com.kids[com.active_tab] {
+		if mut kid is ui.Textbox {
+			if kid != this.box {
 				return
-			}
-			for mut kid in com.kids[com.active_tab] {
-				if mut kid is ui.Textbox {
-					if kid != this.box {
-						return
-					}
-				}
 			}
 		}
 	}

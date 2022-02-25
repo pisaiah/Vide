@@ -57,6 +57,7 @@ fn (mut this Pack) draw() {
 
 fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'V Package Manager (GUI)')
+    modal.set_id(mut win, 'vpm-modal')
 	modal.in_height = 400
 	modal.top_off = 10
 
@@ -117,6 +118,26 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		modal.add_child(pack)
 	}
 
+    mut slider := ui.slider(win, 0, 100, .vert)
+    slider.set_bounds(41,10, 15, 200)
+    slider.draw_event_fn = fn (mut win ui.Window, com &ui.Component) {
+        mut modal := &ui.Modal(win.get_from_id('vpm-modal'))
+        mut packs := modal.children.filter(it is Pack)
+
+        mut this := *com
+        if mut this is ui.Slider {
+            mut sy := ui.text_height(win, 'A{0|') + 25
+            ms := ui.text_height(win, 'A{0|') + 10
+            max_show := ((400 - sy - (ms * 2)) / ms)
+
+            this.y = sy
+            this.cur = modal.scroll_i
+            this.height = (max_show+1) * packs[0].height
+            this.max = win.extra_map['vpm-pl'].int()
+        }
+    }
+    modal.add_child(slider)
+
 	modal.after_draw_event_fn = vpm_modal_draw
 
 	win.add_child(modal)
@@ -141,23 +162,8 @@ fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 	pack.btn = btn
 }
 
+[deprecated: 'Replaced by ui.Slider']
 fn draw_scrollbar(mut com ui.Modal, cl int, spl_len int, ep int) {
-	// Calculate postion for scroll
-	ms := ui.text_height(com.window, 'A{0|') + 7
-	hei := com.in_height - (ms * 4)
-	y := com.y + com.top_off + 25 + (ms * 2) - 5
-	mut sth := int((f32((com.scroll_i)) / f32(spl_len)) * hei)
-	mut enh := int((f32(cl) / f32(spl_len)) * hei)
-	mut requires_scrollbar := enh < hei
-
-	// Draw Scroll
-	if requires_scrollbar {
-		com.window.draw_bordered_rect(com.x + com.xs + 10, y - 1, 15, hei - 1, 2, com.window.theme.scroll_track_color,
-			com.window.theme.scroll_bar_color)
-
-		com.window.draw_bordered_rect(com.x + com.xs + 11, y + sth, 13, enh - 2, 2, com.window.theme.scroll_bar_color,
-			com.window.theme.scroll_track_color)
-	}
 }
 
 fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
@@ -167,8 +173,8 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 		mut sy := ui.text_height(win, 'A{0|') + 25
 		ms := ui.text_height(win, 'A{0|') + 10
 		max_show := ((400 - sy - (ms * 2)) / ms)
-		if com.scroll_i > (packs.len - max_show) {
-			com.scroll_i = packs.len - max_show
+		if com.scroll_i > (packs.len - 1) {
+			com.scroll_i = packs.len - 1
 		}
 		mut pl := packs.len
 		for mut pack in packs {
@@ -181,7 +187,7 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 				}
 				if i >= com.scroll_i && i < (com.scroll_i + max_show) {
 					pack.show = true
-					pack.set_pos(30, sy)
+					pack.set_pos(60, sy)
 					sy += ms
 				} else {
 					pack.show = false
@@ -189,9 +195,9 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 				i++
 			}
 		}
-		if com.scroll_i > (pl - max_show) && com.scroll_i > max_show {
+		if com.scroll_i > (pl - 1) && com.scroll_i > max_show {
 			com.scroll_i = pl - max_show
 		}
-		draw_scrollbar(mut com, max_show, pl, max_show * ms)
+        win.extra_map['vpm-pl'] = pl.str()
 	}
 }

@@ -115,11 +115,13 @@ fn main() {
 		tree.height = gg.window_size().height
 	}
 
+    tree.set_id(mut window, 'proj-tree')
 	make_tree(mut window, folder, mut tree)
 
 	window.add_child(tree)
 
 	mut tb := ui.tabbox(window)
+    tb.set_id(mut window, 'main-tabs')
 	tb.set_bounds(200, 35, 200, 80)
 
 	tb.draw_event_fn = on_draw
@@ -128,6 +130,7 @@ fn main() {
 	welcome_tab(mut window, mut tb, folder)
 
 	mut console_box := ui.textbox(window, 'Console Output:')
+    console_box.set_id(mut window, 'consolebox')
 	window.add_child(console_box)
 
 	// basic plugin system

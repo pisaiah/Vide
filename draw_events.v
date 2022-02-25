@@ -32,19 +32,14 @@ fn on_box_draw(mut win ui.Window, mut tb ui.Component) {
 
 // Size components
 fn on_draw(mut win ui.Window, mut tb ui.Component) {
-	mut x_off := 0
-	mut y_off := 0
-	for mut com in win.components {
-		if mut com is ui.Tree {
-			x_off = com.x + com.width
-			y_off = gg.window_size().height - com.y - 20
-			break
-		}
-	}
+    mut tree := &ui.Tree(win.get_from_id('proj-tree'))
+	x_off := tree.x + tree.width
+	y_off := gg.window_size().height - tree.y - 123
+
 	if tb.x != x_off {
 		tb.x = x_off
 	}
-	y_off -= 100
+
 	if tb.height != y_off {
 		tb.height = y_off - 4
 	}
@@ -53,12 +48,11 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	if tb.width != width {
 		tb.width = width
 	}
-	for mut com in win.components {
-		if mut com is ui.Textbox {
-			com.x = x_off
-			com.y = y_off + 32
-			com.height = 110
-			com.width = width
-		}
-	}
+	
+    
+    mut com := &ui.Textbox(win.get_from_id('consolebox'))
+	com.x = x_off
+	com.y = y_off + 32
+	com.height = 110
+	com.width = width
 }
