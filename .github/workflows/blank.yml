@@ -19,9 +19,9 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.10'
+          version: 'weekly.2022.11'
           version-file: ''
-          check-latest: false
+          check-latest: true
           stable: false
           architecture: ''
       - uses: actions/checkout@v1
@@ -62,9 +62,9 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.10'
+          version: 'weekly.2022.11'
           version-file: ''
-          check-latest: false
+          check-latest: true
           stable: false
           architecture: ''
       - uses: actions/checkout@v1
@@ -100,9 +100,9 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.10'
+          version: 'weekly.2022.11'
           version-file: ''
-          check-latest: false
+          check-latest: true
           stable: false
           architecture: ''
       - uses: actions/checkout@v1
