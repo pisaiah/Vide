@@ -5,9 +5,14 @@ import iui as ui
 import os
 import gx
 
-fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
+// fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
+fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
+	mut win := &ui.Window(win_ptr)
+	mut box := &ui.TextEdit(box_ptr)
+
 	mut saved := false
 	if box.ctrl_down {
+		// println(box.last_letter)
 		if box.last_letter == 's' {
 			println('SAVE REQUEST!')
 			do_save(mut win)
@@ -17,21 +22,17 @@ fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
 
 	// Text Suggestions
 	mut indx := box.carrot_top + 1
-	mut mtxt := ''
-	spl := box.text.split_into_lines()
-	if (indx - 1) < spl.len {
-		mtxt = spl[indx - 1]
-	}
+	mut mtxt := box.lines[indx - 1]
 	mtxt = mtxt.substr_ni(0, box.carrot_left)
 	mut splt := mtxt.split(' ')
 	fin := splt[splt.len - 1]
+	// println(fin)
 	win.extra_map['fin'] = fin
 
 	// v -check-syntax
 	file := get_tab_name(mut win)
-	// println(file)
 	if file.ends_with('.v') && saved {
-		go cmd_exec(mut win, file, &box)
+		go cmd_exec(mut win, file, box)
 	}
 }
 
@@ -42,7 +43,7 @@ pub mut:
 	text  string
 	num   int
 	off_y int
-	box   &ui.Textbox
+	box   &ui.TextEdit
 }
 
 fn (mut this Hovermess) draw() {
@@ -50,8 +51,11 @@ fn (mut this Hovermess) draw() {
 	mut midy := (this.y + (this.height / 2))
 
 	mut num := this.num - this.box.scroll_i
-	this.y = this.off_y + (ui.text_height(this.win, '1A{') * num - 1) - (ui.text_height(this.win,
-		'1A{') / 2)
+
+	line_height := this.win.gg.text_height('A{')
+	// this.y = this.off_y //+ (ui.text_height(this.win, '1A{') * num - 1) - (ui.text_height(this.win,
+	//'1A{') / 2)
+	this.y = this.off_y + (line_height * (num - 1))
 
 	if this.y < this.off_y {
 		return
@@ -63,7 +67,7 @@ fn (mut this Hovermess) draw() {
 		return
 	}
 	for mut kid in com.kids[com.active_tab] {
-		if mut kid is ui.Textbox {
+		if mut kid is ui.TextEdit {
 			if kid != this.box {
 				return
 			}
@@ -104,7 +108,7 @@ fn hover(mut win ui.Window) Hovermess {
 	}
 }
 
-fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
+fn cmd_exec(mut win ui.Window, file string, box &ui.TextEdit) {
 	vexe := get_v_exe(mut win)
 
 	res := os.execute(vexe + ' -check-syntax ' + file)
@@ -122,13 +126,13 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
 
 	mut tx := 0
 	mut ty := 0
-	mut tbox := ui.textbox(win, '')
+	mut tbox := ui.textedit(win, '')
 	for mut com in win.components {
 		if mut com is ui.Tabbox {
 			tx = com.x
 			ty = com.y
 			for mut kid in com.kids[com.active_tab] {
-				if mut kid is ui.Textbox {
+				if mut kid is ui.TextEdit {
 					tbox = kid
 				}
 			}
@@ -136,7 +140,7 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.Textbox) {
 	}
 
 	for line in l2 {
-		// println(line)
+		println(line)
 		num := line.split('.v:')[1].split(':')[0]
 		mut hove := hover(mut win)
 		hove.num = num.int()
@@ -163,53 +167,57 @@ fn get_tab_name(mut win ui.Window) string {
 	return '.'
 }
 
-fn on_box_draw_1(mut win ui.Window, mut box ui.Textbox, tx int, ty int) {
-	fin := win.extra_map['fin']
+fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
+	mut box := &ui.TextEdit(ptr)
+	mut win := box.win
 
-	mut is_fin := false
-	for str in all_vlib_mod(mut win) {
-		if fin.starts_with(str + '.') {
-			is_fin = true
-		}
-	}
+	if current_line == box.carrot_top {
+		fin := win.extra_map['fin']
 
-	if is_fin {
-		mut indx := box.carrot_top + 1
-		mut mtxt := ''
-		spl := box.text.split_into_lines()
-		if (indx - 1) < spl.len {
-			mtxt = spl[indx - 1]
-		}
-		mtxt = mtxt.substr_ni(0, box.carrot_left)
-		mut splt := mtxt.split(' ')
-
-		last_ym := win.gg.text_height('A{')
-		mut lt := last_ym * (box.carrot_top) - (last_ym * box.scroll_i)
-		mut lw := 0
-		mut splt_i := 0
-		mut aft := ''
-		mut mod := fin.split('.')[0]
-		for atxt in splt {
-			if splt_i == splt.len - 1 {
-				alen := (atxt.last_index('.') or { -1 }) + 1
-				aft = atxt.substr_ni(alen, atxt.len)
-				lw += 5
+		mut is_fin := false
+		for str in all_vlib_mod(mut win) {
+			if fin.starts_with(str + '.') {
+				is_fin = true
 			}
-			lw += ui.text_width(win, atxt + ' ')
-			splt_i++
 		}
-		sug := match_fn(mut win, mod, aft)
-		lw = (lw - ui.text_width(win, ' ')) + (box.padding_x - 4)
 
-		mut r := ((win.theme.text_color.r / 2) + win.theme.background.r) / 2
-		color := gx.rgb(r, r, r)
+		if is_fin {
+			mut indx := box.carrot_top + 1
+			mut mtxt := box.lines[indx - 1]
 
-		win.gg.draw_text(box.x + tx + lw, ty + box.y + lt + 26, sug.replace_once(aft,
-			''), gx.TextCfg{
-			size: win.font_size
-			color: color
-		})
+			mtxt = mtxt.substr(0, box.carrot_left)
+
+			if !mtxt.contains(fin) {
+				return
+			}
+
+			mut splt := mtxt.split(' ')
+
+			mut splt_i := 0
+			mut aft := ''
+			mut mod := fin.split('.')[0]
+			for atxt in splt {
+				if splt_i == splt.len - 1 {
+					alen := (atxt.last_index('.') or { -1 }) + 1
+					aft = atxt.substr_ni(alen, atxt.len)
+				}
+				splt_i++
+			}
+			sug := match_fn(mut win, mod, aft)
+
+			mut r := ((win.theme.text_color.r / 2) + win.theme.background.r) / 2
+			color := gx.rgb(r, r, r)
+
+			win.gg.draw_text(box.x + x, y, sug.replace_once(aft, ''), gx.TextCfg{
+				size: win.font_size
+				color: color
+			})
+		}
 	}
+}
+
+[deprecated: 'Replaced by draw_code_suggest for new TextEdit']
+fn on_box_draw_1(mut win ui.Window, mut box ui.TextEdit, tx int, ty int) {
 }
 
 fn match_fn(mut win ui.Window, mod string, str string) string {

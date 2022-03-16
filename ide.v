@@ -3,10 +3,11 @@ module main
 import gg
 import iui as ui
 import os
-import examples.ide.hc
+//import examples.ide.hc
+import iui.hc
 
 const (
-	version = '0.0.6-dev'
+	version = '0.0.7-dev'
 )
 
 [console]
@@ -115,13 +116,13 @@ fn main() {
 		tree.height = gg.window_size().height
 	}
 
-    tree.set_id(mut window, 'proj-tree')
+	tree.set_id(mut window, 'proj-tree')
 	make_tree(mut window, folder, mut tree)
 
 	window.add_child(tree)
 
 	mut tb := ui.tabbox(window)
-    tb.set_id(mut window, 'main-tabs')
+	tb.set_id(mut window, 'main-tabs')
 	tb.set_bounds(200, 35, 200, 80)
 
 	tb.draw_event_fn = on_draw
@@ -130,7 +131,7 @@ fn main() {
 	welcome_tab(mut window, mut tb, folder)
 
 	mut console_box := ui.textbox(window, 'Console Output:')
-    console_box.set_id(mut window, 'consolebox')
+	console_box.set_id(mut window, 'consolebox')
 	window.add_child(console_box)
 
 	// basic plugin system
@@ -185,11 +186,13 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 		}
 	}
 
-	mut code_box := ui.textbox(window, content)
+	mut code_box := ui.textedit(window, content)
+
 	code_box.text_change_event_fn = codebox_text_change
-	code_box.after_draw_event_fn = on_box_draw
-	code_box.set_bounds(2, 2, 320, 120)
-	code_box.set_codebox(true)
+	code_box.after_draw_event_fn = on_runebox_draw
+	code_box.line_draw_event_fn = draw_code_suggest
+	code_box.set_bounds(2, 2, 620, 250)
+
 	tb.add_child(file, code_box)
 	tb.active_tab = file
 }

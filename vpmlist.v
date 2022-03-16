@@ -57,7 +57,7 @@ fn (mut this Pack) draw() {
 
 fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'V Package Manager (GUI)')
-    modal.set_id(mut win, 'vpm-modal')
+	modal.set_id(mut win, 'vpm-modal')
 	modal.in_height = 400
 	modal.top_off = 10
 
@@ -118,25 +118,25 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		modal.add_child(pack)
 	}
 
-    mut slider := ui.slider(win, 0, 100, .vert)
-    slider.set_bounds(41,10, 15, 200)
-    slider.draw_event_fn = fn (mut win ui.Window, com &ui.Component) {
-        mut modal := &ui.Modal(win.get_from_id('vpm-modal'))
-        mut packs := modal.children.filter(it is Pack)
+	mut slider := ui.slider(win, 0, 100, .vert)
+	slider.set_bounds(41, 10, 15, 200)
+	slider.draw_event_fn = fn (mut win ui.Window, com &ui.Component) {
+		mut modal := &ui.Modal(win.get_from_id('vpm-modal'))
+		mut packs := modal.children.filter(it is Pack)
 
-        mut this := *com
-        if mut this is ui.Slider {
-            mut sy := ui.text_height(win, 'A{0|') + 25
-            ms := ui.text_height(win, 'A{0|') + 10
-            max_show := ((400 - sy - (ms * 2)) / ms)
+		mut this := *com
+		if mut this is ui.Slider {
+			mut sy := ui.text_height(win, 'A{0|') + 25
+			ms := ui.text_height(win, 'A{0|') + 10
+			max_show := ((400 - sy - (ms * 2)) / ms)
 
-            this.y = sy
-            this.cur = modal.scroll_i
-            this.height = (max_show+1) * packs[0].height
-            this.max = win.extra_map['vpm-pl'].int()
-        }
-    }
-    modal.add_child(slider)
+			this.y = sy
+			this.cur = modal.scroll_i
+			this.height = (max_show + 1) * packs[0].height
+			this.max = win.extra_map['vpm-pl'].int()
+		}
+	}
+	modal.add_child(slider)
 
 	modal.after_draw_event_fn = vpm_modal_draw
 
@@ -198,6 +198,6 @@ fn vpm_modal_draw(mut win ui.Window, com &ui.Component) {
 		if com.scroll_i > (pl - 1) && com.scroll_i > max_show {
 			com.scroll_i = pl - max_show
 		}
-        win.extra_map['vpm-pl'] = pl.str()
+		win.extra_map['vpm-pl'] = pl.str()
 	}
 }

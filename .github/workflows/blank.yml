@@ -1,0 +1,209 @@
+name: Build binary artifacts
+
+on:
+  push:
+    tags:
+      - weekly.**
+      - 0.**
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-20.04
+    env:
+      CC: gcc
+      ZIPNAME: vide_linux.zip
+    steps:
+      - name: Setup V
+        uses: vlang/setup-v@v1
+        with:
+          # Default: ${{ github.token }}
+          token: ${{ github.token }}
+          version: 'weekly.2022.10'
+          version-file: ''
+          check-latest: false
+          stable: false
+          architecture: ''
+      - uses: actions/checkout@v1
+      - name: Compile
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install libgc-dev
+          sudo apt install build-essential
+          sudo apt-get --yes --force-yes install libxi-dev libxcursor-dev mesa-common-dev
+          sudo apt-get --yes --force-yes install libgl1-mesa-glx
+          git clone https://github.com/isaiahpatton/ui iui
+          cd iui
+          git clone https://github.com/isaiahpatton/vide
+          v -cc $CC -skip-unused -gc boehm vide
+      - name: Remove excluded
+        run: |
+           rm -rf .git
+      - name: Create ZIP archive
+        run: |
+           cd iui
+           zip -r9 --symlinks $ZIPNAME vide/
+           mv $ZIPNAME ../
+           cd ..
+      - name: Create artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: vide_linux.zip
+
+  build-macos:
+    runs-on: macos-latest
+    env:
+      CC: clang
+      ZIPNAME: vide_macos.zip
+    steps:
+      - name: Setup V
+        uses: vlang/setup-v@v1
+        with:
+          # Default: ${{ github.token }}
+          token: ${{ github.token }}
+          version: 'weekly.2022.10'
+          version-file: ''
+          check-latest: false
+          stable: false
+          architecture: ''
+      - uses: actions/checkout@v1
+      - name: Compile
+        run: |
+          git clone https://github.com/isaiahpatton/ui iui
+          cd iui
+          git clone https://github.com/isaiahpatton/vide
+          v -cc $CC -skip-unused -gc boehm vide
+      - name: Remove excluded
+        run: |
+           rm -rf .git
+      - name: Create ZIP archive
+        run: |
+           cd iui
+           zip -r9 --symlinks $ZIPNAME vide/
+           mv $ZIPNAME ../
+           cd ..
+      - name: Create artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos
+          path: vide_macos.zip
+
+  build-windows:
+    runs-on: windows-latest
+    env:
+      CC: msvc
+      ZIPNAME: vide_windows.zip
+    steps:
+      - name: Setup V
+        uses: vlang/setup-v@v1
+        with:
+          # Default: ${{ github.token }}
+          token: ${{ github.token }}
+          version: 'weekly.2022.10'
+          version-file: ''
+          check-latest: false
+          stable: false
+          architecture: ''
+      - uses: actions/checkout@v1
+      - uses: msys2/setup-msys2@v2
+      - name: Compile
+        run: |
+          git clone https://github.com/vlang/v
+          cd v
+          .\make.bat
+          git clone https://github.com/isaiahpatton/ui iui
+          .\v.exe symlink
+          cd iui
+          git clone https://github.com/isaiahpatton/vide
+          v -cc gcc -skip-unused -gc boehm vide
+      - name: Remove excluded
+        shell: msys2 {0}
+        run: |
+           rm -rf .git
+           cd v
+           cd iui
+           aupx.exe -9 vide/vide.exe
+           cd vide
+           rm -rf *.v
+           cd ..
+           cd ..
+           cd ..
+      - name: Create archive
+        shell: msys2 {0}
+        run: |
+           cd v
+           cd iui
+           cd vide
+           cd ..
+           powershell Compress-Archive vide $ZIPNAME
+           mv $ZIPNAME ../../
+           cd ..
+           cd ..
+# NB: the powershell Compress-Archive line is from:
+# https://superuser.com/a/1336434/194881
+# It is needed, because `zip` is not installed by default :-|
+      - name: Create artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows
+          path: vide_windows.zip
+
+  release:
+    name: Create Github Release
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Get short tag name
+        uses: jungwinter/split@v1
+        id: split
+        with:
+          msg: ${{ github.ref }}
+          seperator: /
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.split.outputs._2 }}
+          name: ${{ steps.split.outputs._2 }}
+          commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+  publish:
+    needs: [release]
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        version: [linux, macos, windows]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Fetch artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: ${{ matrix.version }}
+          path: ./${{ matrix.version }}
+      - name: Get short tag name
+        uses: jungwinter/split@v1
+        id: split
+        with:
+          msg: ${{ github.ref }}
+          seperator: /
+      - name: Get release
+        id: get_release_info
+        uses: leahlundqvist/get-release@v1.3.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: ${{ steps.split.outputs._2 }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ${{ matrix.version }}/vide_${{ matrix.version }}.zip
+          asset_name: vide_${{ matrix.version }}.zip
+          asset_content_type: application/zip

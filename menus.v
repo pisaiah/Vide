@@ -25,16 +25,15 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn about_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'About Vide')
+	mut modal := ui.modal(win, 'About Vɪᴅᴇ')
 
 	mut logo := win.gg.create_image(os.resource_abs_path('assets/vide.png'))
 	mut logo_im := ui.image(win, logo)
 	logo_im.set_bounds(150, 14, 188, 75)
 
 	mut title := ui.label(win, 'Vɪᴅᴇ')
-	title.set_pos(110, 14)
-	title.size = 80
-	title.set_config(80, true, true)
+	title.set_pos(110, 0)
+	title.set_config(60, true, true)
 	title.bold = true
 	title.pack()
 
@@ -67,6 +66,16 @@ fn do_save(mut win ui.Window) {
 				if mut child is ui.Textbox {
 					// set_console_text(mut win, 'Saved file')
 					os.write_file(com.active_tab, child.text) or {
+						set_console_text(mut win, 'Unable to save file!')
+					}
+				}
+				if mut child is ui.Runebox {
+					os.write_file(com.active_tab, child.text) or {
+						set_console_text(mut win, 'Unable to save file!')
+					}
+				}
+				if mut child is ui.TextEdit {
+					os.write_file(com.active_tab, child.lines.join('\n')) or {
 						set_console_text(mut win, 'Unable to save file!')
 					}
 				}

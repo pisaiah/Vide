@@ -7,12 +7,15 @@ import math
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'Settings')
 
+	mut tb := ui.tabbox(win)
+	tb.closable = false
+
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.set_bounds(20, 10, 300, 30)
 	work_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = ui.text_width(win, work.text + ' ') + 10
 	}
-	modal.add_child(work_lbl)
+	tb.add_child('General', work_lbl)
 
 	mut conf := get_config(mut win)
 
@@ -32,14 +35,14 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 			'~'))
 	}
 	work.multiline = false
-	modal.add_child(work)
+	tb.add_child('General', work)
 
 	mut lib_lbl := ui.label(win, 'Path to VEXE')
 	lib_lbl.set_bounds(20, 65, 300, 30)
 	lib_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = ui.text_width(win, work.text + ' ') + 10
 	}
-	modal.add_child(lib_lbl)
+	tb.add_child('General', lib_lbl)
 
 	home := os.home_dir().replace('\\', '/')
 	mut vlib := ui.textbox(win, get_v_exe(mut win).replace(home, '~'))
@@ -53,28 +56,13 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~'))
 	}
 	vlib.multiline = false
-	modal.add_child(vlib)
+	tb.add_child('General', vlib)
+	// modal.add_child(vlib)
 
-	mut flag_lbl := ui.label(win, 'Compiler Flags')
-	flag_lbl.set_bounds(20, 130, 300, 30)
-	flag_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		lbl.width = ui.text_width(win, lbl.text)
-	}
-	mut skip_unused := ui.checkbox(win, '-skip-unused')
-	skip_unused.is_selected = conf.get_or_default('v_flags').contains('-skip-unused')
-	skip_unused.set_bounds(20, 160, 100, 20)
-	skip_unused.set_click(check_click)
+	settings_flags(mut win, mut modal, mut conf, tb)
 
-	mut gc := ui.checkbox(win, '-gc boehm')
-	gc.is_selected = conf.get_or_default('v_flags').contains('-gc boehm')
-	gc.set_bounds(20, 185, 100, 20)
-	gc.set_click(check_click)
-
-	modal.add_child(flag_lbl)
-	modal.add_child(skip_unused)
-	modal.add_child(gc)
-
-	fs_group(mut win, mut modal, 20, 240)
+	// 240
+	fs_group(mut win, mut modal, 20, 150, tb)
 
 	modal.needs_init = false
 	mut close := ui.button(win, 'Save & Done')
@@ -93,11 +81,44 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 		win.components = win.components.filter(mut it !is ui.Modal)
 	})
 
+	tb.set_bounds(10, 5, modal.in_width - 21, 245)
+
 	modal.add_child(close)
+	modal.add_child(tb)
 	win.add_child(modal)
 }
 
-fn fs_group(mut win ui.Window, mut modal ui.Modal, x int, y int) {
+fn settings_flags(mut win ui.Window, mut modal ui.Modal, mut conf Config, tbp voidptr) {
+	mut tb := &ui.Tabbox(tbp)
+	println(tb.kids.len)
+
+	mut flag_lbl := ui.label(win, 'Compiler Flags')
+	flag_lbl.set_bounds(20, 20, 300, 30)
+	flag_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		lbl.width = ui.text_width(win, lbl.text)
+	}
+
+	tb.add_child('Compiler', flag_lbl)
+
+	mut skip_unused := create_flag_check(mut win, 20, 50, '-skip-unused', mut conf)
+	mut gc := create_flag_check(mut win, 20, 75, '-gc boehm', mut conf)
+	mut compress := create_flag_check(mut win, 20, 100, '-compress', mut conf)
+
+	tb.add_child('Compiler', skip_unused)
+	tb.add_child('Compiler', gc)
+	tb.add_child('Compiler', compress)
+}
+
+fn create_flag_check(mut win ui.Window, x int, y int, text string, mut conf Config) ui.Checkbox {
+	mut gc := ui.checkbox(win, text)
+	gc.is_selected = conf.get_or_default('v_flags').contains(text)
+	gc.set_bounds(x, y, 100, 20)
+	gc.set_click(check_click)
+	return gc
+}
+
+fn fs_group(mut win ui.Window, mut modal ui.Modal, x int, y int, tbp voidptr) {
+	mut tb := &ui.Tabbox(tbp)
 	mut fs_lbl := ui.label(win, 'Font size:')
 	fs_lbl.set_bounds(x - 8, y, 300, 20)
 	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
@@ -115,9 +136,9 @@ fn fs_group(mut win ui.Window, mut modal ui.Modal, x int, y int) {
 	fs_inc.set_bounds(x + 33, y + 20, 30, 20)
 	fs_inc.pack()
 
-	modal.add_child(fs_lbl)
-	modal.add_child(fs_dec)
-	modal.add_child(fs_inc)
+	tb.add_child('General', fs_lbl)
+	tb.add_child('General', fs_dec)
+	tb.add_child('General', fs_inc)
 }
 
 fn check_click(mut win ui.Window, box ui.Checkbox) {
