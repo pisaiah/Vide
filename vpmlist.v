@@ -166,9 +166,8 @@ fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 fn draw_scrollbar(mut com ui.Modal, cl int, spl_len int, ep int) {
 }
 
-
 fn vpm_modal_draw(mut win ui.Window, comp &ui.Component) {
-    mut com := *comp
+	mut com := *comp
 	if mut com is ui.Modal {
 		mut packs := com.children.filter(it is Pack)
 		mut i := 0

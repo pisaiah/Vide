@@ -8,7 +8,7 @@ fn make_tree(mut window ui.Window, fold string, mut tree ui.Tree) ui.Tree {
 	mut files := os.ls(fold) or { [] }
 
 	for fi in files {
-		if fi.starts_with('.git') {
+		if fi.starts_with('.git') || fi.contains('.exe') || fi.contains('.dll') {
 			continue
 		}
 		mut sub := ui.tree(window, fold + '/' + fi)

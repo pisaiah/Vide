@@ -7,12 +7,10 @@ import gg
 fn on_runebox_draw(mut win ui.Window, mut tb ui.Component) {
 	mut x_off := 0
 	mut y_off := 0
-	mut ty := 0
 	for mut com in win.components {
 		if mut com is ui.Tabbox {
 			x_off = com.x
 			y_off = com.height - 28
-			ty = com.y
 			break
 		}
 	}

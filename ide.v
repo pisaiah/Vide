@@ -3,7 +3,6 @@ module main
 import gg
 import iui as ui
 import os
-//import examples.ide.hc
 import iui.hc
 
 const (
@@ -102,9 +101,8 @@ fn main() {
 	window.bar.add_child(savee)
 
 	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
-		'/')
+		'/') // '
 	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
-	println(folder)
 
 	window.extra_map['workspace'] = folder
 	os.mkdir_all(folder) or {}
@@ -130,7 +128,8 @@ fn main() {
 
 	welcome_tab(mut window, mut tb, folder)
 
-	mut console_box := ui.textbox(window, 'Console Output:')
+	mut console_box := create_box(window) // ui.textbox(window, 'Console Output:')
+	console_box.z_index = 2
 	console_box.set_id(mut window, 'consolebox')
 	window.add_child(console_box)
 
@@ -143,6 +142,8 @@ fn main() {
 }
 
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
+	mut hbox := ui.hbox(window)
+
 	mut tbtn1 := ui.label(window,
 		'Welcome to Vide! A simple IDE for V made in V.\n
 Note: Currently alpha software!\n\nVersion: ' +
@@ -169,6 +170,10 @@ Note: Currently alpha software!\n\nVersion: ' +
 	})
 	ad.pack()
 
+	hbox.add_child(logo_im)
+	hbox.add_child(gh)
+	hbox.add_child(ad)
+
 	tb.add_child('Welcome', tbtn1)
 	tb.add_child('Welcome', logo_im)
 	tb.add_child('Welcome', gh)
@@ -177,16 +182,8 @@ Note: Currently alpha software!\n\nVersion: ' +
 
 fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 	mut lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
-	mut content := ''
-	for mut str in lines {
-		if content.len > 0 {
-			content = content + '\n' + str.replace('\t', ' '.repeat(4))
-		} else {
-			content = content + str.replace('\r', '')
-		}
-	}
 
-	mut code_box := ui.textedit(window, content)
+	mut code_box := ui.textedit_from_array(window, lines)
 
 	code_box.text_change_event_fn = codebox_text_change
 	code_box.after_draw_event_fn = on_runebox_draw
