@@ -196,8 +196,14 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 
 fn set_console_text(mut win ui.Window, out string) {
 	for mut comm in win.components {
-		if mut comm is ui.Textbox {
-			comm.text = comm.text + out
+		if mut comm is ui.TextEdit {
+			// comm.text = comm.text + out
+            
+            for line in comm.text.split_into_lines() {
+                comm.lines << line
+            }
+            add_new_input_line(mut comm)
+            return
 		}
 	}
 }

@@ -6,7 +6,6 @@ module main
 
 import iui as ui
 import os
-import gx
 
 pub fn create_box(win_ptr voidptr) &ui.TextEdit {
 	mut win := &ui.Window(win_ptr)
