@@ -1,7 +1,7 @@
-// 
+//
 // Verminal - Terminal Emulator in V
 // https://github.com/isaiahpatton/verminal
-// 
+//
 module main
 
 import iui as ui
@@ -45,7 +45,7 @@ fn before_txt_change(mut win ui.Window, tb ui.TextEdit) bool {
 
 	if is_backsp {
 		txt := tb.lines[tb.carrot_top]
-	    path := win.extra_map['path']
+		path := win.extra_map['path']
 		if txt.ends_with(path + '>') {
 			return true
 		}

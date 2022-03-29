@@ -1,7 +1,7 @@
-// 
+//
 // Verminal - Terminal Emulator in V
 // https://github.com/isaiahpatton/verminal
-// 
+//
 module main
 
 import iui as ui

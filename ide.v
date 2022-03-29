@@ -27,78 +27,89 @@ fn main() {
 	// Setup Menubar and items
 	window.bar = ui.menubar(window, window.theme)
 
-	mut file_menu := ui.menuitem('File')
-	mut file_img := $embed_file('assets/icons8-file-48.png')
-	file_menu.icon = ui.image_from_byte_array_with_size(mut window, file_img.to_bytes(),
-		24, 24)
+	file_img := $embed_file('assets/icons8-file-48.png')
+	edit_img := $embed_file('assets/icons8-edit-24.png')
+	help_img := $embed_file('assets/icons8-help-24.png')
+	save_img := $embed_file('assets/icons8-save-48.png')
+	theme_img := $embed_file('assets/icons8-themes-48.png')
 
-	mut new_proj := ui.menuitem('New Project...')
-	new_proj.set_click(new_project_click)
-	file_menu.add_child(new_proj)
+	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 24)
+	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 24)
+	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), 24, 24)
+	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), 24, 24)
+	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), 24, 24)
 
-	mut new_file := ui.menuitem('New File...')
-	new_file.set_click(new_file_click)
-	file_menu.add_child(new_file)
+	file_menu := ui.menu_item(
+		text: 'File'
+		icon: file_icon
+		children: [
+			ui.menu_item(
+				text: 'New Project..'
+				click_event_fn: new_project_click
+			),
+			ui.menu_item(
+				text: 'New File...'
+				click_event_fn: new_file_click
+			),
+			ui.menu_item(
+				text: 'Save'
+				click_event_fn: save_click
+			),
+			ui.menu_item(
+				text: 'Run'
+				click_event_fn: run_click
+			),
+			ui.menu_item(
+				text: 'Vpm UI'
+				click_event_fn: vpm_click
+			),
+			ui.menu_item(
+				text: 'Settings'
+				click_event_fn: settings_click
+			),
+		]
+	)
 
-	mut save := ui.menuitem('Save')
-	save.set_click(save_click)
-	file_menu.add_child(save)
+	edit_menu := ui.menu_item(
+		text: 'Edit'
+		icon: edit_icon
+	)
 
-	mut run := ui.menuitem('Run')
-	run.set_click(run_click)
-	file_menu.add_child(run)
-
-	mut vpm := ui.menuitem('Vpm UI')
-	vpm.set_click(vpm_click)
-	file_menu.add_child(vpm)
-
-	mut settings := ui.menuitem('Settings')
-	settings.set_click(settings_click)
-	file_menu.add_child(settings)
-
-	window.bar.add_child(file_menu)
-
-	mut edit := ui.menuitem('Edit')
-	mut edit_img := $embed_file('assets/icons8-edit-24.png')
-	edit.icon = ui.image_from_byte_array_with_size(mut window, edit_img.to_bytes(), 24,
-		24)
-	window.bar.add_child(edit)
-
-	mut help := ui.menuitem('Help')
-	mut help_img := $embed_file('assets/icons8-help-24.png')
-	help.icon = ui.image_from_byte_array_with_size(mut window, help_img.to_bytes(), 24,
-		24)
+	help_menu := ui.menu_item(
+		text: 'Help'
+		icon: help_icon
+		children: [
+			ui.menu_item(
+				text: 'About Vide'
+				click_event_fn: about_click
+			),
+			ui.menu_item(
+				text: 'About iUI'
+			),
+		]
+	)
 
 	mut theme_menu := ui.menuitem('Themes')
-	mut theme_img := $embed_file('assets/icons8-themes-48.png')
-	theme_menu.icon = ui.image_from_byte_array_with_size(mut window, theme_img.to_bytes(),
-		24, 24)
+	theme_menu.icon = theme_icon
 
-	mut about := ui.menuitem('About iUI')
-
-	mut about_vide := ui.menuitem('About Vide')
-	about_vide.set_click(about_click)
-	help.add_child(about_vide)
-
-	mut themes := [ui.theme_default(), ui.theme_dark(), ui.theme_dark_hc(),
-		ui.theme_black_red(), ui.theme_minty()]
+	themes := ui.get_all_themes()
 	for theme2 in themes {
-		mut item := ui.menuitem(theme2.name)
-		item.set_click(on_theme_click)
+		item := ui.menu_item(text: theme2.name, click_event_fn: on_theme_click)
 		theme_menu.add_child(item)
 	}
 
-	help.add_child(about)
-	window.bar.add_child(help)
+	save_menu := ui.menu_item(
+		text: 'Save'
+		icon: save_icon
+		click_event_fn: save_click
+	)
+
+	window.bar.add_child(file_menu)
+	window.bar.add_child(edit_menu)
+	window.bar.add_child(help_menu)
 	window.bar.add_child(theme_menu)
 
-	mut save_img := $embed_file('assets/icons8-save-48.png')
-	mut savee := ui.menuitem('Save')
-	mut icon := ui.image_from_byte_array_with_size(mut window, save_img.to_bytes(), 24,
-		24)
-	savee.icon = icon
-	savee.set_click(save_click)
-	window.bar.add_child(savee)
+	window.bar.add_child(save_menu)
 
 	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
 		'/') // '
@@ -128,7 +139,7 @@ fn main() {
 
 	welcome_tab(mut window, mut tb, folder)
 
-	mut console_box := create_box(window) // ui.textbox(window, 'Console Output:')
+	mut console_box := create_box(window)
 	console_box.z_index = 2
 	console_box.set_id(mut window, 'consolebox')
 	window.add_child(console_box)
@@ -142,15 +153,13 @@ fn main() {
 }
 
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
-	mut hbox := ui.hbox(window)
-
-	mut tbtn1 := ui.label(window,
+	mut info_lbl := ui.label(window,
 		'Welcome to Vide! A simple IDE for V made in V.\n
 Note: Currently alpha software!\n\nVersion: ' +
 		version + ', UI version: ' + ui.version)
 
-	tbtn1.set_pos(10, 90)
-	tbtn1.pack()
+	info_lbl.set_pos(10, 90)
+	info_lbl.pack()
 
 	mut logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
 	mut logo_im := ui.image(window, logo)
@@ -170,11 +179,7 @@ Note: Currently alpha software!\n\nVersion: ' +
 	})
 	ad.pack()
 
-	hbox.add_child(logo_im)
-	hbox.add_child(gh)
-	hbox.add_child(ad)
-
-	tb.add_child('Welcome', tbtn1)
+	tb.add_child('Welcome', info_lbl)
 	tb.add_child('Welcome', logo_im)
 	tb.add_child('Welcome', gh)
 	tb.add_child('Welcome', ad)
@@ -197,13 +202,11 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 fn set_console_text(mut win ui.Window, out string) {
 	for mut comm in win.components {
 		if mut comm is ui.TextEdit {
-			// comm.text = comm.text + out
-            
-            for line in comm.text.split_into_lines() {
-                comm.lines << line
-            }
-            add_new_input_line(mut comm)
-            return
+			for line in comm.text.split_into_lines() {
+				comm.lines << line
+			}
+			add_new_input_line(mut comm)
+			return
 		}
 	}
 }
@@ -216,14 +219,6 @@ fn run_v(dir string, mut win ui.Window) {
 		vexe = get_v_exe(mut win)
 	}
 
-	mut out := os.execute(vexe + ' run ' + dir)
-	for mut comm in win.components {
-		if mut comm is ui.Textbox {
-			mut is_term := comm.text.trim_space().ends_with('>')
-			comm.text = comm.text + out.output
-			if is_term {
-				comm.text = comm.text + '\n' + win.extra_map['path'] + '>'
-			}
-		}
-	}
+	out := os.execute(vexe + ' run ' + dir)
+	set_console_text(mut win, out.output)
 }
