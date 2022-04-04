@@ -2,6 +2,7 @@ module main
 
 import iui as ui
 import os
+import iui.extra
 
 fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
@@ -10,6 +11,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	des.set_text_change(fn (mut win ui.Window, box ui.Textbox) {
 		win.extra_map['nf-name'] = box.text
 	})
+	des.set_id(mut win, 'new-file-name-box')
 	modal.add_child(des)
 
 	mut lic_lbl := ui.label(win, 'Project')
@@ -19,19 +21,31 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	modal.add_child(lic_lbl)
 
-	mut lic := ui.selector(win, 'Project Directory')
-	lic.set_bounds(25, 44, 450, 25)
+	mut fold_lbl := ui.label(win, ' ')
 
-	for mut child in win.components {
-		if mut child is ui.Tree {
-			for mut kid in child.childs {
-				lic.items << kid.text
-			}
+	mut fold_btn := ui.button(win, 'Pick Directory')
+
+	fold_btn.set_click_fn(fn (a voidptr, b voidptr, c voidptr) {
+		mut win := &ui.Window(a)
+		mut conf := get_config(mut win)
+		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
+
+		path_change_fn := file_picker_path_change
+
+		picker_conf := extra.FilePickerConfig{
+			in_modal: true
+			path: dir
+			path_change_fn: path_change_fn
 		}
-	}
 
-	lic.set_change(pro_change)
-	modal.add_child(lic)
+		extra.open_file_picker(mut win, picker_conf, c)
+	}, fold_lbl)
+
+	fold_btn.set_bounds(25, 44, 200, 25)
+	fold_lbl.set_bounds(230, 44, 190, 25)
+
+	modal.add_child(fold_btn)
+	modal.add_child(fold_lbl)
 
 	modal.needs_init = false
 
@@ -52,8 +66,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 		name := win.extra_map['nf-name']
 		pdir := win.extra_map['nf-dir']
 		mut conf := get_config(mut win)
-		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.home_dir().replace('\\',
-			'/'))
+		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
 
 		os.write_file(pdir + '/' + name, '') or {}
 
@@ -69,8 +82,24 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	win.add_child(modal)
 }
 
-fn pro_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
-	win.extra_map['nf-dir'] = new_val
+fn file_picker_path_change(a voidptr, b voidptr) {
+	picker := &extra.FilePicker(a)
+
+	mut lbl := &ui.Label(b)
+
+	path := picker.get_dir()
+	lbl.text = path
+	lbl.app.extra_map['nf-dir'] = path
+
+	file_name := picker.get_file_name()
+
+	if file_name.len > 0 {
+		if !os.exists(picker.get_full_path()) {
+			lbl.app.extra_map['nf-name'] = file_name
+			mut name_box := &ui.Textbox(lbl.app.get_from_id('new-file-name-box'))
+			name_box.text = file_name
+		}
+	}
 }
 
 fn nf_create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.Textbox {

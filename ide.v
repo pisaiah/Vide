@@ -15,7 +15,7 @@ fn main() {
 	hc.hide_console_win()
 
 	// Create Window
-	mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 500)
+	mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 520)
 
 	// our custom config
 	mut conf := config(mut window)
