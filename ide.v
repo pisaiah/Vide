@@ -19,7 +19,7 @@ fn main() {
 
 	// our custom config
 	mut conf := config(mut window)
-	get_v_exe(mut window)
+	get_v_exe(window)
 
 	// Set Saved Theme
 	set_theme_from_save(mut window)
@@ -66,6 +66,10 @@ fn main() {
 			ui.menu_item(
 				text: 'Settings'
 				click_event_fn: settings_click
+			),
+			ui.menu_item(
+				text: 'Manage V'
+				click_event_fn: show_install_modal
 			),
 		]
 	)
@@ -149,34 +153,31 @@ fn main() {
 	os.mkdir_all(plugin_dir) or {}
 	load_plugins(plugin_dir, mut window) or {}
 
+	open_install_modal_on_start_if_needed(mut window, file_menu)
+
 	window.gg.run()
 }
 
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	mut info_lbl := ui.label(window,
-		'Welcome to Vide! A simple IDE for V made in V.\n
-Note: Currently alpha software!\n\nVersion: ' +
+		'Welcome to Vide! A simple IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + ', UI version: ' + ui.version)
 
-	info_lbl.set_pos(10, 90)
+	info_lbl.set_pos(40, 110)
 	info_lbl.pack()
 
-	mut logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
-	mut logo_im := ui.image(window, logo)
-	logo_im.set_bounds(1, 8, 188, 75)
+	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
+	window.id_map['vide_logo'] = &logo
 
-	mut gh := ui.button(window, 'Github')
-	gh.set_pos(190, 53)
-	gh.set_click(fn (mut win ui.Window, com ui.Button) {
-		ui.open_url('https://github.com/isaiahpatton/vide')
-	})
+	mut logo_im := ui.image(window, logo)
+	logo_im.set_bounds(24, 28, 188, 75)
+
+	mut gh := ui.hyperlink(window, 'Github', 'https://github.com/isaiahpatton/vide')
+	gh.set_pos(214, 80)
 	gh.pack()
 
-	mut ad := ui.button(window, 'Addons')
-	ad.set_pos(255, 53)
-	ad.set_click(fn (mut win ui.Window, com ui.Button) {
-		ui.open_url('https://github.com/topics/vide-addon')
-	})
+	mut ad := ui.hyperlink(window, 'Addons', 'https://github.com/topics/vide-addon')
+	ad.set_pos(263, 80)
 	ad.pack()
 
 	tb.add_child('Welcome', info_lbl)
@@ -189,6 +190,7 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 	mut lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
 	mut code_box := ui.textedit_from_array(window, lines)
+	// mut code_box := ui.textarea(window, lines)
 
 	code_box.text_change_event_fn = codebox_text_change
 	code_box.after_draw_event_fn = on_runebox_draw
@@ -201,7 +203,7 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 
 fn set_console_text(mut win ui.Window, out string) {
 	for mut comm in win.components {
-		if mut comm is ui.TextEdit {
+		if mut comm is ui.TextArea {
 			for line in comm.text.split_into_lines() {
 				comm.lines << line
 			}
@@ -216,7 +218,7 @@ fn run_v(dir string, mut win ui.Window) {
 	if 'VEXE' in os.environ() {
 		vexe = os.environ()['VEXE']
 	} else {
-		vexe = get_v_exe(mut win)
+		vexe = get_v_exe(win)
 	}
 
 	out := os.execute(vexe + ' run ' + dir)

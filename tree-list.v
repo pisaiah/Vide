@@ -5,7 +5,7 @@ import os
 
 // Make an Tree list from files from dir
 fn make_tree(mut window ui.Window, fold string, mut tree ui.Tree) ui.Tree {
-	mut files := os.ls(fold) or { [] }
+	files := os.ls(fold) or { [] }
 
 	for fi in files {
 		if fi.starts_with('.git') || fi.contains('.exe') || fi.contains('.dll') {

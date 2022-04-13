@@ -24,18 +24,15 @@ fn config(mut win ui.Window) &Config {
 	mut config := &Config{
 		window: win
 	}
+	config.set_id(mut win, 'vide-config')
 	win.add_child(config)
 	config.read()
 	return config
 }
 
-fn get_config(mut win ui.Window) &Config {
-	for mut child in win.components {
-		if mut child is Config {
-			return child
-		}
-	}
-	return 0
+fn get_config(win &ui.Window) &Config {
+	conf := win.get_from_id('vide-config')
+	return &Config(conf)
 }
 
 fn (mut this Config) read() {

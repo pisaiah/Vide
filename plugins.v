@@ -59,7 +59,7 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 	if need_compile {
 		println('Compiling addon...')
 		szip.extract_zip_to_dir(file, pfold) or {}
-		vexe := get_v_exe(mut win)
+		vexe := get_v_exe(win)
 		cmd := vexe + ' -skip-unused -d no_backtrace -o ' + os.real_path(pfold + '/' + name) +
 			' -shared ' + os.real_path(pfold + '/') + '.'
 

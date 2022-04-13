@@ -109,7 +109,7 @@ fn hover(mut win ui.Window) Hovermess {
 }
 
 fn cmd_exec(mut win ui.Window, file string, box &ui.TextEdit) {
-	vexe := get_v_exe(mut win)
+	vexe := get_v_exe(win)
 
 	res := os.execute(vexe + ' -check-syntax ' + file)
 	out := res.output
@@ -247,7 +247,7 @@ fn all_vlib_mod(mut win ui.Window) []string {
 	}
 
 	mut arr := []string{}
-	mut vlib := os.dir(get_v_exe(mut win)).replace('\\', '/') + '/vlib'
+	mut vlib := os.dir(get_v_exe(win)).replace('\\', '/') + '/vlib'
 	for file in os.ls(vlib) or { [''] } {
 		arr << file
 	}
@@ -262,7 +262,7 @@ fn find_all_fn_in_vlib(mut win ui.Window, mod string) []string {
 	}
 
 	mut arr := []string{}
-	mut vlib := os.dir(get_v_exe(mut win)).replace('\\', '/') + '/vlib'
+	mut vlib := os.dir(get_v_exe(win)).replace('\\', '/') + '/vlib'
 	mut mod_dir := vlib + '/' + mod
 	for file in os.ls(mod_dir) or { [''] } {
 		lines := os.read_lines(mod_dir + '/' + file) or { [''] }
@@ -277,8 +277,8 @@ fn find_all_fn_in_vlib(mut win ui.Window, mod string) []string {
 	return arr
 }
 
-fn get_v_exe(mut win ui.Window) string {
-	mut conf := get_config(mut win)
+fn get_v_exe(win &ui.Window) string {
+	mut conf := get_config(win)
 	mut saved := conf.get_or_default('v_exe').replace('{user_home}', '~')
 	saved = saved.replace('~', os.home_dir().replace('\\', '/'))
 

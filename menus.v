@@ -8,7 +8,7 @@ const (
 )
 
 fn set_theme_from_save(mut win ui.Window) {
-	mut conf := get_config(mut win)
+	mut conf := get_config(win)
 	name := conf.get_or_default('theme')
 	if name.len > 1 {
 		theme := ui.theme_by_name(name)
@@ -18,7 +18,7 @@ fn set_theme_from_save(mut win ui.Window) {
 
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	theme := ui.theme_by_name(com.text)
-	mut conf := get_config(mut win)
+	mut conf := get_config(win)
 	conf.set('theme', com.text)
 	conf.save()
 	win.set_theme(theme)
@@ -69,7 +69,7 @@ fn do_save(mut win ui.Window) {
 						set_console_text(mut win, 'Unable to save file!')
 					}
 				}
-				if mut child is ui.Runebox {
+				if mut child is ui.TextField {
 					os.write_file(com.active_tab, child.text) or {
 						set_console_text(mut win, 'Unable to save file!')
 					}

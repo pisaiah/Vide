@@ -13,7 +13,7 @@ mut:
 }
 
 fn module_exists(name string) bool {
-	path := os.vmodules_dir().replace('\\', '/') + '/' + name.replace('.', '/')
+	path := os.vmodules_dir().replace('\\', '/') + '/' + name.replace('.', '/') // '
 	exists := os.exists(path)
 	if exists {
 		ls := os.ls(path) or { [''] }
@@ -61,7 +61,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	modal.in_height = 400
 	modal.top_off = 10
 
-	v := get_v_exe(mut win)
+	v := get_v_exe(win)
 
 	// Get all from vpm
 	mut res := os.execute(v + ' search a b c d e f g h i j k l m n o p q r s t u v w x y z').output
@@ -149,7 +149,7 @@ fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 	height := ui.text_height(win, 'A{') + 5
 	btn.set_bounds(250, 1, 100, height)
 	btn.set_click(fn (mut win ui.Window, btn ui.Button) {
-		v := get_v_exe(mut win)
+		v := get_v_exe(win)
 		res := os.execute(v + ' ' + btn.extra).output
 		println(res)
 		if btn.extra.starts_with('remove ') {

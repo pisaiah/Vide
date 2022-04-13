@@ -17,47 +17,48 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	tb.add_child('General', work_lbl)
 
-	mut conf := get_config(mut win)
+	mut conf := get_config(win)
 
-	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
-		'/')
+	workd := os.real_path(conf.get_or_default('workspace_dir').replace('{user_home}',
+		'~'))
 	folder := os.expand_tilde_to_home(workd)
 
-	mut work := ui.textbox(win, folder)
+	mut work := ui.textfield(win, folder)
 	work.set_bounds(20, 40, 300, ui.text_height(win, 'A{'))
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = ui.text_width(win, work.text + 'a b')
+		work.width = math.max(ui.text_width(win, work.text + 'a b'), 200)
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
-	work.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
-		mut conf := get_config(mut win)
+	work.text_change_event_fn = fn (a voidptr, b voidptr) {
+		mut conf := get_config(&ui.Window(a))
+		work := &ui.TextField(b)
 		conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
-			'~'))
+			'~')) // '
 	}
-	work.multiline = false
+	// work.multiline = false
 	tb.add_child('General', work)
 
 	mut lib_lbl := ui.label(win, 'Path to VEXE')
 	lib_lbl.set_bounds(20, 65, 300, 30)
 	lib_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = ui.text_width(win, work.text + ' ') + 10
+		wid := ui.text_width(win, work.text + ' ') + 10
+		work.width = math.max(200, wid)
 	}
 	tb.add_child('General', lib_lbl)
 
-	home := os.home_dir().replace('\\', '/')
-	mut vlib := ui.textbox(win, get_v_exe(mut win).replace(home, '~'))
+	home := os.home_dir().replace('\\', '/') // '
+	mut vlib := ui.textbox(win, get_v_exe(win).replace(home, '~'))
 	vlib.set_bounds(20, 90, 300, ui.text_height(win, 'A{'))
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(200, ui.text_width(win, work.text + 'a b'))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 	vlib.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
-		mut conf := get_config(mut win)
-		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~'))
+		mut conf := get_config(win)
+		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~')) // '
 	}
 	vlib.multiline = false
 	tb.add_child('General', vlib)
-	// modal.add_child(vlib)
 
 	settings_flags(mut win, mut modal, mut conf, tb)
 
@@ -76,7 +77,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(can)
 
 	close.set_click(fn (mut win ui.Window, btn ui.Button) {
-		mut conf := get_config(mut win)
+		mut conf := get_config(win)
 		conf.save()
 		win.components = win.components.filter(mut it !is ui.Modal)
 	})
@@ -142,7 +143,7 @@ fn fs_group(mut win ui.Window, mut modal ui.Modal, x int, y int, tbp voidptr) {
 }
 
 fn check_click(mut win ui.Window, box ui.Checkbox) {
-	mut conf := get_config(mut win)
+	mut conf := get_config(win)
 	mut valu := conf.get_or_default('v_flags')
 	if valu.contains(box.text) {
 		valu = valu.replace(box.text, '')
