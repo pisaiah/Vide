@@ -5,22 +5,12 @@ import iui as ui
 fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
 
-	mut name := create_input(mut win, mut modal, 'Name', 25, 15)
-	name.set_text_change(fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['np-name'] = box.text
-	})
+	name := create_input(mut win, mut modal, 'Name', 25, 15)
+	des := create_input(mut win, mut modal, 'Description', 25, 65)
+	ver := create_input(mut win, mut modal, 'Version', 25, 115)
+
 	modal.add_child(name)
-
-	mut des := create_input(mut win, mut modal, 'Description', 25, 65)
-	des.set_text_change(fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['np-des'] = box.text
-	})
 	modal.add_child(des)
-
-	mut ver := create_input(mut win, mut modal, 'Version', 25, 115)
-	ver.set_text_change(fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['np-ver'] = box.text
-	})
 	modal.add_child(ver)
 
 	mut lic_lbl := ui.label(win, 'License')
@@ -58,9 +48,10 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(can)
 
 	close.set_click(fn (mut win ui.Window, btn ui.Button) {
-		name := win.extra_map['np-name']
-		des := win.extra_map['np-des']
-		ver := win.extra_map['np-ver']
+		name := &ui.TextField(win.get_from_id('NewProj-Name')).text
+		des := &ui.TextField(win.get_from_id('NewProj-Description')).text
+		ver := &ui.TextField(win.get_from_id('NewProj-Version')).text
+
 		lic := win.extra_map['np-lic']
 		dir := win.extra_map['workspace']
 
@@ -83,7 +74,7 @@ fn lic_change(mut win ui.Window, com ui.Select, old_val string, new_val string) 
 	win.extra_map['np-lic'] = new_val
 }
 
-fn create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.Textbox {
+fn create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.TextField {
 	mut work_lbl := ui.label(win, title)
 	work_lbl.set_bounds(x, y, 300, 30)
 	work_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
@@ -91,17 +82,14 @@ fn create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y in
 	}
 	modal.add_child(work_lbl)
 
-	mut work := ui.textbox(win, '')
+	mut work := ui.textfield(win, '')
 	work.set_bounds(x, y + 30, 300, ui.text_height(win, 'A{'))
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = int(f64_max(200, ui.text_width(win, work.text) + work.text.len))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 
-	work.multiline = false
-	return work
-}
+	work.set_id(mut win, 'NewProj-' + title)
 
-fn np_done_click(mut win ui.Window, com ui.Button) {
-	ui.debug('btn click')
+	return work
 }

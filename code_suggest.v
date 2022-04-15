@@ -8,7 +8,7 @@ import gx
 // fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
 fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 	mut win := &ui.Window(win_ptr)
-	mut box := &ui.TextEdit(box_ptr)
+	mut box := &ui.TextArea(box_ptr)
 
 	mut saved := false
 	if box.ctrl_down {
@@ -21,9 +21,9 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 	}
 
 	// Text Suggestions
-	mut indx := box.carrot_top + 1
+	mut indx := box.caret_top + 1
 	mut mtxt := box.lines[indx - 1]
-	mtxt = mtxt.substr_ni(0, box.carrot_left)
+	mtxt = mtxt.substr_ni(0, box.caret_left)
 	mut splt := mtxt.split(' ')
 	fin := splt[splt.len - 1]
 	// println(fin)
@@ -43,7 +43,7 @@ pub mut:
 	text  string
 	num   int
 	off_y int
-	box   &ui.TextEdit
+	box   &ui.TextArea
 }
 
 fn (mut this Hovermess) draw() {
@@ -67,7 +67,7 @@ fn (mut this Hovermess) draw() {
 		return
 	}
 	for mut kid in com.kids[com.active_tab] {
-		if mut kid is ui.TextEdit {
+		if mut kid is ui.TextArea {
 			if kid != this.box {
 				return
 			}
@@ -108,7 +108,7 @@ fn hover(mut win ui.Window) Hovermess {
 	}
 }
 
-fn cmd_exec(mut win ui.Window, file string, box &ui.TextEdit) {
+fn cmd_exec(mut win ui.Window, file string, box &ui.TextArea) {
 	vexe := get_v_exe(win)
 
 	res := os.execute(vexe + ' -check-syntax ' + file)
@@ -126,13 +126,13 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.TextEdit) {
 
 	mut tx := 0
 	mut ty := 0
-	mut tbox := ui.textedit(win, '')
+	mut tbox := ui.textarea(win, [''])
 	for mut com in win.components {
 		if mut com is ui.Tabbox {
 			tx = com.x
 			ty = com.y
 			for mut kid in com.kids[com.active_tab] {
-				if mut kid is ui.TextEdit {
+				if mut kid is ui.TextArea {
 					tbox = kid
 				}
 			}
@@ -168,10 +168,10 @@ fn get_tab_name(mut win ui.Window) string {
 }
 
 fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
-	mut box := &ui.TextEdit(ptr)
+	mut box := &ui.TextArea(ptr)
 	mut win := box.win
 
-	if current_line == box.carrot_top {
+	if current_line == box.caret_top {
 		fin := win.extra_map['fin']
 
 		mut is_fin := false
@@ -182,10 +182,10 @@ fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
 		}
 
 		if is_fin {
-			mut indx := box.carrot_top + 1
+			mut indx := box.caret_top + 1
 			mut mtxt := box.lines[indx - 1]
 
-			mtxt = mtxt.substr(0, box.carrot_left)
+			mtxt = mtxt.substr(0, box.caret_left)
 
 			if !mtxt.contains(fin) {
 				return
@@ -216,8 +216,8 @@ fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
 	}
 }
 
-[deprecated: 'Replaced by draw_code_suggest for new TextEdit']
-fn on_box_draw_1(mut win ui.Window, mut box ui.TextEdit, tx int, ty int) {
+[deprecated: 'Replaced by draw_code_suggest for new TextArea']
+fn on_box_draw_1(mut win ui.Window, mut box ui.TextArea, tx int, ty int) {
 }
 
 fn match_fn(mut win ui.Window, mod string, str string) string {

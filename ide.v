@@ -189,8 +189,8 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 	mut lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
-	mut code_box := ui.textedit_from_array(window, lines)
-	// mut code_box := ui.textarea(window, lines)
+	// mut code_box := ui.textedit_from_array(window, lines)
+	mut code_box := ui.textarea(window, lines)
 
 	code_box.text_change_event_fn = codebox_text_change
 	code_box.after_draw_event_fn = on_runebox_draw

@@ -151,7 +151,7 @@ fn run_exec_win(args []string) []string {
 	for pro.is_alive() {
 		mut out := pro.stdout_read()
 		if out.len > 0 {
-			println(out)
+			// println(out)
 			for line in out.split_into_lines() {
 				content << line.trim_space()
 			}

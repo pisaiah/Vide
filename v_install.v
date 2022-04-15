@@ -22,7 +22,7 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 		return
 	}
 
-	v_found := v_ver.starts_with('V ')
+	// v_found := v_ver.starts_with('V ')
 
 	mut modal := ui.modal(win, 'V Manager (Non-finished Test)')
 
@@ -116,8 +116,6 @@ fn download_v(a voidptr, b voidptr, c voidptr) {
 	os.mkdir(extract_to) or {}
 
 	extract_zip_to_dir(file, extract_to) or {}
-
-	// println(val)
 }
 
 // Fixed version of szip.extract_zip_to_dir
@@ -137,8 +135,6 @@ pub fn extract_zip_to_dir(file string, dir string) ?bool {
 		}
 
 		zip.extract_entry(do_to) or {
-			println(do_to)
-			println(err)
 		}
 	}
 	return true

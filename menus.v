@@ -74,7 +74,7 @@ fn do_save(mut win ui.Window) {
 						set_console_text(mut win, 'Unable to save file!')
 					}
 				}
-				if mut child is ui.TextEdit {
+				if mut child is ui.TextArea {
 					os.write_file(com.active_tab, child.lines.join('\n')) or {
 						set_console_text(mut win, 'Unable to save file!')
 					}

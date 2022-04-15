@@ -8,8 +8,9 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
 
 	mut des := nf_create_input(mut win, mut modal, 'File Name', 25, 80)
-	des.set_text_change(fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['nf-name'] = box.text
+	des.set_text_change(fn (win voidptr, box voidptr) {
+		mut wind := &ui.Window(win)
+		wind.extra_map['nf-name'] = &ui.TextField(box).text
 	})
 	des.set_id(mut win, 'new-file-name-box')
 	modal.add_child(des)
@@ -96,13 +97,13 @@ fn file_picker_path_change(a voidptr, b voidptr) {
 	if file_name.len > 0 {
 		if !os.exists(picker.get_full_path()) {
 			lbl.app.extra_map['nf-name'] = file_name
-			mut name_box := &ui.Textbox(lbl.app.get_from_id('new-file-name-box'))
+			mut name_box := &ui.TextField(lbl.app.get_from_id('new-file-name-box'))
 			name_box.text = file_name
 		}
 	}
 }
 
-fn nf_create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.Textbox {
+fn nf_create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.TextField {
 	mut work_lbl := ui.label(win, title)
 	work_lbl.set_bounds(x, y, 300, 30)
 	work_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
@@ -110,13 +111,13 @@ fn nf_create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y
 	}
 	modal.add_child(work_lbl)
 
-	mut work := ui.textbox(win, '')
+	mut work := ui.textfield(win, '')
 	work.set_bounds(x, y + 30, 300, ui.text_height(win, 'A{'))
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = int(f64_max(450, ui.text_width(win, work.text) + work.text.len))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 
-	work.multiline = false
+	// work.multiline = false
 	return work
 }
