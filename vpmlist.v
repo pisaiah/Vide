@@ -44,7 +44,6 @@ fn (mut this Pack) draw() {
 			}
 		}
 
-		// println('LT: ' + this.label.text + ', exist?: ' + installed.str())
 		if this.is_mouse_rele {
 			if ui.point_in(mut this.btn, this.btn.app.click_x - this.x, this.btn.app.click_y - this.y) {
 				this.btn.is_mouse_down = false
@@ -77,16 +76,15 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	}
 
 	mut slbl := ui.label(win, 'Search: ')
-	mut tbox := ui.textbox(win, ' ')
-	tbox.multiline = false
+	mut tbox := ui.textfield(win, ' ')
+
 	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
 		box.x = ui.text_width(win, 'Search: ') + 8
 		box.width = math.max(200, ui.text_width(win, box.text + 'a b'))
 		box.height = ui.text_height(win, 'A{0|') + 8
 	}
-	tbox.text_change_event_fn = fn (mut win ui.Window, box ui.Textbox) {
-		win.extra_map['vpm-search'] = box.text.trim_space()
-	}
+	tbox.set_id(mut win, 'vpm-search')
+
 	modal.add_child(slbl)
 	modal.add_child(tbox)
 
@@ -180,8 +178,9 @@ fn vpm_modal_draw(mut win ui.Window, comp &ui.Component) {
 		mut pl := packs.len
 		for mut pack in packs {
 			if mut pack is Pack {
-				contain_search := pack.label.text.to_lower().contains(win.extra_map['vpm-search'].to_lower())
-				if win.extra_map['vpm-search'].len > 0 && !contain_search {
+				box := &ui.TextField(win.get_from_id('vpm-search'))
+				contain_search := pack.label.text.to_lower().contains(box.text.to_lower())
+				if box.text.len > 0 && !contain_search {
 					pack.show = false
 					pl--
 					continue

@@ -7,11 +7,9 @@ import szip
 
 fn open_install_modal_on_start_if_needed(mut win ui.Window, com ui.MenuItem) {
 	v_ver, v_path := get_v_version(win)
-	could_not_find_v := v_path.len < 0 || v_ver.starts_with('V ')
+	could_find_v := v_path.len < 0 || v_ver.starts_with('V ')
 
-	debug := true
-
-	if could_not_find_v || debug {
+	if !could_find_v {
 		show_install_modal(mut win, com)
 	}
 }
@@ -22,15 +20,15 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 		return
 	}
 
-	// v_found := v_ver.starts_with('V ')
+	v_found := v_ver.starts_with('V ')
 
 	mut modal := ui.modal(win, 'V Manager (Non-finished Test)')
 
-	// if v_found {
-	//	show_installed_info(win, mut modal, v_ver)
-	//} else {
-	show_install_info(win, mut modal, v_ver)
-	//}
+	if v_found {
+		show_installed_info(win, mut modal, v_ver)
+	} else {
+		show_install_info(win, mut modal, v_ver)
+	}
 
 	win.add_child(modal)
 }
@@ -39,13 +37,13 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 fn show_installed_info(win &ui.Window, mut modal ui.Modal, data string) {
 	lbl := ui.label(win, 'V Version: ' + data, ui.LabelConfig{
 		should_pack: true
-		x: 8
-		y: 4
+		x: 24
+		y: 24
 	})
 	modal.add_child(lbl)
 
 	mut btn := ui.button(win, 'Update V')
-	btn.set_pos(12, 64)
+	btn.set_pos(24, 64)
 	btn.set_click_fn(update_v, 0)
 	btn.pack()
 	modal.add_child(btn)
@@ -91,6 +89,7 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	modal.needs_init = false
 }
 
+// Update V
 fn update_v(a voidptr, b voidptr, c voidptr) {
 	ver, path := get_v_version(a)
 	if ver.len < 0 {
@@ -102,6 +101,14 @@ fn update_v(a voidptr, b voidptr, c voidptr) {
 	go run_update(path, b)
 }
 
+fn run_update(path string, b voidptr) {
+	output := run_exec([path, 'up'])
+	mut btn := &ui.Button(b)
+	println(output)
+	btn.text = 'Updated V'
+}
+
+// Download V
 fn download_v(a voidptr, b voidptr, c voidptr) {
 	url := 'https://github.com/vlang/v/releases/latest/download/v_' + os.user_os() + '.zip'
 
@@ -125,7 +132,6 @@ pub fn extract_zip_to_dir(file string, dir string) ?bool {
 	for i in 0 .. total {
 		zip.open_entry_by_index(i) or {}
 		do_to := os.real_path(os.join_path(dir, zip.name()))
-		is_dir := zip.is_dir() or { panic(err) }
 
 		os.mkdir_all(os.dir(do_to)) or { println(err) }
 		os.write_file(do_to, '') or {}
@@ -138,13 +144,6 @@ pub fn extract_zip_to_dir(file string, dir string) ?bool {
 		}
 	}
 	return true
-}
-
-fn run_update(path string, b voidptr) {
-	output := run_exec([path, 'up'])
-	mut btn := &ui.Button(b)
-	println(output)
-	btn.text = 'Updated V'
 }
 
 fn get_v_version(win &ui.Window) (string, string) {

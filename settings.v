@@ -47,17 +47,19 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	tb.add_child('General', lib_lbl)
 
 	home := os.home_dir().replace('\\', '/') // '
-	mut vlib := ui.textbox(win, get_v_exe(win).replace(home, '~'))
+	mut vlib := ui.textfield(win, get_v_exe(win).replace(home, '~'))
 	vlib.set_bounds(20, 90, 300, ui.text_height(win, 'A{'))
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(200, ui.text_width(win, work.text + 'a b'))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
-	vlib.text_change_event_fn = fn (mut win ui.Window, work ui.Textbox) {
+	vlib.text_change_event_fn = fn (win_ptr voidptr, box_ptr voidptr) {
+		mut win := &ui.Window(win_ptr)
+		work := &ui.TextField(box_ptr)
+
 		mut conf := get_config(win)
 		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~')) // '
 	}
-	vlib.multiline = false
 	tb.add_child('General', vlib)
 
 	settings_flags(mut win, mut modal, mut conf, tb)

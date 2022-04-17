@@ -163,21 +163,21 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 		'Welcome to Vide! A simple IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + ', UI version: ' + ui.version)
 
-	info_lbl.set_pos(40, 110)
+	info_lbl.set_pos(45, 120)
 	info_lbl.pack()
 
 	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
 	window.id_map['vide_logo'] = &logo
 
 	mut logo_im := ui.image(window, logo)
-	logo_im.set_bounds(24, 28, 188, 75)
+	logo_im.set_bounds(29, 38, 188, 75)
 
 	mut gh := ui.hyperlink(window, 'Github', 'https://github.com/isaiahpatton/vide')
-	gh.set_pos(214, 80)
+	gh.set_pos(219, 90)
 	gh.pack()
 
 	mut ad := ui.hyperlink(window, 'Addons', 'https://github.com/topics/vide-addon')
-	ad.set_pos(263, 80)
+	ad.set_pos(268, 90)
 	ad.pack()
 
 	tb.add_child('Welcome', info_lbl)
@@ -187,7 +187,13 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 }
 
 fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
-	mut lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
+	if file in tb.kids {
+		// Don't remake already open tab
+		tb.active_tab = file
+		return
+	}
+
+	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
 	// mut code_box := ui.textedit_from_array(window, lines)
 	mut code_box := ui.textarea(window, lines)

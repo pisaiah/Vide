@@ -63,12 +63,6 @@ fn do_save(mut win ui.Window) {
 			// txt := com.active_tab
 			mut tab := com.kids[com.active_tab]
 			for mut child in tab {
-				if mut child is ui.Textbox {
-					// set_console_text(mut win, 'Saved file')
-					os.write_file(com.active_tab, child.text) or {
-						set_console_text(mut win, 'Unable to save file!')
-					}
-				}
 				if mut child is ui.TextField {
 					os.write_file(com.active_tab, child.text) or {
 						set_console_text(mut win, 'Unable to save file!')

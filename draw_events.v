@@ -43,7 +43,7 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 		tb.width = width
 	}
 
-	mut com := &ui.Textbox(win.get_from_id('consolebox'))
+	mut com := &ui.TextArea(win.get_from_id('consolebox'))
 	com.x = x_off
 	com.y = y_off + 32
 	com.height = 110

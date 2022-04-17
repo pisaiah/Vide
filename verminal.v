@@ -18,6 +18,7 @@ pub fn create_box(win_ptr voidptr) &ui.TextArea {
 	box.set_id(mut win, 'vermbox')
 	box.draw_event_fn = box_draw
 	box.before_txtc_event_fn = before_txt_change
+	box.padding_y = 8
 
 	return box
 }
