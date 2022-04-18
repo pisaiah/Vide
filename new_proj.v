@@ -5,19 +5,19 @@ import iui as ui
 fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
 
-	name := create_input(mut win, mut modal, 'Name', 25, 15)
-	des := create_input(mut win, mut modal, 'Description', 25, 65)
-	ver := create_input(mut win, mut modal, 'Version', 25, 115)
+	mut vbox := ui.vbox(win)
 
-	modal.add_child(name)
-	modal.add_child(des)
-	modal.add_child(ver)
+	create_input(mut win, mut vbox, 'Name', 25, 15)
+	create_input(mut win, mut vbox, 'Description', 25, 65)
+	create_input(mut win, mut vbox, 'Version', 25, 115)
+
+	vbox.set_pos(25, 15)
+	vbox.pack()
+	modal.add_child(vbox)
 
 	mut lic_lbl := ui.label(win, 'License')
 	lic_lbl.set_bounds(250, 15, 300, 30)
-	lic_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = ui.text_width(win, work.text)
-	}
+	lic_lbl.pack()
 	modal.add_child(lic_lbl)
 
 	mut lic := ui.selector(win, 'Choose a License')
@@ -35,13 +35,10 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	modal.needs_init = false
 
 	mut close := ui.button(win, 'Create')
-	close.x = 25 + 50
-	close.y = (300) - 45
-	close.width = 145
-	close.height = 25
+	close.set_bounds(86, 255, 145, 25)
 
 	mut can := ui.button(win, 'Cancel')
-	can.set_bounds(20, (300 - 45), 50, 25)
+	can.set_bounds(20, 255, 60, 25)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Modal)
 	})
@@ -74,22 +71,19 @@ fn lic_change(mut win ui.Window, com ui.Select, old_val string, new_val string) 
 	win.extra_map['np-lic'] = new_val
 }
 
-fn create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.TextField {
-	mut work_lbl := ui.label(win, title)
-	work_lbl.set_bounds(x, y, 300, 30)
-	work_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = ui.text_width(win, work.text)
-	}
-	modal.add_child(work_lbl)
+fn create_input(mut win ui.Window, mut vbox ui.VBox, title string, x int, y int) &ui.TextField {
+	mut work_lbl := ui.label(win, '\n' + title)
+	work_lbl.pack()
+	vbox.add_child(work_lbl)
 
 	mut work := ui.textfield(win, '')
-	work.set_bounds(x, y + 30, 300, ui.text_height(win, 'A{'))
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = int(f64_max(200, ui.text_width(win, work.text) + work.text.len))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 
 	work.set_id(mut win, 'NewProj-' + title)
+	vbox.add_child(work)
 
 	return work
 }

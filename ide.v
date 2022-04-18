@@ -6,7 +6,7 @@ import os
 import iui.hc
 
 const (
-	version = '0.0.8-dev'
+	version = '0.0.9-dev'
 )
 
 [console]
@@ -163,7 +163,7 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 		'Welcome to Vide! A simple IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + ', UI version: ' + ui.version)
 
-	info_lbl.set_pos(45, 120)
+	info_lbl.set_pos(45, 140)
 	info_lbl.pack()
 
 	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
