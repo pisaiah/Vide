@@ -1,4 +1,6 @@
-# VIDE: Simple IDE for V <img src="./assets/ezgif.com-gif-maker(2).png" width="230px" style="float:right" align="left"> 
+# <img src="./assets/ezgif.com-gif-maker(2).png" width="230px"> 
+
+ A simple IDE for the [V Programming Language](https://vlang.io/) made in V.
 
 ![licence](http://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
 [![GitHub all releases](http://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)](https://github.com/IsaiahPatton/Vide/releases)
@@ -6,12 +8,6 @@
     </h1>
 
 <div></div>
-
-## About
-
-A simple IDE for the [V Programming Language](https://vlang.io/) made in V.
-
-**Note:** Pre-alpha software, will include bugs. 
 
 ## Screenshots:
 
