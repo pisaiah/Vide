@@ -1,4 +1,4 @@
-# VIDE: Simple IDE for V <img src="http://v-ide.github.io/vide.svg" width="230px" style="float:right" align="left"> 
+# VIDE: Simple IDE for V <img src="./assets/ezgif.com-gif-maker(2).png" width="230px" style="float:right" align="left"> 
 
 ![licence](http://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
 [![GitHub all releases](http://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)](https://github.com/IsaiahPatton/Vide/releases)
@@ -9,7 +9,7 @@
 
 ## About
 
-A simple IDE for [V](https://vlang.io/) made in V.
+A simple IDE for the [V Programming Language](https://vlang.io/) made in V.
 
 **Note:** Pre-alpha software, will include bugs. 
 
@@ -24,9 +24,8 @@ A simple IDE for [V](https://vlang.io/) made in V.
 <kbd><img src="https://user-images.githubusercontent.com/16439221/154629544-5522f4f0-2066-4cf4-bd32-8bdc8823dbf2.png" height="110px"><br>Autocomplete (Beta)</kbd>
 
 
-## Known Issues
+## Notes
 - Requires `-gc boehm`
-- Textbox text editing has a few issues. (Mostly fixed in v0.0.7)
 
 ## Resource Requirements
 
