@@ -2,9 +2,10 @@ module main
 
 import iui as ui
 import os
+import gg
 
 const (
-	vide_png = $embed_file('assets/logo.png')
+	vide_png = $embed_file('assets/ezgif.com-gif-maker(2).png')
 )
 
 fn set_theme_from_save(mut win ui.Window) {
@@ -27,28 +28,22 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 fn about_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'About Vɪᴅᴇ')
 
-	mut logo := win.gg.create_image(os.resource_abs_path('assets/vide.png'))
+	logo := &gg.Image(win.id_map['vide_logo'])
 	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds(150, 14, 188, 75)
+	logo_im.set_bounds(150, 34, 193, 76)
 
-	mut title := ui.label(win, 'Vɪᴅᴇ')
-	title.set_pos(110, 0)
-	title.set_config(60, true, true)
-	title.bold = true
-	title.pack()
+	mut label := ui.label(win, 'Small IDE for the V Programming Language made in V.\n\nVersion: ' +
+		version + '\nUI Version: ' + ui.version)
 
-	mut label := ui.label(win, 'Small IDE for V made in V.\nVersion: ' + version +
-		'\nUI Version: ' + ui.version)
-
-	label.set_pos(120, 110)
+	label.set_pos(78, 130)
 	label.pack()
 
-	mut copy := ui.label(win, 'Copyright © 2021-2022 Isaiah.')
-	copy.set_pos(120, 200)
+	mut copy := ui.label(win, 'Copyright © 2021-2022 ')
+	copy.set_pos(16, 270)
 	copy.set_config(12, true, false)
 	modal.add_child(copy)
 
-	modal.add_child(title)
+	modal.add_child(logo_im)
 	modal.add_child(label)
 	win.add_child(modal)
 }
@@ -58,37 +53,23 @@ fn save_click(mut win ui.Window, item ui.MenuItem) {
 }
 
 fn do_save(mut win ui.Window) {
-	for mut com in win.components {
-		if mut com is ui.Tabbox {
-			// txt := com.active_tab
-			mut tab := com.kids[com.active_tab]
-			for mut child in tab {
-				if mut child is ui.TextField {
-					os.write_file(com.active_tab, child.text) or {
-						set_console_text(mut win, 'Unable to save file!')
-					}
-				}
-				if mut child is ui.TextArea {
-					os.write_file(com.active_tab, child.lines.join('\n')) or {
-						set_console_text(mut win, 'Unable to save file!')
-					}
-				}
-			}
+	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
-			return
+	mut tab := com.kids[com.active_tab]
+	for mut child in tab {
+		if mut child is ui.TextArea {
+			os.write_file(com.active_tab, child.lines.join('\n')) or {
+				set_console_text(mut win, 'Unable to save file!')
+			}
 		}
 	}
 }
 
 fn run_click(mut win ui.Window, item ui.MenuItem) {
-	for mut com in win.components {
-		if mut com is ui.Tabbox {
-			txt := com.active_tab
-			dir := os.dir(txt)
+	com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
-			go run_v(dir, mut win)
+	txt := com.active_tab
+	dir := os.dir(txt)
 
-			return
-		}
-	}
+	go run_v(dir, mut win)
 }

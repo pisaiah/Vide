@@ -6,7 +6,7 @@ import os
 import iui.hc
 
 const (
-	version = '0.0.9-dev'
+	version = '0.0.10-dev'
 )
 
 [console]
@@ -15,7 +15,7 @@ fn main() {
 	hc.hide_console_win()
 
 	// Create Window
-	mut window := ui.window(ui.get_system_theme(), 'Vide', 800, 520)
+	mut window := ui.window(ui.get_system_theme(), 'Vide', 850, 520)
 
 	// our custom config
 	mut conf := config(mut window)
@@ -124,7 +124,8 @@ fn main() {
 
 	mut tree := ui.tree(window, 'Projects')
 	tree.is_selected = true
-	tree.set_bounds(0, 22, 170, 200)
+	tree.set_bounds(0, 22, 200, 200)
+	tree.padding_top = 10
 	tree.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
 		tree.height = gg.window_size().height
 	}
@@ -132,15 +133,26 @@ fn main() {
 	tree.set_id(mut window, 'proj-tree')
 	make_tree(mut window, folder, mut tree)
 
-	window.add_child(tree)
+	// window.add_child(tree)
 
 	mut tb := ui.tabbox(window)
 	tb.set_id(mut window, 'main-tabs')
-	tb.set_bounds(200, 35, 200, 80)
+	tb.set_bounds(0, 35, 200, 80)
 
 	tb.draw_event_fn = on_draw
-	window.add_child(tb)
+	// window.add_child(tb)
 
+	mut hbox := ui.hbox(window)
+	hbox.add_child(tree)
+	hbox.add_child(tb)
+	hbox.draw_event_fn = fn (mut win ui.Window, mut hbox ui.Component) {
+		size := win.gg.window_size()
+		hbox.width = size.width
+		hbox.height = size.height
+	}
+	window.add_child(hbox)
+
+	tb.z_index = 1
 	welcome_tab(mut window, mut tb, folder)
 
 	mut console_box := create_box(window)
@@ -160,24 +172,27 @@ fn main() {
 
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	mut info_lbl := ui.label(window,
-		'Welcome to Vide! A simple IDE for the V Programming Language made in V.\n\nVersion: ' +
+		'Welcome to Vide!\nSimple IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + ', UI version: ' + ui.version)
 
-	info_lbl.set_pos(45, 140)
+	padding_left := 70
+	padding_top := 50
+
+	info_lbl.set_pos(padding_left + 12, padding_top + 105)
 	info_lbl.pack()
 
 	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
 	window.id_map['vide_logo'] = &logo
 
 	mut logo_im := ui.image(window, logo)
-	logo_im.set_bounds(29, 38, 188, 75)
+	logo_im.set_bounds(padding_left, padding_top, 193, 76)
 
 	mut gh := ui.hyperlink(window, 'Github', 'https://github.com/isaiahpatton/vide')
-	gh.set_pos(219, 90)
+	gh.set_pos(215 + padding_left, padding_top + 40)
 	gh.pack()
 
 	mut ad := ui.hyperlink(window, 'Addons', 'https://github.com/topics/vide-addon')
-	ad.set_pos(268, 90)
+	ad.set_pos(270 + padding_left, padding_top + 40)
 	ad.pack()
 
 	tb.add_child('Welcome', info_lbl)
@@ -186,7 +201,9 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	tb.add_child('Welcome', ad)
 }
 
-fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
+fn new_tab(mut window ui.Window, file string) {
+	mut tb := &ui.Tabbox(window.get_from_id('main-tabs'))
+
 	if file in tb.kids {
 		// Don't remake already open tab
 		tb.active_tab = file
@@ -195,7 +212,6 @@ fn new_tab(mut window ui.Window, file string, mut tb ui.Tabbox) {
 
 	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
-	// mut code_box := ui.textedit_from_array(window, lines)
 	mut code_box := ui.textarea(window, lines)
 
 	code_box.text_change_event_fn = codebox_text_change

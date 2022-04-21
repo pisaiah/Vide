@@ -76,7 +76,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 	}
 
 	mut slbl := ui.label(win, 'Search: ')
-	mut tbox := ui.textfield(win, ' ')
+	mut tbox := ui.textfield(win, '')
 
 	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
 		box.x = ui.text_width(win, 'Search: ') + 8
@@ -96,6 +96,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		if !txt.contains('[') {
 			continue
 		}
+		println(txt)
 
 		mut pack := &Pack{}
 		name := txt.split('[')[1].split(']')[0]

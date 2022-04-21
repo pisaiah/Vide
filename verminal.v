@@ -77,9 +77,7 @@ fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 		tbox.lines << win.extra_map['verm-help']
 		add_new_input_line(mut tbox)
 	} else if args[0] == 'version' || args[0] == 'ver' {
-		tbox.lines << 'Verminal - A terminal emulator written in V'
-		tbox.lines << '\tVersion: 0.3'
-		tbox.lines << '\tUI Version: ' + ui.version
+		tbox.lines << 'Verminal: 0.4, UI: ' + ui.version
 		add_new_input_line(mut tbox)
 	} else if args[0] == 'cls' || args[0] == 'clear' {
 		tbox.lines.clear()
