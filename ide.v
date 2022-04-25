@@ -30,8 +30,8 @@ fn main() {
 	file_img := $embed_file('assets/icons8-file-48.png')
 	edit_img := $embed_file('assets/icons8-edit-24.png')
 	help_img := $embed_file('assets/icons8-help-24.png')
-	save_img := $embed_file('assets/icons8-save-48.png')
-	theme_img := $embed_file('assets/icons8-themes-48.png')
+	save_img := $embed_file('assets/icons8-save-24.png')
+	theme_img := $embed_file('assets/icons8-change-theme-24.png')
 
 	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 24)
 	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 24)

@@ -46,7 +46,7 @@ pub mut:
 	box   &ui.TextArea
 }
 
-fn (mut this Hovermess) draw() {
+fn (mut this Hovermess) draw(ctx &ui.GraphicsContext) {
 	mut mid := (this.x + (this.width / 2))
 	mut midy := (this.y + (this.height / 2))
 

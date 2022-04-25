@@ -116,7 +116,7 @@ jobs:
           .\v.exe symlink
           cd iui
           git clone https://github.com/isaiahpatton/vide
-          v -cc gcc -skip-unused -gc boehm vide
+          v -cc gcc -skip-unused -gc boehm -cflags -static vide
       - name: Remove excluded
         shell: msys2 {0}
         run: |
