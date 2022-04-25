@@ -4,6 +4,7 @@ import gg
 import iui as ui
 import os
 import gx
+import clipboard
 
 // fn codebox_text_change(mut win ui.Window, box ui.Textbox) {
 fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
@@ -12,12 +13,36 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 
 	mut saved := false
 	if box.ctrl_down {
-		// println(box.last_letter)
 		if box.last_letter == 's' {
 			println('SAVE REQUEST!')
 			do_save(mut win)
 			saved = true
+			box.ctrl_down = false
 		}
+		if box.last_letter == 'v' {
+			mut c := clipboard.new()
+
+			spl := c.get_text().split_into_lines()
+			for i in 0 .. spl.len {
+				s := spl[i]
+				if i == 0 {
+					line := box.lines[box.caret_top]
+					new_line := line.substr_ni(0, box.caret_left) + s +
+						line.substr_ni(box.caret_left, line.len)
+					box.lines[box.caret_top] = new_line
+					box.caret_left = new_line.len
+				} else {
+					box.lines.insert(box.caret_top + i, s)
+				}
+			}
+			if spl.len > 1 {
+				box.caret_top = box.caret_top + spl.len - 1
+				box.caret_left = spl[spl.len - 1].len
+			}
+
+			c.destroy()
+		}
+		box.ctrl_down = false
 	}
 
 	// Text Suggestions
