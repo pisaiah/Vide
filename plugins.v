@@ -10,16 +10,20 @@ import time
 type FNPlMain = fn (mut a ui.Window)
 
 pub fn load_plugins(dir string, mut win ui.Window) ? {
-	println('Loading plugins...')
-	for file in os.ls(dir) or { [''] } {
-		println('Loading plugin "' + file + '"...')
+	list := os.ls(dir) or { [''] }
+	if list.len == 0 {
+		return
+	}
+
+	println('Loading plugins')
+	for file in list {
+		println('Loading plugin $file ...')
 		library_file_path := os.join_path(dir, file)
 		if os.is_dir(library_file_path) {
 			continue
 		}
 
 		if file.ends_with('.videaddon') {
-			// Uncompiled test
 			load_uncompiled(mut win, library_file_path) ?
 			continue
 		}
@@ -29,7 +33,7 @@ pub fn load_plugins(dir string, mut win ui.Window) ? {
 
 		f(mut win)
 	}
-	println('Loaded plugins.')
+	println('Loaded plugins')
 }
 
 // Load from source ZIP

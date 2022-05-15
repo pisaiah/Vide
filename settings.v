@@ -3,12 +3,13 @@ module main
 import iui as ui
 import os
 import math
+import os.font
 
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'Settings')
-	dump(modal.in_height)
+	modal.top_off = 16
 	modal.in_width = 600
-	modal.in_height = 320
+	modal.in_height = 355
 
 	mut tb := ui.tabbox(win)
 	tb.closable = false
@@ -20,14 +21,13 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut conf := get_config(win)
 
-	workd := os.real_path(conf.get_or_default('workspace_dir').replace('{user_home}',
-		'~'))
+	workd := os.real_path(conf.get_value('workspace_dir').replace('{user_home}', '~'))
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
 
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = math.max(ui.text_width(win, work.text + 'a b'), 200)
+		work.width = math.max(ui.text_width(win, work.text + 'a b'), 250)
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 	work.text_change_event_fn = fn (a voidptr, b voidptr) {
@@ -44,7 +44,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut vlib := ui.textfield(win, get_v_exe(win).replace(home, '~'))
 
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = math.max(200, ui.text_width(win, work.text + 'a b'))
+		work.width = math.max(250, ui.text_width(win, work.text + 'a b'))
 		work.height = ui.text_height(win, 'A{0|') + 8
 	}
 	vlib.text_change_event_fn = fn (win_ptr voidptr, box_ptr voidptr) {
@@ -78,7 +78,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	close.set_bounds(425, modal.in_height - 42, 160, 30)
 
 	mut can := ui.button(win, 'Cancel')
-	can.set_bounds(334, modal.in_height - 42, 85, 30)
+	can.set_bounds(330, modal.in_height - 42, 85, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Modal)
 	})
@@ -109,7 +109,45 @@ fn appearance_tab(win &ui.Window, mut conf Config, tbp voidptr) {
 	vbox.add_child(font_slider)
 	vbox.add_child(tree_padding_lbl)
 	vbox.add_child(tree_padding_slider)
+
+	font_lbl := ui.label(win, 'Main Font', ui.LabelConfig{
+		x: 16
+		y: 16
+		should_pack: true
+	})
+	vbox.add_child(font_lbl)
+
+	mut font_box := ui.selector(win, 'Font', ui.SelectConfig{
+		bounds: ui.Bounds{16, 8, 150, 34}
+		items: [
+			'Default Font',
+			'Anomaly Mono',
+			'KARISMA_',
+			'Agave-Regular',
+			'System SegoeUI',
+		]
+	})
+	font_box.set_change(sel_change)
+
+	vbox.add_child(font_box)
+
 	tb.add_child('Appearance', vbox)
+}
+
+fn sel_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
+	mut path := os.resource_abs_path('assets/' + new_val.replace(' ', '-') + '.ttf')
+
+	if new_val == 'Default Font' {
+		path = font.default()
+	}
+	if new_val.starts_with('System ') {
+		path = 'C:/windows/fonts/' + new_val.split('System ')[1].to_lower() + '.ttf'
+	}
+
+	font := win.add_font(new_val, path)
+	win.graphics_context.font = font
+	mut conf := get_config(win)
+	conf.set('main_font', path)
 }
 
 fn make_tree_width_slider(win &ui.Window) (ui.Label, &ui.Slider) {
@@ -171,33 +209,17 @@ fn settings_flags(win &ui.Window, mut conf Config, tbp voidptr) {
 
 fn create_flag_check(win &ui.Window, text string, mut conf Config) ui.Checkbox {
 	mut gc := ui.checkbox(win, text)
-	gc.is_selected = conf.get_or_default('v_flags').contains(text)
+	gc.is_selected = conf.get_value('v_flags').contains(text)
 	gc.set_bounds(0, 8, 100, 20)
 	gc.set_click(check_click)
 	return gc
 }
 
-fn fs_group(win &ui.Window, x int, y int, tbp voidptr) {
-	mut tb := &ui.Tabbox(tbp)
-	mut fs_lbl := ui.label(win, 'Font size:')
-	fs_lbl.set_bounds(x - 8, y, 300, 20)
-	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		lbl.text = 'Font Size (' + win.font_size.str() + '):'
-		lbl.width = ui.text_width(win, lbl.text)
-	}
-
-	mut font_slider := ui.slider(win, 0, 14, .hor)
-	font_slider.set_bounds(x, y + 20, 100, 20)
-	font_slider.cur = win.font_size - 10
-	font_slider.draw_event_fn = font_slider_draw
-
-	tb.add_child('General', fs_lbl)
-	tb.add_child('General', font_slider)
-}
-
 fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 	mut this := *com
 	mut tree := &ui.Tree(win.get_from_id('proj-tree'))
+	this.y = win.font_size - 12
+	this.height = win.font_size + 4
 	if mut this is ui.Slider {
 		fs := tree.width
 		new_val := (int(this.cur) * 10) + 100
@@ -205,7 +227,7 @@ fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 			return
 		}
 		tree.width = new_val
-		win.gg.set_cfg(size: new_val)
+		win.graphics_context.set_cfg(size: new_val)
 	}
 }
 
@@ -217,14 +239,21 @@ fn font_slider_draw(mut win ui.Window, com &ui.Component) {
 		if fs == new_val {
 			return
 		}
+
+		mut conf := get_config(win)
+		conf.set('font_size', new_val.str())
+
+		this.y = new_val - 12
+		this.height = new_val + 4
+
 		win.font_size = new_val
-		win.gg.set_cfg(size: new_val)
+		win.graphics_context.set_cfg(size: new_val)
 	}
 }
 
 fn check_click(mut win ui.Window, box ui.Checkbox) {
 	mut conf := get_config(win)
-	mut valu := conf.get_or_default('v_flags')
+	mut valu := conf.get_value('v_flags')
 	if valu.contains(box.text) {
 		valu = valu.replace(box.text, '')
 	} else {

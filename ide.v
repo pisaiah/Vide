@@ -6,7 +6,7 @@ import os
 import iui.hc
 
 const (
-	version = '0.0.10-dev'
+	version = '0.0.11-dev'
 )
 
 [console]
@@ -15,11 +15,18 @@ fn main() {
 	hc.hide_console_win()
 
 	// Create Window
-	mut window := ui.window(ui.get_system_theme(), 'Vide', 850, 520)
+	mut window := ui.window_with_config(ui.get_system_theme(), 'Vide', 1000, 600, ui.WindowConfig{
+		ui_mode: true
+	})
 
 	// our custom config
 	mut conf := config(mut window)
 	get_v_exe(window)
+
+	fs := conf.get_value('font_size')
+	if fs.len > 0 {
+		window.font_size = fs.int()
+	}
 
 	// Set Saved Theme
 	set_theme_from_save(mut window)
@@ -115,7 +122,7 @@ fn main() {
 
 	window.bar.add_child(save_menu)
 
-	workd := conf.get_or_default('workspace_dir').replace('{user_home}', '~').replace('\\',
+	workd := conf.get_value('workspace_dir').replace('{user_home}', '~').replace('\\',
 		'/') // '
 	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
 
@@ -145,10 +152,21 @@ fn main() {
 	mut hbox := ui.hbox(window)
 	hbox.add_child(tree)
 	hbox.add_child(tb)
+
 	hbox.draw_event_fn = fn (mut win ui.Window, mut hbox ui.Component) {
 		size := win.gg.window_size()
 		hbox.width = size.width
 		hbox.height = size.height
+
+		if 'font_load' !in win.extra_map {
+			mut conf := get_config(win)
+			saved_font := conf.get_value('main_font')
+			if saved_font.len > 0 {
+				font := win.add_font('Saved Font', saved_font)
+				win.graphics_context.font = font
+			}
+			win.extra_map['font_load'] = 'true'
+		}
 	}
 	window.add_child(hbox)
 
@@ -178,27 +196,42 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	padding_left := 70
 	padding_top := 50
 
-	info_lbl.set_pos(padding_left + 12, padding_top + 105)
+	mut vbox := ui.vbox(window)
+	vbox.set_pos(padding_left, padding_top)
+
+	info_lbl.set_pos(12, 24)
 	info_lbl.pack()
 
 	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
 	window.id_map['vide_logo'] = &logo
 
 	mut logo_im := ui.image(window, logo)
-	logo_im.set_bounds(padding_left, padding_top, 193, 76)
+	logo_im.set_bounds(0, 0, logo.width, logo.height)
 
 	mut gh := ui.hyperlink(window, 'Github', 'https://github.com/isaiahpatton/vide')
-	gh.set_pos(215 + padding_left, padding_top + 40)
-	gh.pack()
-
 	mut ad := ui.hyperlink(window, 'Addons', 'https://github.com/topics/vide-addon')
-	ad.set_pos(270 + padding_left, padding_top + 40)
+	mut di := ui.hyperlink(window, 'Discord', 'https://discord.gg/NruVtYBf5g')
+
+	ad.set_pos(12, 0)
+	di.set_pos(12, 0)
+	gh.pack()
+	di.pack()
 	ad.pack()
 
-	tb.add_child('Welcome', info_lbl)
-	tb.add_child('Welcome', logo_im)
-	tb.add_child('Welcome', gh)
-	tb.add_child('Welcome', ad)
+	vbox.add_child(logo_im)
+	vbox.add_child(info_lbl)
+
+	// Links
+	mut hbox := ui.hbox(window)
+	hbox.add_child(gh)
+	hbox.add_child(ad)
+	hbox.add_child(di)
+	hbox.set_bounds(12, 12, 600, 100)
+	hbox.pack()
+	vbox.add_child(hbox)
+	vbox.pack()
+
+	tb.add_child('Welcome', vbox)
 }
 
 fn new_tab(mut window ui.Window, file string) {
@@ -217,7 +250,10 @@ fn new_tab(mut window ui.Window, file string) {
 	code_box.text_change_event_fn = codebox_text_change
 	code_box.after_draw_event_fn = on_runebox_draw
 	code_box.line_draw_event_fn = draw_code_suggest
-	code_box.set_bounds(2, 2, 620, 250)
+	code_box.hide_border = true
+	code_box.padding_x = 8
+	code_box.padding_y = 8
+	code_box.set_bounds(0, 0, 620, 250)
 
 	tb.add_child(file, code_box)
 	tb.active_tab = file

@@ -125,6 +125,7 @@ jobs:
            cd iui
            cd vide
            rm -rf *.v
+           rm -rf .git
            cd ..
            cd ..
            cd ..

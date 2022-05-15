@@ -14,7 +14,6 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 	mut saved := false
 	if box.ctrl_down {
 		if box.last_letter == 's' {
-			println('SAVE REQUEST!')
 			do_save(mut win)
 			saved = true
 			box.ctrl_down = false
@@ -72,8 +71,8 @@ pub mut:
 }
 
 fn (mut this Hovermess) draw(ctx &ui.GraphicsContext) {
-	mut mid := (this.x + (this.width / 2))
-	mut midy := (this.y + (this.height / 2))
+	mid := (this.x + (this.width / 2))
+	midy := (this.y + (this.height / 2))
 
 	mut num := this.num - this.box.scroll_i
 
@@ -304,7 +303,7 @@ fn find_all_fn_in_vlib(mut win ui.Window, mod string) []string {
 
 fn get_v_exe(win &ui.Window) string {
 	mut conf := get_config(win)
-	mut saved := conf.get_or_default('v_exe').replace('{user_home}', '~')
+	mut saved := conf.get_value('v_exe').replace('{user_home}', '~')
 	saved = saved.replace('~', os.home_dir().replace('\\', '/'))
 
 	if saved.len <= 0 {

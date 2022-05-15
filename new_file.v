@@ -29,7 +29,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	fold_btn.set_click_fn(fn (a voidptr, b voidptr, c voidptr) {
 		mut win := &ui.Window(a)
 		mut conf := get_config(win)
-		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
+		dir := conf.get_value('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
 
 		path_change_fn := file_picker_path_change
 
@@ -67,7 +67,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 		name := win.extra_map['nf-name']
 		pdir := win.extra_map['nf-dir']
 		mut conf := get_config(win)
-		dir := conf.get_or_default('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
+		dir := conf.get_value('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
 
 		os.write_file(pdir + '/' + name, '') or {}
 

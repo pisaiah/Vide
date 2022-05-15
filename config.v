@@ -16,14 +16,11 @@ const (
 struct Config {
 	ui.Component_A
 pub mut:
-	window &ui.Window
-	conf   map[string]string
+	conf map[string]string
 }
 
 fn config(mut win ui.Window) &Config {
-	mut config := &Config{
-		window: win
-	}
+	mut config := &Config{}
 	config.set_id(mut win, 'vide-config')
 	win.add_child(config)
 	config.read()
@@ -44,7 +41,7 @@ fn (mut this Config) read() {
 		os.write_file(file, default_config) or {}
 	}
 
-	mut lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
+	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 	for line in lines {
 		if !line.contains('=') {
 			continue
@@ -55,7 +52,7 @@ fn (mut this Config) read() {
 	ui.debug('Vide: Loaded config.')
 }
 
-fn (mut this Config) get_or_default(key string) string {
+fn (mut this Config) get_value(key string) string {
 	if key in this.conf {
 		return this.conf[key]
 	} else {

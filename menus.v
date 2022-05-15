@@ -5,12 +5,12 @@ import os
 import gg
 
 const (
-	vide_png = $embed_file('assets/ezgif.com-gif-maker(2).png')
+	vide_png = $embed_file('assets/ezgif.com-gif-maker(3).png')
 )
 
 fn set_theme_from_save(mut win ui.Window) {
 	mut conf := get_config(win)
-	name := conf.get_or_default('theme')
+	name := conf.get_value('theme')
 	if name.len > 1 {
 		theme := ui.theme_by_name(name)
 		win.set_theme(theme)
@@ -30,7 +30,7 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 
 	logo := &gg.Image(win.id_map['vide_logo'])
 	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds(150, 34, 193, 76)
+	logo_im.set_bounds(99, 24, 263, 93)
 
 	mut label := ui.label(win, 'Small IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + '\nUI Version: ' + ui.version)

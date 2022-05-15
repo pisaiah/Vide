@@ -3,8 +3,7 @@ module main
 import os
 
 //
-// Note: While using Boehm GC, net.http will crash for certain URLs.
-// (Unhandled Exception 0xC0000374)
+// TODO: Can remove, fixed in V.
 //
 fn get_url_source(url string, out string) string {
 	format_url := url.replace('&amp;', '&')
