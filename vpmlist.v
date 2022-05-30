@@ -2,7 +2,6 @@ module main
 
 import iui as ui
 import os
-import math
 
 struct Pack {
 	ui.Component_A
@@ -72,18 +71,81 @@ fn (mut this Pack) draw(ctx &ui.GraphicsContext) {
 }
 
 fn vpm_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'V Package Manager (GUI)')
+	mut modal := ui.page(win, 'V Package Manager (GUI)')
 	modal.set_id(mut win, 'vpm-modal')
-	modal.in_height = 420
-	modal.top_off = 10
 
+	mut slbl := ui.label(win, 'Search: ')
+	mut tbox := ui.textfield(win, '')
+
+	mut vbox := ui.vbox(win)
+
+	slbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		modal := &ui.Page(win.get_from_id('vpm-modal'))
+		if modal.width > 900 {
+			lbl.x = (modal.width / 8) - (lbl.width / 2)
+		} else {
+			lbl.x = 4
+		}
+	}
+
+	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
+		modal := &ui.Page(win.get_from_id('vpm-modal'))
+		if modal.width > 900 {
+			box.x = (modal.width / 8) + (ui.text_width(win, ' Search: '))
+			box.width = (modal.width / 2) - box.x
+		} else {
+			tw := ui.text_width(win, ' Search: ')
+			box.x = tw
+			box.width = modal.width - (tw * 2) - 28
+		}
+		box.height = ui.text_height(win, 'A{0|') + 8
+	}
+	tbox.set_id(mut win, 'vpm-search')
+
+	modal.add_child(slbl)
+	modal.add_child(tbox)
+
+	slbl.set_pos(10, 10)
+	tbox.set_bounds(80, 5, 100, 30)
+
+	// Load results async
+	go load_modules(mut win, mut vbox)
+
+	mut slider := ui.slider(win, 0, 100, .vert)
+	slider.set_bounds(41, 30, 24, 200)
+	slider.draw_event_fn = fn (mut win ui.Window, com &ui.Component) {
+		mut modal := &ui.Page(win.get_from_id('vpm-modal'))
+
+		mut this := *com
+		mut vbox := modal.children.filter(it is ui.VBox)[0]
+		if mut this is ui.Slider {
+			this.y = 0
+			this.x = modal.width - this.width - 3
+			this.height = (modal.height - modal.top_off) - 4
+			if this.is_mouse_rele || this.is_mouse_down {
+				vbox.scroll_i = int(this.cur)
+			}
+			this.cur = vbox.scroll_i
+			this.max = vbox.children.len
+		}
+	}
+	modal.add_child(slider)
+
+	vbox.overflow = false
+	vbox.set_bounds(0, 40, 200, 348)
+	vbox.draw_event_fn = vpm_vbox_draw_border
+
+	modal.add_child(vbox)
+	win.add_child(modal)
+}
+
+fn load_modules(mut win ui.Window, mut vbox ui.VBox) {
 	v := get_v_exe(win)
-
-	// Get all from vpm
 	mut res := os.execute(v + ' search a b c d e f g h i j k l m n o p q r s t u v w x y z').output
+	dump(res)
 	mut arr := res.split_into_lines()
 
-	mut installed := os.execute(v + ' list').output
+	installed := os.execute(v + ' list').output
 	mut iarr := installed.split_into_lines()
 	iarr.delete(0) // Remove "Installed modules" text
 	mut installed_pack := []string{}
@@ -92,26 +154,8 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		installed_pack << s.trim_space()
 	}
 
-	mut slbl := ui.label(win, 'Search: ')
-	mut tbox := ui.textfield(win, '')
-
-	mut vbox := ui.vbox(win)
-
-	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
-		box.x = ui.text_width(win, 'Search: ') + 8
-		box.width = math.max(200, ui.text_width(win, box.text + 'a b'))
-		box.height = ui.text_height(win, 'A{0|') + 8
-	}
-	tbox.set_id(mut win, 'vpm-search')
-
-	modal.add_child(slbl)
-	modal.add_child(tbox)
-
-	slbl.set_pos(10, 15)
-	tbox.set_bounds(60, 5, 100, 30)
-
 	for i in 0 .. arr.len {
-		mut txt := arr[i]
+		txt := arr[i]
 		if !txt.contains('[') {
 			continue
 		}
@@ -121,8 +165,9 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 		}
 		name := txt.split('[')[1].split(']')[0]
 
-		mut lbl := ui.label(win, name)
-		lbl.pack()
+		lbl := ui.label(win, name, ui.LabelConfig{
+			should_pack: true
+		})
 		pack.label = lbl
 
 		th := ui.text_height(win, 'A{0|') * 2
@@ -136,30 +181,7 @@ fn vpm_click(mut win ui.Window, com ui.MenuItem) {
 
 		vbox.add_child(pack)
 	}
-
-	mut slider := ui.slider(win, 0, 100, .vert)
-	slider.set_bounds(41, 30, 15, 200)
-	slider.draw_event_fn = fn (mut win ui.Window, com &ui.Component) {
-		mut modal := &ui.Modal(win.get_from_id('vpm-modal'))
-
-		mut this := *com
-		vbox := modal.children.filter(it is ui.VBox)[0]
-		if mut this is ui.Slider {
-			this.y = vbox.y
-			this.x = vbox.x - this.width
-			this.height = vbox.height
-			this.cur = vbox.scroll_i
-			this.max = vbox.children.len
-		}
-	}
-	modal.add_child(slider)
-
-	vbox.overflow = false
-	vbox.set_bounds(60, 40, 200, 348)
-	vbox.draw_event_fn = vpm_vbox_draw_border
-
-	modal.add_child(vbox)
-	win.add_child(modal)
+	win.gg.refresh_ui()
 }
 
 fn create_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
@@ -173,7 +195,7 @@ fn update_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 	mut btn := pack.btn
 	btn.extra = cmd + ' ' + name
 	height := ui.text_height(win, 'A{') + 5
-	btn.set_bounds(250, 1, 100, height)
+	btn.set_bounds(250, 5, 100, height)
 	btn.set_click(fn (mut win ui.Window, btn ui.Button) {
 		v := get_v_exe(win)
 		res := os.execute(v + ' ' + btn.extra).output
@@ -189,7 +211,19 @@ fn update_cmd_btn(mut win ui.Window, cmd string, name string, mut pack Pack) {
 	pack.btn = btn
 }
 
-fn vpm_vbox_draw_border(mut win ui.Window, com &ui.Component) {
+fn vpm_vbox_draw_border(mut win ui.Window, mut com ui.Component) {
 	win.draw_bordered_rect(com.rx, com.ry, com.width, com.height, 1, win.theme.textbox_background,
 		win.theme.textbox_border)
+
+	mut modal := &ui.Page(win.get_from_id('vpm-modal'))
+
+	if modal.width < 900 {
+		com.x = 4
+		com.width = modal.width - 8 - 28
+		return
+	}
+
+	com.x = (modal.width / 8)
+	com.width = modal.width - (modal.width / 4)
+	com.height = modal.height - modal.top_off - 60
 }

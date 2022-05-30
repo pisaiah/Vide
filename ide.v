@@ -131,7 +131,7 @@ fn main() {
 
 	mut tree := ui.tree(window, 'Projects')
 	tree.is_selected = true
-	tree.set_bounds(0, 22, 200, 200)
+	tree.set_bounds(0, 22, 250, 200)
 	tree.padding_top = 10
 	tree.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
 		tree.height = gg.window_size().height

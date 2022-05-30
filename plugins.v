@@ -24,12 +24,12 @@ pub fn load_plugins(dir string, mut win ui.Window) ? {
 		}
 
 		if file.ends_with('.videaddon') {
-			load_uncompiled(mut win, library_file_path) ?
+			load_uncompiled(mut win, library_file_path)?
 			continue
 		}
 
-		handle := dl.open_opt(library_file_path, dl.rtld_lazy) ?
-		f := FNPlMain(dl.sym_opt(handle, 'on_load') ?)
+		handle := dl.open_opt(library_file_path, dl.rtld_lazy)?
+		f := FNPlMain(dl.sym_opt(handle, 'on_load')?)
 
 		f(mut win)
 	}
@@ -78,8 +78,8 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 		}
 	}
 
-	handle := dl.open_opt(file_path, dl.rtld_lazy) ?
-	f := FNPlMain(dl.sym_opt(handle, 'on_load') ?)
+	handle := dl.open_opt(file_path, dl.rtld_lazy)?
+	f := FNPlMain(dl.sym_opt(handle, 'on_load')?)
 
 	f(mut win)
 }

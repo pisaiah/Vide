@@ -5,7 +5,7 @@ import os
 import gg
 
 const (
-	vide_png = $embed_file('assets/ezgif.com-gif-maker(3).png')
+	vide_png = $embed_file('assets/ezgif.com-gif-maker(5).png')
 )
 
 fn set_theme_from_save(mut win ui.Window) {
@@ -27,24 +27,27 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 
 fn about_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'About Vɪᴅᴇ')
+	mut vbox := ui.vbox(win)
+	vbox.set_pos(70, 16)
 
 	logo := &gg.Image(win.id_map['vide_logo'])
 	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds(99, 24, 263, 93)
+	logo_im.set_bounds(4, 2, logo.width, logo.height)
 
 	mut label := ui.label(win, 'Small IDE for the V Programming Language made in V.\n\nVersion: ' +
 		version + '\nUI Version: ' + ui.version)
 
-	label.set_pos(78, 130)
+	label.set_pos(4, 16)
 	label.pack()
 
 	mut copy := ui.label(win, 'Copyright © 2021-2022 ')
 	copy.set_pos(16, 270)
 	copy.set_config(12, true, false)
-	modal.add_child(copy)
 
-	modal.add_child(logo_im)
-	modal.add_child(label)
+	vbox.add_child(logo_im)
+	vbox.add_child(label)
+	modal.add_child(copy)
+	modal.add_child(vbox)
 	win.add_child(modal)
 }
 
