@@ -129,27 +129,14 @@ fn main() {
 	window.extra_map['workspace'] = folder
 	os.mkdir_all(folder) or {}
 
-	mut tree := ui.tree(window, 'Projects')
-	tree.is_selected = true
-	tree.set_bounds(0, 22, 250, 200)
-	tree.padding_top = 10
-	tree.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
-		tree.height = gg.window_size().height
-	}
-
-	tree.set_id(mut window, 'proj-tree')
-	make_tree(mut window, folder, mut tree)
-
-	// window.add_child(tree)
-
 	mut tb := ui.tabbox(window)
 	tb.set_id(mut window, 'main-tabs')
-	tb.set_bounds(0, 35, 200, 80)
+	tb.set_bounds(4, 35, 200, 80)
 
 	tb.draw_event_fn = on_draw
-	// window.add_child(tb)
 
 	mut hbox := ui.hbox(window)
+	tree := setup_tree(mut window, folder)
 	hbox.add_child(tree)
 	hbox.add_child(tb)
 
@@ -186,6 +173,25 @@ fn main() {
 	open_install_modal_on_start_if_needed(mut window, file_menu)
 
 	window.gg.run()
+}
+
+fn setup_tree(mut window ui.Window, folder string) &ui.Tree2 {
+	mut tree2 := ui.tree2('Projects')
+	tree2.set_bounds(4, 28, 300, 200)
+	tree2.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
+		tree.height = gg.window_size().height - 30
+	}
+
+	files := os.ls(folder) or { [] }
+	tree2.click_event_fn = tree2_click
+
+	for fi in files {
+		mut node := make_tree2(os.join_path(folder, fi))
+		tree2.add_child(node)
+	}
+
+	tree2.set_id(mut window, 'proj-tree')
+	return tree2
 }
 
 fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {

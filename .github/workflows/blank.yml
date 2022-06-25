@@ -1,10 +1,15 @@
 name: Build binary artifacts
 
+#on:
+#  push:
+#    tags:
+#      - weekly.**
+#      - 0.**
+
 on:
   push:
-    tags:
-      - weekly.**
-      - 0.**
+    branches:
+      - master
 
 jobs:
 
@@ -19,7 +24,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.11'
+          version: 'weekly.2022.24'
           version-file: ''
           check-latest: true
           stable: false
@@ -62,7 +67,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.11'
+          version: 'weekly.2022.24'
           version-file: ''
           check-latest: true
           stable: false
@@ -100,7 +105,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: 'weekly.2022.11'
+          version: 'weekly.2022.24'
           version-file: ''
           check-latest: true
           stable: false
