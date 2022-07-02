@@ -23,7 +23,7 @@ fn on_runebox_draw(mut win ui.Window, mut tb ui.Component) {
 // Size components
 fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	tree := &ui.Tree(win.get_from_id('proj-tree'))
-	x_off := tree.x + tree.width
+	x_off := tree.x + tree.width + 4
 
 	y_off := gg.window_size().height - 170
 
@@ -39,6 +39,6 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	mut com := &ui.TextArea(win.get_from_id('consolebox'))
 	com.x = x_off
 	com.y = tb.y + tb.height + 4
-	com.height = 130
+	com.height = 128
 	com.width = width
 }

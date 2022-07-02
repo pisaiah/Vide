@@ -4,12 +4,14 @@ import iui as ui
 import os
 import math
 import os.font
+import iui.extra.dialogs
+import net.http
 
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'Settings')
-	modal.top_off = 16
-	modal.in_width = 600
-	modal.in_height = 355
+	mut modal := ui.page(win, 'Settings')
+	// modal.top_off = 16
+	// modal.in_width = 600
+	// modal.in_height = 355
 
 	mut tb := ui.tabbox(win)
 	tb.closable = false
@@ -45,7 +47,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(250, ui.text_width(win, work.text + 'a b'))
-		work.height = ui.text_height(win, 'A{0|') + 8
+		work.height = win.graphics_context.line_height + 10
 	}
 	vlib.text_change_event_fn = fn (win_ptr voidptr, box_ptr voidptr) {
 		mut win := &ui.Window(win_ptr)
@@ -57,12 +59,34 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	work_lbl.set_bounds(0, 8, 0, 0)
 	lib_lbl.set_bounds(0, 8, 0, 0)
-	work.set_bounds(8, 4, 0, 0)
+	work.set_bounds(8, 0, 0, 0)
 	vlib.set_bounds(8, 4, 0, 0)
+
+	mut hbox := ui.hbox(win)
+	hbox.set_pos(0, 4)
+	hbox.pack()
+
+	mut dialog_btn := ui.button(win, 'Choose Folder')
+	dialog_btn.set_click_fn(fn [mut work] (a voidptr, b voidptr, c voidptr) {
+		val := dialogs.select_folder_dialog('Select Workspace Directory', work.text)
+		if val.len > 0 && os.exists(val) {
+			work.text = val
+
+			mut win := &ui.Window(a)
+			mut conf := get_config(win)
+			conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
+				'~')) // '
+		}
+	}, 0)
+	dialog_btn.set_pos(4, 0)
+	dialog_btn.pack()
+
+	hbox.add_child(work)
+	hbox.add_child(dialog_btn)
 
 	vbox.set_bounds(16, 16, 0, 0)
 	vbox.add_child(work_lbl)
-	vbox.add_child(work)
+	vbox.add_child(hbox)
 	vbox.add_child(lib_lbl)
 	vbox.add_child(vlib)
 
@@ -80,17 +104,27 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut can := ui.button(win, 'Cancel')
 	can.set_bounds(330, modal.in_height - 42, 85, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
-		win.components = win.components.filter(mut it !is ui.Modal)
+		win.components = win.components.filter(mut it !is ui.Page)
 	})
 	modal.add_child(can)
 
 	close.set_click(fn (mut win ui.Window, btn ui.Button) {
 		mut conf := get_config(win)
 		conf.save()
-		win.components = win.components.filter(mut it !is ui.Modal)
+		win.components = win.components.filter(mut it !is ui.Page)
 	})
 
-	tb.set_bounds(10, 5, modal.in_width - 21, modal.in_height - 55)
+	mut can_btn := &can
+	mut close_btn := &close
+	tb.draw_event_fn = fn [modal, mut tb, mut can_btn, mut close_btn] (win &ui.Window, mut com ui.Component) {
+		tb.set_bounds(70, 10, modal.width - 140, modal.height - modal.top_off - 99)
+
+		btn_y := modal.height - 68 - modal.top_off
+		btn_x := modal.width - 320
+
+		can_btn.set_bounds(btn_x, btn_y, 85, 35)
+		close_btn.set_bounds(btn_x + 99, btn_y, 165, 35)
+	}
 
 	modal.add_child(close)
 	modal.add_child(tb)
@@ -118,12 +152,13 @@ fn appearance_tab(win &ui.Window, mut conf Config, tbp voidptr) {
 	vbox.add_child(font_lbl)
 
 	mut font_box := ui.selector(win, 'Font', ui.SelectConfig{
-		bounds: ui.Bounds{16, 8, 150, 34}
+		bounds: ui.Bounds{16, 8, 250, 35}
 		items: [
 			'Default Font',
 			'Anomaly Mono',
 			'KARISMA_',
 			'Agave-Regular',
+			'JetBrainsMono-Regular',
 			'System SegoeUI',
 		]
 	})
@@ -134,8 +169,23 @@ fn appearance_tab(win &ui.Window, mut conf Config, tbp voidptr) {
 	tb.add_child('Appearance', vbox)
 }
 
+// Downloads JetBrainsMono
+fn download_jbm() {
+	os.mkdir(os.resource_abs_path('assets')) or {}
+	path := os.resource_abs_path('assets/JetBrainsMono-Regular.ttf')
+	url := 'https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf'
+	http.download_file(url, path) or { return }
+}
+
 fn sel_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
 	mut path := os.resource_abs_path('assets/' + new_val.replace(' ', '-') + '.ttf')
+
+	if new_val == 'JetBrainsMono-Regular' {
+		exists := os.exists(path)
+		if !exists {
+			download_jbm()
+		}
+	}
 
 	if new_val == 'Default Font' {
 		path = font.default()

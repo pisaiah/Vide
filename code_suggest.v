@@ -55,6 +55,7 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 
 	// v -check-syntax
 	file := get_tab_name(mut win)
+	dump(file)
 	if file.ends_with('.v') && saved {
 		go cmd_exec(mut win, file, box)
 	}
@@ -138,6 +139,13 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.TextArea) {
 	res := os.execute(vexe + ' -check-syntax ' + file)
 	out := res.output
 
+	dump(out)
+	if res.exit_code != 0 {
+		// Oh no
+		dump(res.exit_code)
+		return
+	}
+
 	lines := out.split_into_lines()
 	mut l2 := []string{}
 	for line in lines {
@@ -183,12 +191,8 @@ fn cmd_exec(mut win ui.Window, file string, box &ui.TextArea) {
 }
 
 fn get_tab_name(mut win ui.Window) string {
-	for mut com in win.components {
-		if mut com is ui.Tabbox {
-			return com.active_tab
-		}
-	}
-	return '.'
+	mut tb := &ui.Tabbox(win.get_from_id('main-tabs'))
+	return tb.active_tab
 }
 
 fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {

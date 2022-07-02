@@ -146,10 +146,15 @@ fn main() {
 		hbox.height = size.height
 
 		if 'font_load' !in win.extra_map {
+			download_jbm()
 			mut conf := get_config(win)
 			saved_font := conf.get_value('main_font')
 			if saved_font.len > 0 {
 				font := win.add_font('Saved Font', saved_font)
+				win.graphics_context.font = font
+			} else {
+				path := os.resource_abs_path('assets/JetBrainsMono-Regular.ttf')
+				font := win.add_font('Saved Font', path)
 				win.graphics_context.font = font
 			}
 			win.extra_map['font_load'] = 'true'
@@ -245,6 +250,14 @@ fn new_tab(mut window ui.Window, file string) {
 
 	if file in tb.kids {
 		// Don't remake already open tab
+		tb.active_tab = file
+		return
+	}
+
+	if file.ends_with('.png') {
+		// Test
+		comp := make_image_view(file, mut window)
+		tb.add_child(file, comp)
 		tb.active_tab = file
 		return
 	}
