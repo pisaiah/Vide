@@ -224,18 +224,22 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 		url: 'https://github.com/isaiahpatton/vide'
 		pack: true
 	)
-	
+
 	ad := ui.link(
 		text: 'Addons'
 		url: 'https://github.com/topics/vide-addon'
-		bounds: ui.Bounds{x: 12}
+		bounds: ui.Bounds{
+			x: 12
+		}
 		pack: true
 	)
 
 	di := ui.link(
 		text: 'Discord'
 		url: 'https://discord.gg/NruVtYBf5g'
-		bounds: ui.Bounds{x: 12}
+		bounds: ui.Bounds{
+			x: 12
+		}
 		pack: true
 	)
 
