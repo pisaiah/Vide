@@ -1,15 +1,10 @@
 name: Build binary artifacts
 
-#on:
-#  push:
-#    tags:
-#      - weekly.**
-#      - 0.**
-
 on:
   push:
-    branches:
-      - master
+    tags:
+      - weekly.**
+      - 0.**
 
 jobs:
 
@@ -173,7 +168,7 @@ jobs:
           tag: ${{ steps.split.outputs._2 }}
           name: ${{ steps.split.outputs._2 }}
           commit: ${{ github.sha }}
-          draft: true
+          draft: false
           prerelease: false
 
   publish:
