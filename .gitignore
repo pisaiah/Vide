@@ -5,6 +5,8 @@ bin/
 include/
 1include/
 *.dll
+assets/
+!src/assets/
 !example-plugin/*.dll
 *.a
 *.h
