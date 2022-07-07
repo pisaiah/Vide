@@ -225,8 +225,8 @@ fn make_font_slider(win &ui.Window) (ui.Label, &ui.Slider) {
 		lbl.width = ui.text_width(win, lbl.text)
 	}
 
-	mut font_slider := ui.slider(win, 0, 14, .hor)
-	font_slider.set_bounds(16, 4, 100, 20)
+	mut font_slider := ui.slider(win, 0, 24, .hor)
+	font_slider.set_bounds(16, 4, 200, 20)
 	font_slider.cur = win.font_size - 10
 	font_slider.draw_event_fn = font_slider_draw
 	return fs_lbl, font_slider

@@ -32,7 +32,7 @@ fn main() {
 	set_theme_from_save(mut window)
 
 	// Setup Menubar and items
-	window.bar = ui.menubar(window, window.theme)
+	window.bar = ui.menu_bar()
 
 	file_img := $embed_file('assets/icons8-file-48.png')
 	edit_img := $embed_file('assets/icons8-edit-24.png')
@@ -219,15 +219,25 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	mut logo_im := ui.image(window, logo)
 	logo_im.set_bounds(0, 0, logo.width, logo.height)
 
-	mut gh := ui.hyperlink(window, 'Github', 'https://github.com/isaiahpatton/vide')
-	mut ad := ui.hyperlink(window, 'Addons', 'https://github.com/topics/vide-addon')
-	mut di := ui.hyperlink(window, 'Discord', 'https://discord.gg/NruVtYBf5g')
+	gh := ui.link(
+		text: 'Github'
+		url: 'https://github.com/isaiahpatton/vide'
+		pack: true
+	)
+	
+	ad := ui.link(
+		text: 'Addons'
+		url: 'https://github.com/topics/vide-addon'
+		bounds: ui.Bounds{x: 12}
+		pack: true
+	)
 
-	ad.set_pos(12, 0)
-	di.set_pos(12, 0)
-	gh.pack()
-	di.pack()
-	ad.pack()
+	di := ui.link(
+		text: 'Discord'
+		url: 'https://discord.gg/NruVtYBf5g'
+		bounds: ui.Bounds{x: 12}
+		pack: true
+	)
 
 	vbox.add_child(logo_im)
 	vbox.add_child(info_lbl)
