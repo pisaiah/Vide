@@ -1,4 +1,4 @@
-# <img src="./assets/ezgif.com-gif-maker(5).png" width="280px"> 
+# <img src="./src/assets/ezgif.com-gif-maker(5).png" width="280px"> 
 
  A simple IDE for the [V Programming Language](https://vlang.io/) made in V.
 
