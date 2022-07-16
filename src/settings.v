@@ -27,10 +27,12 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
+	mut dialog_btn := ui.button(win, 'Choose Folder')
+	mut dialog_btn_ref := &dialog_btn
 
-	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = math.max(ui.text_width(win, work.text + 'a b'), 250)
-		work.height = ui.text_height(win, 'A{0|') + 8
+	work.draw_event_fn = fn [dialog_btn_ref] (mut win ui.Window, mut work ui.Component) {
+		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
+		work.height = dialog_btn_ref.height//ui.text_height(win, 'A{0|') + 8
 	}
 	work.text_change_event_fn = fn (a voidptr, b voidptr) {
 		mut conf := get_config(&ui.Window(a))
@@ -66,7 +68,6 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	hbox.set_pos(0, 4)
 	hbox.pack()
 
-	mut dialog_btn := ui.button(win, 'Choose Folder')
 	dialog_btn.set_click_fn(fn [mut work] (a voidptr, b voidptr, c voidptr) {
 		val := dialogs.select_folder_dialog('Select Workspace Directory', work.text)
 		if val.len > 0 && os.exists(val) {
@@ -118,6 +119,12 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut close_btn := &close
 	tb.draw_event_fn = fn [modal, mut tb, mut can_btn, mut close_btn] (win &ui.Window, mut com ui.Component) {
 		tb.set_bounds(70, 10, modal.width - 140, modal.height - modal.top_off - 99)
+
+		ctx := win.graphics_context
+		tb.tab_height_active = ctx.line_height * 2
+		tb.tab_height_inactive = ctx.line_height * 2
+		tb.inactive_offset = -1
+		tb.active_offset = -4
 
 		btn_y := modal.height - 68 - modal.top_off
 		btn_x := modal.width - 320
@@ -205,7 +212,7 @@ fn make_tree_width_slider(win &ui.Window) (ui.Label, &ui.Slider) {
 	tree_padding_lbl.set_bounds(16, 16, 300, 20)
 	tree_padding_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
 		tree := &ui.Tree(win.get_from_id('proj-tree'))
-		lbl.text = 'Project Tree Width (' + tree.width.str() + '):'
+		lbl.text = 'Project Tree Width ($tree.width):'
 		lbl.width = ui.text_width(win, lbl.text)
 	}
 
@@ -225,7 +232,7 @@ fn make_font_slider(win &ui.Window) (ui.Label, &ui.Slider) {
 		lbl.width = ui.text_width(win, lbl.text)
 	}
 
-	mut font_slider := ui.slider(win, 0, 24, .hor)
+	mut font_slider := ui.slider(win, 0, 28, .hor)
 	font_slider.set_bounds(16, 4, 200, 20)
 	font_slider.cur = win.font_size - 10
 	font_slider.draw_event_fn = font_slider_draw

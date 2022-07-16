@@ -20,6 +20,30 @@ fn on_runebox_draw(mut win ui.Window, mut tb ui.Component) {
 	}
 }
 
+fn on_text_area_draw(mut win ui.Window, mut tb ui.Component) {
+	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
+
+	x_off := com.x
+	y_off := com.height - 31
+
+	if mut tb is ui.TextArea {
+		line_height := ui.get_line_height(win.graphics_context)
+		if tb.height != y_off {
+			max_height := (tb.lines.len * line_height) + tb.padding_y
+			if max_height > y_off {
+				tb.height = max_height
+			} else {
+				tb.height = y_off
+			}
+		}
+	}
+	width := gg.window_size().width - x_off - 5 - 16 // 16 = Scrollbar width
+
+	if tb.width != width {
+		tb.width = width
+	}
+}
+
 // Size components
 fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	tree := &ui.Tree(win.get_from_id('proj-tree'))

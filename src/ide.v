@@ -281,14 +281,21 @@ fn new_tab(mut window ui.Window, file string) {
 	mut code_box := ui.textarea(window, lines)
 
 	code_box.text_change_event_fn = codebox_text_change
-	code_box.after_draw_event_fn = on_runebox_draw
+	code_box.after_draw_event_fn = on_text_area_draw
 	code_box.line_draw_event_fn = draw_code_suggest
 	code_box.hide_border = true
 	code_box.padding_x = 8
 	code_box.padding_y = 8
 	code_box.set_bounds(0, 0, 620, 250)
 
-	tb.add_child(file, code_box)
+	mut scroll_view := ui.scroll_view(
+		bounds: ui.Bounds{0, 0, 620, 250}
+		view: code_box
+		increment: 16
+	)
+	scroll_view.after_draw_event_fn = on_runebox_draw
+
+	tb.add_child(file, scroll_view)
 	tb.active_tab = file
 }
 

@@ -4,7 +4,7 @@
 
 ![licence](http://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
 [![GitHub all releases](http://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)](https://github.com/IsaiahPatton/Vide/releases)
-![vlang](http://img.shields.io/badge/V-0.2.4-%236d8fc5?style=for-the-badge) 
+![vlang](http://img.shields.io/badge/V-0.3-%236d8fc5?style=for-the-badge) 
     </h1>
 
 <div></div>
