@@ -38,7 +38,6 @@ fn on_text_area_draw(mut win ui.Window, mut tb ui.Component) {
 		}
 	}
 	width := gg.window_size().width - x_off - 5 - 16 // 16 = Scrollbar width
-
 	if tb.width != width {
 		tb.width = width
 	}

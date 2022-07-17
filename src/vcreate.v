@@ -28,6 +28,7 @@ fn cerror(e string) {
 fn check_name(name string) string {
 	if name.trim_space().len == 0 {
 		return ''
+
 		// cerror('project name cannot be empty')
 		// exit(1)
 	}
@@ -117,6 +118,7 @@ fn (c &Create) create_git_repo(dir string) {
 		res := os.execute('git init $dir')
 		if res.exit_code != 0 {
 			cerror('Unable to create git repo')
+
 			// exit(4)
 		}
 	}

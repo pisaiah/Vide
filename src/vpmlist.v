@@ -44,7 +44,6 @@ fn (mut this Pack) draw(ctx &ui.GraphicsContext) {
 	ctx.gg.draw_line(this.x, line_y, this.x + this.width, line_y, ctx.theme.scroll_bar_color)
 
 	// Change buttons
-
 	if !this.is_mouse_rele {
 		return
 	}

@@ -4,6 +4,7 @@ import iui as ui
 import os
 import gg
 import szip
+import net.http
 
 fn open_install_modal_on_start_if_needed(mut win ui.Window, com ui.MenuItem) {
 	v_ver, v_path := get_v_version(win)
@@ -119,7 +120,9 @@ fn download_v(a voidptr, b voidptr, c voidptr) {
 	file := os.join_path(vide_dir, 'v_dl.zip')
 	extract_to := os.join_path(vide_dir, 'v_extract')
 
-	download_to(url, file)
+	http.download_file(url, file) or {
+		// or failed
+	}
 	os.mkdir(extract_to) or {}
 
 	extract_zip_to_dir(file, extract_to) or {}

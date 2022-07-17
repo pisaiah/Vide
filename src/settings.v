@@ -9,10 +9,10 @@ import net.http
 
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.page(win, 'Settings')
+
 	// modal.top_off = 16
 	// modal.in_width = 600
 	// modal.in_height = 355
-
 	mut tb := ui.tabbox(win)
 	tb.closable = false
 
@@ -32,7 +32,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	work.draw_event_fn = fn [dialog_btn_ref] (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
-		work.height = dialog_btn_ref.height//ui.text_height(win, 'A{0|') + 8
+		work.height = dialog_btn_ref.height // ui.text_height(win, 'A{0|') + 8
 	}
 	work.text_change_event_fn = fn (a voidptr, b voidptr) {
 		mut conf := get_config(&ui.Window(a))
@@ -97,7 +97,6 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	appearance_tab(win, mut conf, tb)
 
 	// fs_group(win, 20, 170, tb)
-
 	modal.needs_init = false
 	mut close := ui.button(win, 'Save & Done')
 	close.set_bounds(425, modal.in_height - 42, 160, 30)

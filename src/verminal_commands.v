@@ -36,6 +36,7 @@ fn cmd_dir(mut tbox ui.TextArea, path string, args []string) {
 	for file in ls {
 		txt = txt + '\t' + file + '\n'
 	}
+
 	// os.file_last_mod_unix(os.real_path(path + '/' + file)).str()
 	tbox.text = tbox.text + txt
 }

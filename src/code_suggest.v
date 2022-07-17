@@ -50,6 +50,7 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 	mtxt = mtxt.substr_ni(0, box.caret_left)
 	mut splt := mtxt.split(' ')
 	fin := splt[splt.len - 1]
+
 	// println(fin)
 	win.extra_map['fin'] = fin
 
@@ -78,6 +79,7 @@ fn (mut this Hovermess) draw(ctx &ui.GraphicsContext) {
 	mut num := this.num - this.box.scroll_i
 
 	line_height := this.win.gg.text_height('A{')
+
 	// this.y = this.off_y //+ (ui.text_height(this.win, '1A{') * num - 1) - (ui.text_height(this.win,
 	//'1A{') / 2)
 	this.y = this.off_y + (line_height * (num - 1))
