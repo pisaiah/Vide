@@ -1,18 +1,21 @@
 module main
 
 import iui as ui
-import os
 import gg
-import szip
-import net.http
+// import os
+// import szip
+// import net.http
 
-fn open_install_modal_on_start_if_needed(mut win ui.Window, com ui.MenuItem) {
+// TODO: Redo this.
+
+fn open_install_modal_on_start_if_needed(mut win ui.Window, b voidptr) {
+	/*
 	v_ver, v_path := get_v_version(win)
 	could_find_v := v_path.len < 0 || v_ver.starts_with('V ')
 
 	if !could_find_v {
 		show_install_modal(mut win, com)
-	}
+	}*/
 }
 
 fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
@@ -21,7 +24,7 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 		return
 	}
 
-	v_found := v_ver.starts_with('V ')
+	v_found := false // v_ver.starts_with('V ')
 
 	mut modal := ui.modal(win, 'V Manager (Non-finished Test)')
 
@@ -62,11 +65,11 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	mut logo_im := ui.image(win, logo)
 	logo_im.set_bounds((modal.in_width - 188) / 2, 20, 188, 75)
 
-	lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the V compiler executable.\n\nWould you like to download V, or configure the path in Settings later'
+	lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the V compiler executable.\n\nWould you like to download V, or configure in Settings later'
 
 	lbl := ui.label(win, lbl_txt, ui.LabelConfig{
 		should_pack: true
-		x: 96
+		x: 50
 		y: 90
 	})
 
@@ -111,6 +114,7 @@ fn run_update(path string, b voidptr) {
 
 // Download V
 fn download_v(a voidptr, b voidptr, c voidptr) {
+	/*
 	url := 'https://github.com/vlang/v/releases/latest/download/v_' + os.user_os() + '.zip'
 
 	temp := os.config_dir() or { os.temp_dir() }
@@ -120,15 +124,16 @@ fn download_v(a voidptr, b voidptr, c voidptr) {
 	file := os.join_path(vide_dir, 'v_dl.zip')
 	extract_to := os.join_path(vide_dir, 'v_extract')
 
-	http.download_file(url, file) or {
+	/http.download_file(url, file) or {
 		// or failed
 	}
 	os.mkdir(extract_to) or {}
 
-	extract_zip_to_dir(file, extract_to) or {}
+	extract_zip_to_dir(file, extract_to) or {}*/
 }
 
 // Fixed version of szip.extract_zip_to_dir
+/*
 pub fn extract_zip_to_dir(file string, dir string) ?bool {
 	mut zip := szip.open(file, .best_speed, .read_only) or { panic(err) }
 	total := zip.total() or { return false }
@@ -148,6 +153,7 @@ pub fn extract_zip_to_dir(file string, dir string) ?bool {
 	}
 	return true
 }
+*/
 
 fn get_v_version(win &ui.Window) (string, string) {
 	output := get_v_version_1('v')

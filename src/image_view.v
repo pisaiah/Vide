@@ -33,13 +33,15 @@ pub fn make_image_view(file string, mut win ui.Window) &ui.Component {
 	file_size := format_size(os.file_size(file))
 
 	mut lbl := ui.label(win, '')
+	// TODO: removed for debugging wasm
+	/*
 	lbl.draw_event_fn = fn [data, img, file_size] (win &ui.Window, mut com ui.Component) {
 		color := get_pixel(img.mx, img.my, data.file)
 		mouse_details := '\nMX,MY: $img.mx, $img.my, $color'
 
 		com.text = 'Details:\nImage Size: $data.width x $data.height\nFile Size: ' + file_size +
 			'$mouse_details\nPreview Zoom:'
-	}
+	}*/
 	lbl.set_pos(8, 8)
 	lbl.pack()
 
@@ -70,11 +72,13 @@ pub fn make_image_view(file string, mut win ui.Window) &ui.Component {
 fn size_btn(win &ui.Window, data ImageViewData, mut img Image, mult int) &ui.Button {
 	mut btn := ui.button(win, mult.str() + 'x')
 	btn.set_pos(4, 1)
+	// TODO: removed for debugging wasm
+	/*
 	btn.set_click_fn(fn [data, mut img, mult] (a voidptr, b voidptr, c voidptr) {
 		img.width = data.width * mult
 		img.height = data.height * mult
 		img.zoom = mult
-	}, 0)
+	}, 0)*/
 	btn.pack()
 	return &btn
 }

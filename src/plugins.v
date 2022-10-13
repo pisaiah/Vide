@@ -3,7 +3,7 @@ module main
 import os
 import iui as ui
 import dl
-import szip
+// import szip
 import time
 
 // Basic plugin system
@@ -60,6 +60,8 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 		}
 	}
 
+	// TODO: removed for debugging wasm
+	/*
 	if need_compile {
 		println('Compiling addon...')
 		szip.extract_zip_to_dir(file, pfold) or {}
@@ -76,7 +78,7 @@ fn load_uncompiled(mut win ui.Window, file string) ? {
 			}
 			println(res)
 		}
-	}
+	}*/
 
 	handle := dl.open_opt(file_path, dl.rtld_lazy)?
 	f := FNPlMain(dl.sym_opt(handle, 'on_load')?)

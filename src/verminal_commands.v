@@ -38,7 +38,7 @@ fn cmd_dir(mut tbox ui.TextArea, path string, args []string) {
 	}
 
 	// os.file_last_mod_unix(os.real_path(path + '/' + file)).str()
-	tbox.text = tbox.text + txt
+	tbox.lines << txt
 }
 
 fn cmd_v(mut tbox ui.TextArea, args []string) {

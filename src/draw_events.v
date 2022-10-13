@@ -61,7 +61,7 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 
 	mut com := &ui.TextArea(win.get_from_id('consolebox'))
 	com.x = x_off
-	com.y = tb.y + tb.height + 4
-	com.height = 128
+	com.y = tb.y + tb.height + 5
+	com.height = 130
 	com.width = width
 }

@@ -9,18 +9,39 @@ const (
 	version = '0.0.11-dev'
 )
 
+struct App {
+pub mut:
+	win  &ui.Window
+	conf &Config
+	nill voidptr = unsafe { nil }
+}
+
+fn (mut app App) get_saved_value(key string) string {
+	return app.conf.get_value(key)
+}
+
 [console]
 fn main() {
 	// Hide Console
 	hc.hide_console_win()
 
 	// Create Window
-	mut window := ui.window_with_config(ui.get_system_theme(), 'Vide', 1000, 600, ui.WindowConfig{
-		ui_mode: true
-	})
+
+	mut window := ui.make_window(
+		theme: ui.get_system_theme()
+		title: 'Vide - IDE for V'
+		width: 990
+		height: 600
+	)
+
+	mut conf := config(mut window)
+
+	mut app := &App{
+		win: window
+		conf: conf
+	}
 
 	// our custom config
-	mut conf := config(mut window)
 	get_v_exe(window)
 
 	fs := conf.get_value('font_size')
@@ -28,99 +49,11 @@ fn main() {
 		window.font_size = fs.int()
 	}
 
+	// Set menu
+	app.make_menubar()
+
 	// Set Saved Theme
-	set_theme_from_save(mut window)
-
-	// Setup Menubar and items
-	window.bar = ui.menu_bar()
-
-	file_img := $embed_file('assets/icons8-file-48.png')
-	edit_img := $embed_file('assets/icons8-edit-24.png')
-	help_img := $embed_file('assets/icons8-help-24.png')
-	save_img := $embed_file('assets/icons8-save-24.png')
-	theme_img := $embed_file('assets/icons8-change-theme-24.png')
-
-	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 24)
-	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 24)
-	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), 24, 24)
-	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), 24, 24)
-	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), 24, 24)
-
-	file_menu := ui.menu_item(
-		text: 'File'
-		icon: file_icon
-		children: [
-			ui.menu_item(
-				text: 'New Project..'
-				click_event_fn: new_project_click
-			),
-			ui.menu_item(
-				text: 'New File...'
-				click_event_fn: new_file_click
-			),
-			ui.menu_item(
-				text: 'Save'
-				click_event_fn: save_click
-			),
-			ui.menu_item(
-				text: 'Run'
-				click_event_fn: run_click
-			),
-			ui.menu_item(
-				text: 'Vpm UI'
-				click_event_fn: vpm_click
-			),
-			ui.menu_item(
-				text: 'Settings'
-				click_event_fn: settings_click
-			),
-			ui.menu_item(
-				text: 'Manage V'
-				click_event_fn: show_install_modal
-			),
-		]
-	)
-
-	edit_menu := ui.menu_item(
-		text: 'Edit'
-		icon: edit_icon
-	)
-
-	help_menu := ui.menu_item(
-		text: 'Help'
-		icon: help_icon
-		children: [
-			ui.menu_item(
-				text: 'About Vide'
-				click_event_fn: about_click
-			),
-			ui.menu_item(
-				text: 'About iUI'
-			),
-		]
-	)
-
-	mut theme_menu := ui.menuitem('Themes')
-	theme_menu.icon = theme_icon
-
-	themes := ui.get_all_themes()
-	for theme2 in themes {
-		item := ui.menu_item(text: theme2.name, click_event_fn: on_theme_click)
-		theme_menu.add_child(item)
-	}
-
-	save_menu := ui.menu_item(
-		text: 'Save'
-		icon: save_icon
-		click_event_fn: save_click
-	)
-
-	window.bar.add_child(file_menu)
-	window.bar.add_child(edit_menu)
-	window.bar.add_child(help_menu)
-	window.bar.add_child(theme_menu)
-
-	window.bar.add_child(save_menu)
+	app.set_theme_from_save()
 
 	workd := conf.get_value('workspace_dir').replace('{user_home}', '~').replace('\\',
 		'/') // '
@@ -131,7 +64,7 @@ fn main() {
 
 	mut tb := ui.tabbox(window)
 	tb.set_id(mut window, 'main-tabs')
-	tb.set_bounds(4, 35, 200, 80)
+	tb.set_bounds(4, 28, 200, 80)
 
 	tb.draw_event_fn = on_draw
 
@@ -145,6 +78,7 @@ fn main() {
 		hbox.width = size.width
 		hbox.height = size.height
 
+		/*
 		if 'font_load' !in win.extra_map {
 			download_jbm()
 			mut conf := get_config(win)
@@ -158,7 +92,7 @@ fn main() {
 				win.graphics_context.font = font
 			}
 			win.extra_map['font_load'] = 'true'
-		}
+		}*/
 	}
 	window.add_child(hbox)
 
@@ -171,11 +105,11 @@ fn main() {
 	window.add_child(console_box)
 
 	// basic plugin system
-	plugin_dir := os.real_path(os.home_dir() + '/vide/plugins/')
-	os.mkdir_all(plugin_dir) or {}
-	load_plugins(plugin_dir, mut window) or {}
+	// plugin_dir := os.real_path(os.home_dir() + '/vide/plugins/')
+	// os.mkdir_all(plugin_dir) or {}
+	// load_plugins(plugin_dir, mut window) or {}
 
-	open_install_modal_on_start_if_needed(mut window, file_menu)
+	// open_install_modal_on_start_if_needed(mut window, app.nill)
 
 	window.gg.run()
 }

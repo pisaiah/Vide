@@ -117,7 +117,7 @@ fn (c &Create) create_git_repo(dir string) {
 	if !os.is_dir('$dir/.git') {
 		res := os.execute('git init $dir')
 		if res.exit_code != 0 {
-			cerror('Unable to create git repo')
+			// cerror('Unable to create git repo')
 
 			// exit(4)
 		}

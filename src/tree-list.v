@@ -47,6 +47,37 @@ fn tree2_click(mut ctx ui.GraphicsContext, tree &ui.Tree2, node &ui.TreeNode) {
 }
 
 // Refresh Tree list
-fn refresh_tree(mut window ui.Window, fold string, mut tree ui.Tree) {
+fn refresh_tree(mut window ui.Window, fold string, mut tree ui.Tree2) {
 	// TODO
+	dump('REFRESH')
+	tree.children.clear()
+
+	files := os.ls(fold) or { [] }
+	tree.click_event_fn = tree2_click
+
+	for fi in files {
+		mut node := make_tree2(os.join_path(fold, fi))
+		tree.add_child(node)
+	}
 }
+
+/*
+fn setup_tree(mut window ui.Window, folder string) &ui.Tree2 {
+	mut tree2 := ui.tree2('Projects')
+	tree2.set_bounds(4, 28, 300, 200)
+	tree2.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
+		tree.height = gg.window_size().height - 30
+	}
+
+	files := os.ls(folder) or { [] }
+	tree2.click_event_fn = tree2_click
+
+	for fi in files {
+		mut node := make_tree2(os.join_path(folder, fi))
+		tree2.add_child(node)
+	}
+
+	tree2.set_id(mut window, 'proj-tree')
+	return tree2
+}
+*/

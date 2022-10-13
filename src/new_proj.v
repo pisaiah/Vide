@@ -56,11 +56,9 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 		create_v(dir, args)
 
 		win.components = win.components.filter(mut it !is ui.Modal)
-		for mut com in win.components {
-			if mut com is ui.Tree {
-				refresh_tree(mut win, dir, mut com)
-			}
-		}
+
+		mut com := &ui.Tree2(win.get_from_id('proj-tree'))
+		refresh_tree(mut win, dir, mut com)
 	})
 
 	modal.add_child(close)
