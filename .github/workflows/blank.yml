@@ -46,8 +46,6 @@ jobs:
       - name: Create ZIP archive
         run: |
            zip -r9 --symlinks $ZIPNAME vide/
-           mv $ZIPNAME ../
-           cd ..
       - name: Create artifact
         uses: actions/upload-artifact@v2
         with:
@@ -82,8 +80,6 @@ jobs:
       - name: Create ZIP archive
         run: |
            zip -r9 --symlinks $ZIPNAME vide/
-           mv $ZIPNAME ../
-           cd ..
       - name: Create artifact
         uses: actions/upload-artifact@v2
         with:
