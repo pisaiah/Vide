@@ -11,23 +11,19 @@
 
 ## Screenshots:
 
-<kbd><img src="https://user-images.githubusercontent.com/16439221/154627315-7d7651ca-6a92-4e1b-afb4-64c12c06ee5e.png" height="230px"><br>Light Theme</kbd>
-<kbd><img src="https://user-images.githubusercontent.com/16439221/154627409-0a7c2d22-0557-4d9d-9cd2-ecc7a4e9be66.png" height="230px"><br>Dark Theme</kbd><br>
+<kbd><img src="https://v-ide.com/assets/main.png" height="260px"><br>Light Theme</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/198676647-0e86a02d-4309-4221-a126-72e58701a358.png" height="260px"><br>Dark Theme</kbd><br>
 
+<kbd><img src="https://user-images.githubusercontent.com/16439221/198677448-14c37d2f-1b77-4388-87a1-527b99767fbb.png" height="180px"><br>UI for VPM</kbd>
+<kbd><img src="https://v-ide.com/assets/new-proj.png" height="180px"><br>Multiple Projects</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/198676998-57874962-f79f-4cf2-b224-e1841c949d34.png" height="180px"><br>Autocomplete (Beta)</kbd>
 
-<kbd><img src="https://user-images.githubusercontent.com/16439221/154629365-4f1f3fa5-f68f-4e7c-85b2-3b967ddc473f.png" height="110px"><br>UI for VPM</kbd>
-<kbd><img src="https://user-images.githubusercontent.com/16439221/154628989-01d3d44e-2fd2-443b-9be1-bd7cf6a7b1bf.png" height="110px"><br>Syntax checks</kbd>
-<kbd><img src="https://user-images.githubusercontent.com/16439221/154629544-5522f4f0-2066-4cf4-bd32-8bdc8823dbf2.png" height="110px"><br>Autocomplete (Beta)</kbd>
-
-
-## Notes
-- Requires `-gc boehm`
 
 ## Resource Requirements
 
 | IDE     | Disk    | RAM     |
 |---------|---------|---------|
 |         |         |         |
-| Vide    | < 1MB   | ~ 40MB  |
-| VS Code | 308MB   | ~ 300MB |
+| Vide    | < 5MB   | ~ 60MB  |
+| VS Code | 300MB   | ~ 300MB |
 |         |         |         |
