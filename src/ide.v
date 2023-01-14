@@ -3,7 +3,7 @@ module main
 import gg
 import iui as ui
 import os
-import iui.hc
+import hc
 
 const (
 	version = '0.0.11-dev'
@@ -32,6 +32,7 @@ fn main() {
 		title: 'Vide - IDE for V'
 		width: 990
 		height: 600
+		ui_mode: false
 	)
 
 	mut conf := config(mut window)
@@ -55,7 +56,7 @@ fn main() {
 	// Set Saved Theme
 	app.set_theme_from_save()
 
-	workd := conf.get_value('workspace_dir').replace('{user_home}', '~').replace('\\',
+	workd := conf.get_value('workspace_dir').replace('\{user_home}', '~').replace('\\',
 		'/') // '
 	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
 
@@ -217,6 +218,7 @@ fn new_tab(mut window ui.Window, file string) {
 	code_box.text_change_event_fn = codebox_text_change
 	code_box.after_draw_event_fn = on_text_area_draw
 	code_box.line_draw_event_fn = draw_code_suggest
+	code_box.active_line_draw_event = text_area_testing
 	code_box.hide_border = true
 	code_box.padding_x = 8
 	code_box.padding_y = 8
@@ -226,6 +228,7 @@ fn new_tab(mut window ui.Window, file string) {
 		bounds: ui.Bounds{0, 0, 620, 250}
 		view: code_box
 		increment: 16
+		always_show: true
 	)
 	scroll_view.after_draw_event_fn = on_runebox_draw
 

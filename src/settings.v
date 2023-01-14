@@ -11,12 +11,6 @@ import gg
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.page(win, 'Settings')
 
-	// modal.top_off = 16
-	// modal.in_width = 600
-	// modal.in_height = 355
-	// mut tb := ui.tabbox(win)
-	// tb.closable = false
-
 	mut vbox := ui.vbox(win)
 
 	mut lbl := title_label(win, 'General')
@@ -41,14 +35,12 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 		win.components = win.components.filter(mut it !is ui.Page)
 	})
 
-	mut can_btn := &can
-	mut close_btn := &close
-
-	vbox.draw_event_fn = fn (win &ui.Window, mut com ui.Component) {
+	vbox.draw_event_fn = fn (mut win ui.Window, mut com ui.Component) {
 		size := win.gg.window_size()
 		x_pos := (size.width / 3) - (com.width / 2)
 		ui.set_pos(mut com, x_pos, 24)
 	}
+	win.id_map['setting_box'] = vbox
 
 	mut conf := get_config(win)
 
@@ -63,7 +55,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 		view: vbox
 	)
 
-	sv.draw_event_fn = fn (win &ui.Window, mut com ui.Component) {
+	sv.draw_event_fn = fn (mut win ui.Window, mut com ui.Component) {
 		size := win.gg.window_size()
 		ui.set_bounds(mut com, 20, 54, size.width - 40, size.height - 155)
 	}
@@ -77,7 +69,7 @@ fn title_label(win &ui.Window, text string) &ui.Label {
 	mut lbl := ui.label(win, text)
 	lbl.pack()
 	lbl.set_pos(0, 16)
-	lbl.set_config(16, false, true)
+	lbl.set_config(4, false, true)
 	return &lbl
 }
 
@@ -85,14 +77,13 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.pack()
 
-	workd := os.real_path(conf.get_value('workspace_dir').replace('{user_home}', '~'))
+	workd := os.real_path(conf.get_value('workspace_dir').replace('\{user_home}', '~'))
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
 	mut dialog_btn := ui.button(win, 'Choose Folder')
-	mut dialog_btn_ref := &dialog_btn
 
-	work.draw_event_fn = fn [dialog_btn_ref] (mut win ui.Window, mut work ui.Component) {
+	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
 		work.height = win.graphics_context.line_height + 8
 	}
@@ -155,19 +146,108 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	vbox.add_child(vlib)
 }
 
+fn create_font_slider(win &ui.Window) &ui.VBox {
+	mut fs_lbl := ui.label(win, 'Font size:')
+	fs_lbl.set_bounds(4, 4, 100, 20)
+	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		lbl.text = 'Font Size (' + win.font_size.str() + '):'
+		lbl.width = ui.text_width(win, lbl.text)
+	}
+
+	mut font_slider := ui.slider(win, 0, 28, .hor)
+	font_slider.set_bounds(4, 4, 100, 30)
+	font_slider.cur = win.font_size - 10
+	font_slider.draw_event_fn = font_slider_draw
+
+	mut vbox := ui.vbox(win)
+	vbox.add_child(fs_lbl)
+	vbox.add_child(font_slider)
+
+	return vbox
+}
+
+fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
+	mut this := *com
+	mut tree := &ui.Tree2(win.get_from_id('proj-tree'))
+	// this.y = win.font_size - 12
+	// this.height = win.font_size + 4
+	if mut this is ui.Slider {
+		fs := tree.width
+		new_val := (int(this.cur) * 10) + 100
+		if fs == new_val {
+			return
+		}
+		tree.width = new_val
+		win.graphics_context.set_cfg(size: new_val)
+	}
+}
+
+fn font_slider_draw(mut win ui.Window, com &ui.Component) {
+	mut this := *com
+	if mut this is ui.Slider {
+		fs := win.font_size
+		new_val := int(this.cur) + 10
+		if fs == new_val {
+			return
+		}
+
+		mut conf := get_config(win)
+		conf.set('font_size', new_val.str())
+
+		// this.height = new_val + 4
+
+		win.font_size = new_val
+		win.graphics_context.set_cfg(size: new_val)
+
+		win.gg.ft.flush()
+		win.gg.ft.fons.reset_atlas(1024, 1024)
+	}
+}
+
+fn create_tree_width_slider(win &ui.Window) &ui.VBox {
+	mut tree_padding_lbl := ui.label(win, 'Project Tree Padding')
+	tree_padding_lbl.set_bounds(4, 4, 100, 20)
+	tree_padding_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		tree := &ui.Tree2(win.get_from_id('proj-tree'))
+		lbl.text = 'Project Tree Width (${tree.width}):'
+		lbl.width = ui.text_width(win, lbl.text)
+	}
+
+	mut tree_padding_slider := ui.slider(win, 0, 30, .hor)
+	tree_padding_slider.set_bounds(8, 8, 100, 30)
+	tree := &ui.Tree2(win.get_from_id('proj-tree'))
+	tree_padding_slider.cur = (tree.width - 100) / 10
+	tree_padding_slider.draw_event_fn = tree_padding_slider_draw
+
+	mut vbox := ui.vbox(win)
+	vbox.add_child(tree_padding_lbl)
+	vbox.add_child(tree_padding_slider)
+
+	return vbox
+}
+
 fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	// mut vbox := ui.vbox(win)
 
 	mut lbl := title_label(win, 'Appearance')
 	vbox.add_child(lbl)
 
-	fs_lbl, font_slider := make_font_slider(win)
-	tree_padding_lbl, tree_padding_slider := make_tree_width_slider(win)
+	font_size_box := create_font_slider(win)
+	tree_padding_box := create_tree_width_slider(win)
 
-	vbox.add_child(fs_lbl)
-	vbox.add_child(font_slider)
-	vbox.add_child(tree_padding_lbl)
-	vbox.add_child(tree_padding_slider)
+	mut hbox := ui.hbox(win)
+
+	hbox.add_child(font_size_box)
+	hbox.add_child(tree_padding_box)
+
+	hbox.set_bounds(0, 0, 400, 100)
+	hbox.set_width_as_percent(true, 99)
+
+	hbox.parent = vbox
+
+	// hbox.pack()
+
+	vbox.add_child(hbox)
 
 	font_lbl := ui.label(win, 'Main Font', ui.LabelConfig{
 		x: 32
@@ -181,9 +261,8 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 		items: [
 			'Default Font',
 			'Anomaly Mono',
-			'KARISMA_',
 			'Agave-Regular',
-			'JetBrainsMono-Regular',
+			'JetBrainsMono',
 			'System SegoeUI',
 		]
 	})
@@ -194,10 +273,37 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	// tb.add_child('Appearance', vbox)
 }
 
+// Font selector change
+fn sel_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
+	mut path := os.resource_abs_path('assets/' + new_val.replace(' ', '-') + '.ttf')
+
+	if new_val == 'JetBrainsMono' {
+		exists := os.exists(path)
+		if !exists {
+			download_font()
+		}
+	}
+
+	if new_val == 'Default Font' {
+		path = font.default()
+	}
+	if new_val.starts_with('System ') {
+		path = 'C:/windows/fonts/' + new_val.split('System ')[1].to_lower() + '.ttf'
+	}
+
+	font := win.add_font(new_val, path)
+	win.graphics_context.font = font
+	mut conf := get_config(win)
+	conf.set('main_font', path)
+}
+
 // Downloads JetBrainsMono
 fn download_font() {
 	os.mkdir(os.resource_abs_path('assets')) or {}
-	path := os.resource_abs_path('assets/JetBrainsMono-Regular.ttf')
-	url := 'https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf'
-	// http.download_file(url, path) or { return }
+	path := os.resource_abs_path('assets/JetBrainsMono.ttf')
+
+	mut embed := $embed_file('assets/JetBrainsMono.ttf')
+	os.write_file_array(path, embed.to_bytes()) or {
+		// Oh no!
+	}
 }

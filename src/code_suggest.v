@@ -58,7 +58,7 @@ fn codebox_text_change(win_ptr voidptr, box_ptr voidptr) {
 	file := get_tab_name(mut win)
 	dump(file)
 	if file.ends_with('.v') && saved {
-		go cmd_exec(mut win, file, box)
+		spawn cmd_exec(mut win, file, box)
 	}
 }
 
@@ -197,6 +197,51 @@ fn get_tab_name(mut win ui.Window) string {
 	return tb.active_tab
 }
 
+fn text_area_testing(ptr voidptr, x int, y int) {
+	mut box := &ui.TextArea(ptr)
+	txt := box.lines[box.caret_top]
+	sub := txt[0..box.caret_left].replace('\t', ' '.repeat(8))
+	doti := sub.index('.') or { return }
+	dot := sub[0..(doti + 1)]
+	aft := sub[(doti + 1)..]
+
+	ctx := box.win.graphics_context
+	line_height := ui.get_line_height(ctx)
+
+	dw := ctx.gg.text_width(dot)
+	sw := ctx.gg.text_width(sub)
+	wid := sw - dw
+
+	trim := dot.trim_space()
+
+	mut mats := find_all_matches(mut box.win, trim, aft)
+
+	if mats.len == 0 {
+		return
+	}
+
+	mats.sort(a.len > b.len)
+
+	dump(mats)
+	max_wid := ctx.gg.text_width(mats[0] + ' ')
+
+	box.win.gg.draw_rect_empty(x + dw, y, wid, line_height, gx.blue)
+	box.win.gg.draw_rect_empty(x + dw, y + line_height + 2, max_wid, line_height * mats.len,
+		gx.blue)
+
+	r := ((ctx.theme.text_color.r / 2) + ctx.theme.background.r) / 2
+	color := gx.rgb(r, r, r)
+	conf := gx.TextCfg{
+		color: color
+		size: ctx.win.font_size
+	}
+
+	for i, mat in mats {
+		ctx.draw_text(x + dw, y + line_height + 2 + (line_height * i), mat, ctx.font,
+			conf)
+	}
+}
+
 fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
 	mut box := &ui.TextArea(ptr)
 	mut win := box.win
@@ -270,6 +315,27 @@ fn match_fn(mut win ui.Window, mod string, str string) string {
 	return ''
 }
 
+fn find_all_matches(mut win ui.Window, mod string, str string) []string {
+	if str.len <= 0 {
+		return []
+	}
+	strs := find_all_fn_in_vlib(mut win, mod)
+
+	for st in strs {
+		if st == str {
+			return [st]
+		}
+	}
+
+	mut matches := []string{}
+	for st in strs {
+		if st.contains(str) && !matches.contains(st) {
+			matches << st
+		}
+	}
+	return matches
+}
+
 fn all_vlib_mod(mut win ui.Window) []string {
 	id := 'vlib'
 	if id in win.extra_map {
@@ -309,7 +375,7 @@ fn find_all_fn_in_vlib(mut win ui.Window, mod string) []string {
 
 fn get_v_exe(win &ui.Window) string {
 	mut conf := get_config(win)
-	mut saved := conf.get_value('v_exe').replace('{user_home}', '~')
+	mut saved := conf.get_value('v_exe').replace('\{user_home}', '~')
 	saved = saved.replace('~', os.home_dir().replace('\\', '/'))
 
 	if saved.len <= 0 {

@@ -102,7 +102,7 @@ fn update_v(a voidptr, b voidptr, c voidptr) {
 
 	mut btn := &ui.Button(b)
 	btn.text = 'Updating...'
-	go run_update(path, b)
+	spawn run_update(path, b)
 }
 
 fn run_update(path string, b voidptr) {

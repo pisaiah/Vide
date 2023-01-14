@@ -2,7 +2,7 @@ module main
 
 import iui as ui
 import os
-import iui.extra
+// import extra
 
 fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
@@ -29,8 +29,9 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 	fold_btn.set_click_fn(fn (a voidptr, b voidptr, c voidptr) {
 		mut win := &ui.Window(a)
 		mut conf := get_config(win)
-		dir := conf.get_value('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
+		dir := conf.get_value('workspace_dir').replace('\{user_home}', os.real_path(os.home_dir()))
 
+		/*
 		path_change_fn := file_picker_path_change
 
 		picker_conf := extra.FilePickerConfig{
@@ -39,7 +40,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 			path_change_fn: path_change_fn
 		}
 
-		extra.open_file_picker(mut win, picker_conf, c)
+		extra.open_file_picker(mut win, picker_conf, c)*/
 	}, fold_lbl)
 
 	fold_btn.set_bounds(25, 44, 200, 25)
@@ -67,7 +68,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 		name := win.extra_map['nf-name']
 		pdir := win.extra_map['nf-dir']
 		mut conf := get_config(win)
-		dir := conf.get_value('workspace_dir').replace('{user_home}', os.real_path(os.home_dir()))
+		dir := conf.get_value('workspace_dir').replace('\{user_home}', os.real_path(os.home_dir()))
 
 		os.write_file(pdir + '/' + name, '') or {}
 
@@ -81,6 +82,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn file_picker_path_change(a voidptr, b voidptr) {
+	/*
 	picker := &extra.FilePicker(a)
 
 	mut lbl := &ui.Label(b)
@@ -97,7 +99,7 @@ fn file_picker_path_change(a voidptr, b voidptr) {
 			mut name_box := &ui.TextField(lbl.app.get_from_id('new-file-name-box'))
 			name_box.text = file_name
 		}
-	}
+	}*/
 }
 
 fn nf_create_input(mut win ui.Window, mut modal ui.Modal, title string, x int, y int) &ui.TextField {

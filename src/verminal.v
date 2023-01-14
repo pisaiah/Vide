@@ -91,7 +91,7 @@ fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 		cmd_dir(mut tbox, path, args)
 		add_new_input_line(mut tbox)
 	} else if args[0] == 'v' || args[0] == 'dir' || args[0] == 'git' {
-		go verminal_cmd_exec(mut win, mut tbox, args)
+		spawn verminal_cmd_exec(mut win, mut tbox, args)
 	} else if args[0].len == 2 && args[0].ends_with(':') {
 		win.extra_map['path'] = os.real_path(args[0])
 		add_new_input_line(mut tbox)

@@ -8,7 +8,7 @@ fn on_runebox_draw(mut win ui.Window, mut tb ui.Component) {
 	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
 	x_off := com.x
-	y_off := com.height - 31
+	y_off := com.height - 39
 
 	if tb.height != y_off {
 		tb.height = y_off
@@ -21,20 +21,21 @@ fn on_runebox_draw(mut win ui.Window, mut tb ui.Component) {
 }
 
 fn on_text_area_draw(mut win ui.Window, mut tb ui.Component) {
-	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
+	com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
 	x_off := com.x
 	y_off := com.height - 31
 
 	if mut tb is ui.TextArea {
 		line_height := ui.get_line_height(win.graphics_context)
-		if tb.height != y_off {
-			max_height := (tb.lines.len * line_height) + tb.padding_y
-			if max_height > y_off {
-				tb.height = max_height
-			} else {
-				tb.height = y_off
-			}
+
+		lines := tb.lines.len + 1
+		max_height := (lines * line_height) + tb.padding_y
+
+		if max_height > y_off {
+			tb.height = max_height
+		} else {
+			tb.height = y_off
 		}
 	}
 	width := gg.window_size().width - x_off - 5 - 16 // 16 = Scrollbar width
@@ -45,7 +46,7 @@ fn on_text_area_draw(mut win ui.Window, mut tb ui.Component) {
 
 // Size components
 fn on_draw(mut win ui.Window, mut tb ui.Component) {
-	tree := &ui.Tree(win.get_from_id('proj-tree'))
+	tree := &ui.Tree2(win.get_from_id('proj-tree'))
 	x_off := tree.x + tree.width + 4
 
 	y_off := gg.window_size().height - 170
@@ -62,6 +63,6 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	mut com := &ui.TextArea(win.get_from_id('consolebox'))
 	com.x = x_off
 	com.y = tb.y + tb.height + 5
-	com.height = 130
+	com.height = 135
 	com.width = width
 }

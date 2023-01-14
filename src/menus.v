@@ -45,9 +45,14 @@ fn (mut app App) make_menubar() {
 				text: 'Run'
 				click_event_fn: run_click
 			),
+			/*
 			ui.menu_item(
 				text: 'Vpm UI'
 				click_event_fn: vpm_click
+			),*/
+			ui.menu_item(
+				text: 'Manage Modules..'
+				click_event_fn: vpm_click_
 			),
 			ui.menu_item(
 				text: 'Settings'
@@ -134,7 +139,7 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 	label.set_pos(4, 16)
 	label.pack()
 
-	mut copy := ui.label(win, 'Copyright © 2021-2022 by Isaiah.')
+	mut copy := ui.label(win, 'Copyright © 2021-2023 by Isaiah.')
 	copy.set_pos(16, 270)
 	copy.set_config(16, true, false)
 
@@ -172,5 +177,5 @@ fn run_click(mut win ui.Window, item ui.MenuItem) {
 	txt := com.active_tab
 	dir := os.dir(txt)
 
-	go run_v(dir, mut win)
+	spawn run_v(dir, mut win)
 }

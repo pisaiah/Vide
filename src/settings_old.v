@@ -3,9 +3,6 @@ module main
 import iui as ui
 import os
 import math
-import os.font
-// import iui.extra.dialogs
-// import net.http
 
 fn settings_click_old(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.page(win, 'Settings')
@@ -23,13 +20,11 @@ fn settings_click_old(mut win ui.Window, com ui.MenuItem) {
 
 	mut conf := get_config(win)
 
-	workd := os.real_path(conf.get_value('workspace_dir').replace('{user_home}', '~'))
+	workd := os.real_path(conf.get_value('workspace_dir').replace('\{user_home}', '~'))
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
 	mut dialog_btn := ui.button(win, 'Choose Folder')
-	mut dialog_btn_ref := &dialog_btn
-
 	/*
 	work.draw_event_fn = fn [dialog_btn_ref] (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
@@ -116,10 +111,7 @@ fn settings_click_old(mut win ui.Window, com ui.MenuItem) {
 		win.components = win.components.filter(mut it !is ui.Page)
 	})
 
-	mut can_btn := &can
-	mut close_btn := &close
-
-	tb.draw_event_fn = fn (win &ui.Window, mut com ui.Component) {
+	tb.draw_event_fn = fn (mut win ui.Window, mut com ui.Component) {
 		ui.set_bounds(mut com, 70, 10, 1920, 1080)
 	}
 
@@ -183,49 +175,18 @@ fn appearance_tab(win &ui.Window, mut conf Config, tbp voidptr) {
 	tb.add_child('Appearance', vbox)
 }
 
-// Downloads JetBrainsMono
-fn download_jbm() {
-	os.mkdir(os.resource_abs_path('assets')) or {}
-	path := os.resource_abs_path('assets/JetBrainsMono-Regular.ttf')
-	url := 'https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf'
-	// http.download_file(url, path) or { return }
-}
-
-fn sel_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
-	mut path := os.resource_abs_path('assets/' + new_val.replace(' ', '-') + '.ttf')
-
-	if new_val == 'JetBrainsMono-Regular' {
-		exists := os.exists(path)
-		if !exists {
-			download_jbm()
-		}
-	}
-
-	if new_val == 'Default Font' {
-		path = font.default()
-	}
-	if new_val.starts_with('System ') {
-		path = 'C:/windows/fonts/' + new_val.split('System ')[1].to_lower() + '.ttf'
-	}
-
-	font := win.add_font(new_val, path)
-	win.graphics_context.font = font
-	mut conf := get_config(win)
-	conf.set('main_font', path)
-}
-
 fn make_tree_width_slider(win &ui.Window) (ui.Label, &ui.Slider) {
 	mut tree_padding_lbl := ui.label(win, 'Project Tree Padding')
 	tree_padding_lbl.set_bounds(32, 16, 300, 20)
 	tree_padding_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		tree := &ui.Tree(win.get_from_id('proj-tree'))
-		lbl.text = 'Project Tree Width ($tree.width):'
+		tree := &ui.Tree2(win.get_from_id('proj-tree'))
+		lbl.text = 'Project Tree Width (${tree.width}):'
 		lbl.width = ui.text_width(win, lbl.text)
 	}
 
 	mut tree_padding_slider := ui.slider(win, 0, 30, .hor)
 	tree_padding_slider.set_bounds(32, 4, 100, 20)
-	tree := &ui.Tree(win.get_from_id('proj-tree'))
+	tree := &ui.Tree2(win.get_from_id('proj-tree'))
 	tree_padding_slider.cur = (tree.width - 100) / 10
 	tree_padding_slider.draw_event_fn = tree_padding_slider_draw
 	return tree_padding_lbl, tree_padding_slider
@@ -277,42 +238,6 @@ fn create_flag_check(win &ui.Window, text string, mut conf Config) ui.Checkbox {
 	gc.set_bounds(0, 8, 100, 20)
 	gc.set_click(check_click)
 	return gc
-}
-
-fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
-	mut this := *com
-	mut tree := &ui.Tree(win.get_from_id('proj-tree'))
-	this.y = win.font_size - 12
-	this.height = win.font_size + 4
-	if mut this is ui.Slider {
-		fs := tree.width
-		new_val := (int(this.cur) * 10) + 100
-		if fs == new_val {
-			return
-		}
-		tree.width = new_val
-		win.graphics_context.set_cfg(size: new_val)
-	}
-}
-
-fn font_slider_draw(mut win ui.Window, com &ui.Component) {
-	mut this := *com
-	if mut this is ui.Slider {
-		fs := win.font_size
-		new_val := int(this.cur) + 10
-		if fs == new_val {
-			return
-		}
-
-		mut conf := get_config(win)
-		conf.set('font_size', new_val.str())
-
-		this.y = new_val - 12
-		this.height = new_val + 4
-
-		win.font_size = new_val
-		win.graphics_context.set_cfg(size: new_val)
-	}
 }
 
 fn check_click(mut win ui.Window, box ui.Checkbox) {

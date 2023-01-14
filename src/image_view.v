@@ -87,15 +87,15 @@ fn format_size(val f64) string {
 	by := f64(1024)
 
 	kb := val / by
-	str := '$kb'.str()[0..4]
+	str := '${kb}'.str()[0..4]
 
 	if kb > 1024 {
 		mb := kb / by
-		str2 := '$mb'.str()[0..4]
+		str2 := '${mb}'.str()[0..4]
 
-		return '$str KB / $str2 MB'
+		return '${str} KB / ${str2} MB'
 	}
-	return '$str KB'
+	return '${str} KB'
 }
 
 fn make_gg_image(mut storage ImageViewData, mut win ui.Window, first bool) {
@@ -109,7 +109,7 @@ fn make_gg_image(mut storage ImageViewData, mut win ui.Window, first bool) {
 	win.gg.update_pixel_data(storage.id, storage.file.data)
 }
 
-pub fn read(path string) ?stbi.Image {
+pub fn read(path string) !stbi.Image {
 	return stbi.load(path)
 }
 

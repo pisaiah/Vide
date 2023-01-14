@@ -22,7 +22,7 @@ mut:
 }
 
 fn cerror(e string) {
-	eprintln('\nerror: $e')
+	eprintln('\nerror: ${e}')
 }
 
 fn check_name(name string) string {
@@ -37,12 +37,12 @@ fn check_name(name string) string {
 		if cname.contains(' ') {
 			cname = cname.replace(' ', '_')
 		}
-		eprintln('warning: the project name cannot be capitalized, the name will be changed to `$cname`')
+		eprintln('warning: the project name cannot be capitalized, the name will be changed to `${cname}`')
 		return cname
 	}
 	if name.contains(' ') {
 		cname := name.replace(' ', '_')
-		eprintln('warning: the project name cannot contain spaces, the name will be changed to `$cname`')
+		eprintln('warning: the project name cannot contain spaces, the name will be changed to `${cname}`')
 		return cname
 	}
 	return name
@@ -51,10 +51,10 @@ fn check_name(name string) string {
 fn vmod_content(c Create) string {
 	return [
 		'Module {',
-		"	name: '$c.name'",
-		"	description: '$c.description'",
-		"	version: '$c.version'",
-		"	license: '$c.license'",
+		"	name: '${c.name}'",
+		"	description: '${c.description}'",
+		"	version: '${c.version}'",
+		"	license: '${c.license}'",
 		'	dependencies: []',
 		'}',
 		'',
@@ -75,7 +75,7 @@ fn gen_gitignore(name string) string {
 	return [
 		'# Binaries for programs and plugins',
 		'main',
-		'$name',
+		'${name}',
 		'*.exe',
 		'*.exe~',
 		'*.so',
@@ -95,7 +95,7 @@ fn gitattributes_content() string {
 }
 
 fn (c &Create) write_vmod(new bool) {
-	vmod_path := if new { '$c.dir/$c.name/v.mod' } else { 'v.mod' }
+	vmod_path := if new { '${c.dir}/${c.name}/v.mod' } else { 'v.mod' }
 	os.write_file(vmod_path, vmod_content(c)) or { panic(err) }
 }
 
@@ -103,26 +103,26 @@ fn (c &Create) write_main(new bool) {
 	if !new && (os.exists('${c.name}.v') || os.exists('src/${c.name}.v')) {
 		return
 	}
-	main_path := if new { '$c.dir/$c.name/${c.name}.v' } else { '${c.name}.v' }
+	main_path := if new { '${c.dir}/${c.name}/${c.name}.v' } else { '${c.name}.v' }
 	os.write_file(main_path, main_content()) or { panic(err) }
 }
 
 fn (c &Create) write_gitattributes(new bool) {
-	gitattributes_path := if new { '$c.dir/$c.name/.gitattributes' } else { '.gitattributes' }
+	gitattributes_path := if new { '${c.dir}/${c.name}/.gitattributes' } else { '.gitattributes' }
 	os.write_file(gitattributes_path, gitattributes_content()) or { panic(err) }
 }
 
 fn (c &Create) create_git_repo(dir string) {
 	// Create Git Repo and .gitignore file
-	if !os.is_dir('$dir/.git') {
-		res := os.execute('git init $dir')
+	if !os.is_dir('${dir}/.git') {
+		res := os.execute('git init ${dir}')
 		if res.exit_code != 0 {
 			// cerror('Unable to create git repo')
 
 			// exit(4)
 		}
 	}
-	gitignore_path := '$dir/.gitignore'
+	gitignore_path := '${dir}/.gitignore'
 	if !os.exists(gitignore_path) {
 		os.write_file(gitignore_path, gen_gitignore(c.name)) or {}
 	}
@@ -152,7 +152,7 @@ pub fn create_v(dir string, args []string) {
 	c.version = if args.len > 2 {
 		args[2]
 	} else {
-		os.input('Input your project version: ($default_version) ')
+		os.input('Input your project version: (${default_version}) ')
 	}
 	if c.version == '' {
 		c.version = default_version
@@ -161,7 +161,7 @@ pub fn create_v(dir string, args []string) {
 	c.license = if args.len > 3 {
 		args[3]
 	} else {
-		os.input('Input your project license: ($default_license) ')
+		os.input('Input your project license: (${default_license}) ')
 	}
 	if c.license == '' {
 		c.license = default_license
