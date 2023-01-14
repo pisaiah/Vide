@@ -127,7 +127,6 @@ jobs:
            rm -rf .git
            cd ..
            cd ..
-           cd ..
       - name: Create archive
         shell: msys2 {0}
         run: |
@@ -135,8 +134,7 @@ jobs:
            cd vide
            cd ..
            powershell Compress-Archive vide $ZIPNAME
-           mv $ZIPNAME ../../
-           cd ..
+           mv $ZIPNAME ../
            cd ..
 # NB: the powershell Compress-Archive line is from:
 # https://superuser.com/a/1336434/194881
