@@ -6,7 +6,7 @@ import os
 import hc
 
 const (
-	version = '0.0.11-dev'
+	version = '0.0.12-dev'
 )
 
 struct App {
@@ -103,7 +103,14 @@ fn main() {
 	mut console_box := create_box(window)
 	console_box.z_index = 2
 	console_box.set_id(mut window, 'consolebox')
-	window.add_child(console_box)
+	// window.add_child(console_box)
+
+	mut sv := ui.scroll_view(
+		view: console_box
+		increment: 5
+	)
+	sv.set_id(mut window, 'vermsv')
+	window.add_child(sv)
 
 	// basic plugin system
 	// plugin_dir := os.real_path(os.home_dir() + '/vide/plugins/')

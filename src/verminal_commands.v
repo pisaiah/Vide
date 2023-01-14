@@ -56,9 +56,7 @@ fn verminal_cmd_exec(mut win ui.Window, mut tbox ui.TextArea, args []string) {
 		cmd_exec_unix(mut win, mut tbox, args)
 	}
 
-	line_height := ui.text_height(win, 'A0{')
-	shown_lines := tbox.height / line_height
-	tbox.scroll_i = tbox.lines.len - shown_lines
+	win.extra_map['update_scroll'] = 'true'
 }
 
 // Linux

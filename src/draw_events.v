@@ -61,8 +61,24 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	}
 
 	mut com := &ui.TextArea(win.get_from_id('consolebox'))
-	com.x = x_off
-	com.y = tb.y + tb.height + 5
-	com.height = 135
+	com.x = 0 // x_off
+	com.y = 0 // tb.y + tb.height + 5
+	if com.height < 100 {
+		com.height = 134
+	}
+
+	mut hei := (com.lines.len + 1) * ui.get_line_height(win.graphics_context)
+	if hei < 135 {
+		hei = hei + (135 - hei)
+	}
+
+	com.height = hei + com.padding_y
+
 	com.width = width
+
+	mut sv := &ui.ScrollView(win.get_from_id('vermsv'))
+	sv.x = x_off
+	sv.y = tb.y + tb.height + 5
+	sv.height = 135
+	sv.width = width
 }

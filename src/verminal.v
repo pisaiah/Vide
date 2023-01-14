@@ -13,7 +13,7 @@ pub fn create_box(win_ptr voidptr) &ui.TextArea {
 	path := os.real_path(os.home_dir())
 	win.extra_map['path'] = path
 
-	mut box := ui.textarea(win, ['Verminal 0.4', path + '>'])
+	mut box := ui.textarea(win, [path + '>'])
 	box.code_syntax_on = false
 	box.set_id(mut win, 'vermbox')
 	box.draw_event_fn = box_draw
@@ -28,7 +28,6 @@ fn box_draw(mut win ui.Window, com &ui.Component) {
 	if mut this is ui.TextArea {
 		this.caret_top = this.lines.len - 1
 		line := this.lines[this.caret_top]
-
 		cp := win.extra_map['path']
 
 		if line.contains(cp + '>') {
@@ -36,11 +35,16 @@ fn box_draw(mut win ui.Window, com &ui.Component) {
 				this.caret_left = cp.len + 1
 			}
 		}
+
+		if 'update_scroll' in win.extra_map {
+			jump_sv(mut win, this.height)
+			win.extra_map.delete('update_scroll')
+		}
 	}
 }
 
 fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
-	mut is_backsp := tb.last_letter == 'backspace'
+	is_backsp := tb.last_letter == 'backspace'
 
 	if is_backsp {
 		txt := tb.lines[tb.caret_top]
@@ -50,9 +54,13 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 		}
 	}
 
-	mut is_enter := tb.last_letter == 'enter'
+	is_enter := tb.last_letter == 'enter'
+	jump_sv(mut win, tb.height)
 
 	if is_enter {
+		mut tbox := &ui.TextArea(win.get_from_id('vermbox'))
+		tbox.last_letter = ''
+
 		mut txt := tb.lines[tb.caret_top]
 		mut cline := txt // txt[txt.len - 1]
 		mut path := win.extra_map['path']
@@ -66,10 +74,16 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 	return false
 }
 
+fn jump_sv(mut win ui.Window, tbh int) {
+	mut sv := &ui.ScrollView(win.get_from_id('vermsv'))
+	val := tbh - sv.height
+	sv.scroll_i = val / sv.increment
+}
+
 fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 	args := cmd.split(' ')
 
-	mut tbox := &ui.TextArea(win.get_from_id('vermbox')) //(mut win)
+	mut tbox := &ui.TextArea(win.get_from_id('vermbox'))
 	if args[0] == 'cd' {
 		cmd_cd(mut win, mut tbox, args)
 		add_new_input_line(mut tbox)
@@ -100,6 +114,9 @@ fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 		verminal_cmd_exec(mut win, mut tbox, args)
 	}
 
+	jump_sv(mut win, box.height)
+
+	win.extra_map['update_scroll'] = 'true'
 	win.extra_map['lastcmd'] = cmd
 }
 

@@ -19,11 +19,11 @@ fn (mut app App) make_menubar() {
 	save_img := $embed_file('assets/icons8-save-24.png')
 	theme_img := $embed_file('assets/icons8-change-theme-24.png')
 
-	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 24)
-	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 24)
-	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), 24, 24)
-	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), 24, 24)
-	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), 24, 24)
+	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 22)
+	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 22)
+	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), 24, 22)
+	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), 24, 22)
+	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), 24, 22)
 
 	file_menu := ui.menu_item(
 		text: 'File'
