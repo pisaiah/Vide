@@ -65,14 +65,14 @@ fn main() {
 
 	mut tb := ui.tabbox(window)
 	tb.set_id(mut window, 'main-tabs')
-	tb.set_bounds(4, 28, 200, 80)
+	tb.set_bounds(0, 0, 300, 400)
 
 	tb.draw_event_fn = on_draw
 
 	mut hbox := ui.hbox(window)
 	tree := setup_tree(mut window, folder)
 	hbox.add_child(tree)
-	hbox.add_child(tb)
+	// hbox.add_child(tb)
 
 	hbox.draw_event_fn = fn (mut win ui.Window, mut hbox ui.Component) {
 		size := win.gg.window_size()
@@ -108,9 +108,28 @@ fn main() {
 	mut sv := ui.scroll_view(
 		view: console_box
 		increment: 5
+		bounds: ui.Bounds{
+			height: 100
+		}
+		padding: 0
 	)
 	sv.set_id(mut window, 'vermsv')
-	window.add_child(sv)
+
+	mut spv := ui.split_view(
+		first: tb
+		second: sv
+		min_percent: 20
+		h1: 70
+		h2: 20
+		bounds: ui.Bounds{
+			y: 28
+			x: 4
+		}
+	)
+	spv.set_id(mut window, 'spv')
+	hbox.add_child(spv)
+
+	// window.add_child(sv)
 
 	// basic plugin system
 	// plugin_dir := os.real_path(os.home_dir() + '/vide/plugins/')

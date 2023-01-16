@@ -19,7 +19,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: '0.3'
+          version: 'weekly.2023.02'
           version-file: ''
           check-latest: true
           stable: false
@@ -32,8 +32,7 @@ jobs:
           sudo apt install build-essential
           sudo apt-get --yes --force-yes install libxi-dev libxcursor-dev mesa-common-dev
           sudo apt-get --yes --force-yes install libgl1-mesa-glx
-          git clone https://github.com/isaiahpatton/ui iui
-          cd iui
+          v install https://github.com/isaiahpatton/ui
           git clone https://github.com/isaiahpatton/vide
           v -cc $CC -skip-unused -gc boehm vide
       - name: Remove excluded
@@ -41,10 +40,7 @@ jobs:
            rm -rf .git
       - name: Create ZIP archive
         run: |
-           cd iui
            zip -r9 --symlinks $ZIPNAME vide/
-           mv $ZIPNAME ../
-           cd ..
       - name: Create artifact
         uses: actions/upload-artifact@v2
         with:
@@ -62,7 +58,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: '0.3'
+          version: 'weekly.2023.02'
           version-file: ''
           check-latest: true
           stable: false
@@ -70,8 +66,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Compile
         run: |
-          git clone https://github.com/isaiahpatton/ui iui
-          cd iui
+          v install https://github.com/isaiahpatton/ui
           git clone https://github.com/isaiahpatton/vide
           v -cc $CC -skip-unused -gc boehm vide
       - name: Remove excluded
@@ -79,10 +74,7 @@ jobs:
            rm -rf .git
       - name: Create ZIP archive
         run: |
-           cd iui
            zip -r9 --symlinks $ZIPNAME vide/
-           mv $ZIPNAME ../
-           cd ..
       - name: Create artifact
         uses: actions/upload-artifact@v2
         with:
@@ -100,7 +92,7 @@ jobs:
         with:
           # Default: ${{ github.token }}
           token: ${{ github.token }}
-          version: '0.3'
+          version: 'weekly.2023.02'
           version-file: ''
           check-latest: true
           stable: false
@@ -112,9 +104,8 @@ jobs:
           git clone https://github.com/vlang/v
           cd v
           .\make.bat
-          git clone https://github.com/isaiahpatton/ui iui
+          .\v.exe install https://github.com/isaiahpatton/ui
           .\v.exe symlink
-          cd iui
           git clone https://github.com/isaiahpatton/vide
           v -cc gcc -skip-unused -gc boehm -cflags -static vide
       - name: Remove excluded
@@ -122,23 +113,19 @@ jobs:
         run: |
            rm -rf .git
            cd v
-           cd iui
            cd vide
            rm -rf *.v
            rm -rf .git
-           cd ..
            cd ..
            cd ..
       - name: Create archive
         shell: msys2 {0}
         run: |
            cd v
-           cd iui
            cd vide
            cd ..
            powershell Compress-Archive vide $ZIPNAME
-           mv $ZIPNAME ../../
-           cd ..
+           mv $ZIPNAME ../
            cd ..
 # NB: the powershell Compress-Archive line is from:
 # https://superuser.com/a/1336434/194881
@@ -168,7 +155,7 @@ jobs:
           tag: ${{ steps.split.outputs._2 }}
           name: ${{ steps.split.outputs._2 }}
           commit: ${{ github.sha }}
-          draft: false
+          draft: true
           prerelease: false
 
   publish:
@@ -192,11 +179,9 @@ jobs:
           seperator: /
       - name: Get release
         id: get_release_info
-        uses: leahlundqvist/get-release@v1.3.1
+        uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag_name: ${{ steps.split.outputs._2 }}
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.1

@@ -49,20 +49,15 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	tree := &ui.Tree2(win.get_from_id('proj-tree'))
 	x_off := tree.x + tree.width + 4
 
-	y_off := gg.window_size().height - 170
+	ws := gg.window_size()
 
-	if tb.height != y_off {
-		tb.height = y_off
-	}
-	width := gg.window_size().width - x_off - 4
+	width := ws.width - x_off - 4
 
 	if tb.width != width {
 		tb.width = width
 	}
 
 	mut com := &ui.TextArea(win.get_from_id('consolebox'))
-	com.x = 0 // x_off
-	com.y = 0 // tb.y + tb.height + 5
 	if com.height < 100 {
 		com.height = 134
 	}
@@ -77,8 +72,19 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	com.width = width
 
 	mut sv := &ui.ScrollView(win.get_from_id('vermsv'))
-	sv.x = x_off
-	sv.y = tb.y + tb.height + 5
-	sv.height = 135
+
+	if com.height < sv.height {
+		com.height = sv.height
+	}
+
 	sv.width = width
+
+	mut spv := &ui.SplitView(win.get_from_id('spv'))
+	spv.width = width
+
+	height := ws.height - spv.y - 5
+
+	if spv.height != height {
+		spv.height = height
+	}
 }

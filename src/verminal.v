@@ -37,7 +37,7 @@ fn box_draw(mut win ui.Window, com &ui.Component) {
 		}
 
 		if 'update_scroll' in win.extra_map {
-			jump_sv(mut win, this.height)
+			jump_sv(mut win, this.height, this.lines.len)
 			win.extra_map.delete('update_scroll')
 		}
 	}
@@ -55,7 +55,7 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 	}
 
 	is_enter := tb.last_letter == 'enter'
-	jump_sv(mut win, tb.height)
+	jump_sv(mut win, tb.height, tb.lines.len)
 
 	if is_enter {
 		mut tbox := &ui.TextArea(win.get_from_id('vermbox'))
@@ -74,9 +74,13 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 	return false
 }
 
-fn jump_sv(mut win ui.Window, tbh int) {
+fn jump_sv(mut win ui.Window, tbh int, lines int) {
 	mut sv := &ui.ScrollView(win.get_from_id('vermsv'))
 	val := tbh - sv.height
+	if lines <= 1 {
+		sv.scroll_i = 0
+		return
+	}
 	sv.scroll_i = val / sv.increment
 }
 
@@ -114,7 +118,7 @@ fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 		verminal_cmd_exec(mut win, mut tbox, args)
 	}
 
-	jump_sv(mut win, box.height)
+	jump_sv(mut win, box.height, tbox.lines.len)
 
 	win.extra_map['update_scroll'] = 'true'
 	win.extra_map['lastcmd'] = cmd
