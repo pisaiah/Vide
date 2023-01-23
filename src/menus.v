@@ -5,7 +5,8 @@ import os
 import gg
 
 const (
-	vide_png = $embed_file('assets/ezgif.com-gif-maker(5).png')
+	vide_png0 = $embed_file('assets/ezgif.com-gif-maker(5).png')
+	vide_png1 = $embed_file('assets/word.png')
 )
 
 fn (mut app App) make_menubar() {
@@ -112,6 +113,7 @@ fn (mut app App) set_theme_from_save() {
 	if name.len > 1 {
 		theme := ui.theme_by_name(name)
 		app.win.set_theme(theme)
+		theme.setup_fn(mut app.win)
 	}
 }
 
@@ -124,9 +126,9 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn about_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.page(win, 'About VIDE')
+	mut modal := ui.modal(win, 'About VIDE')
 	mut vbox := ui.vbox(win)
-	vbox.set_pos(70, 16)
+	vbox.set_pos(50, 16)
 
 	logo := &gg.Image(win.id_map['vide_logo'])
 	mut logo_im := ui.image(win, logo)
@@ -140,8 +142,8 @@ fn about_click(mut win ui.Window, com ui.MenuItem) {
 	label.pack()
 
 	mut copy := ui.label(win, 'Copyright © 2021-2023 by Isaiah.')
-	copy.set_pos(16, 270)
-	copy.set_config(16, true, false)
+	copy.set_pos(265, 225)
+	copy.set_config(14, true, false)
 
 	vbox.add_child(logo_im)
 	vbox.add_child(label)

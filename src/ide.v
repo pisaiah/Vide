@@ -174,11 +174,13 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	info_lbl.set_pos(12, 24)
 	info_lbl.pack()
 
-	logo := window.gg.create_image_from_byte_array(vide_png.to_bytes())
+	logo := window.gg.create_image_from_byte_array(vide_png0.to_bytes())
 	window.id_map['vide_logo'] = &logo
 
-	mut logo_im := ui.image(window, logo)
-	logo_im.set_bounds(0, 0, logo.width, logo.height)
+	logo1 := window.gg.create_image_from_byte_array(vide_png1.to_bytes())
+
+	mut logo_im := ui.image(window, logo1)
+	logo_im.set_bounds(0, 0, logo1.width, logo1.height)
 
 	gh := ui.link(
 		text: 'Github'

@@ -24,7 +24,7 @@ fn settings_click_old(mut win ui.Window, com ui.MenuItem) {
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
-	mut dialog_btn := ui.button(win, 'Choose Folder')
+	mut dialog_btn := ui.button(text: 'Choose Folder')
 	/*
 	work.draw_event_fn = fn [dialog_btn_ref] (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
@@ -95,10 +95,10 @@ fn settings_click_old(mut win ui.Window, com ui.MenuItem) {
 
 	// fs_group(win, 20, 170, tb)
 	modal.needs_init = false
-	mut close := ui.button(win, 'Save & Done')
+	mut close := ui.button(text: 'Save & Done')
 	close.set_bounds(425, modal.in_height - 42, 160, 30)
 
-	mut can := ui.button(win, 'Cancel')
+	mut can := ui.button(text: 'Cancel')
 	can.set_bounds(330, modal.in_height - 42, 85, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Page)

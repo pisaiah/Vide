@@ -24,7 +24,7 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut fold_lbl := ui.label(win, ' ')
 
-	mut fold_btn := ui.button(win, 'Pick Directory')
+	mut fold_btn := ui.button(text: 'Pick Directory')
 
 	fold_btn.set_click_fn(fn (a voidptr, b voidptr, c voidptr) {
 		mut win := &ui.Window(a)
@@ -51,13 +51,12 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 
 	modal.needs_init = false
 
-	mut close := ui.button(win, 'Create')
-	close.x = 25 + 50
-	close.y = (300) - 45
-	close.width = 145
-	close.height = 25
+	mut close := ui.button(
+		text: 'Create'
+		bounds: ui.Bounds{75, (300) - 45, 145, 25}
+	)
 
-	mut can := ui.button(win, 'Cancel')
+	mut can := ui.button(text: 'Cancel')
 	can.set_bounds(20, (300 - 45), 50, 25)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Modal)

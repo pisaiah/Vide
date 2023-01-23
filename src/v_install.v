@@ -46,7 +46,7 @@ fn show_installed_info(win &ui.Window, mut modal ui.Modal, data string) {
 	})
 	modal.add_child(lbl)
 
-	mut btn := ui.button(win, 'Update V')
+	mut btn := ui.button(text: 'Update V')
 	btn.set_pos(24, 64)
 	btn.set_click_fn(update_v, 0)
 	btn.pack()
@@ -77,11 +77,11 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	btn_x := (modal.in_width - btn_width) / 2
 	btn_y := 260
 
-	mut dlbtn := ui.button(win, 'Download latest V')
+	mut dlbtn := ui.button(text: 'Download latest V')
 	dlbtn.set_click_fn(download_v, 0)
 	dlbtn.set_bounds(btn_x, btn_y, btn_width, 40)
 
-	mut ignore_btn := ui.button(win, 'Ignore / Configure later')
+	mut ignore_btn := ui.button(text: 'Ignore / Configure later')
 	ignore_btn.set_click(ui.default_modal_close_fn)
 	ignore_btn.set_bounds(btn_x, btn_y + 45, btn_width, 40)
 

@@ -159,7 +159,7 @@ fn load_modules_(mut win ui.Window, mut vbox ui.HBox) {
 		mut pack := &Package{
 			win: win
 			label: lbl
-			btn: create_cmd_btn(mut win, btn_txt)
+			btn: create_cmd_btn(btn_txt)
 		}
 
 		update_comd_btn(mut win, btn_txt, name, mut pack)
@@ -205,7 +205,7 @@ fn module_exists(name string) bool {
 	return exists
 }
 
-fn create_cmd_btn(mut win ui.Window, cmd string) &ui.Button {
-	mut btn := ui.button(win, cmd.title())
-	return &btn
+fn create_cmd_btn(cmd string) &ui.Button {
+	mut btn := ui.button(text: cmd.title())
+	return btn
 }

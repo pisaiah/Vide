@@ -70,7 +70,7 @@ pub fn make_image_view(file string, mut win ui.Window) &ui.Component {
 }
 
 fn size_btn(win &ui.Window, data ImageViewData, mut img Image, mult int) &ui.Button {
-	mut btn := ui.button(win, mult.str() + 'x')
+	mut btn := ui.button(text: mult.str() + 'x')
 	btn.set_pos(4, 1)
 	// TODO: removed for debugging wasm
 	/*
@@ -80,7 +80,7 @@ fn size_btn(win &ui.Window, data ImageViewData, mut img Image, mult int) &ui.But
 		img.zoom = mult
 	}, 0)*/
 	btn.pack()
-	return &btn
+	return btn
 }
 
 fn format_size(val f64) string {

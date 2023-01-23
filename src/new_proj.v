@@ -34,10 +34,10 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 
 	modal.needs_init = false
 
-	mut close := ui.button(win, 'Create')
+	mut close := ui.button(text: 'Create')
 	close.set_bounds(86, 255, 145, 25)
 
-	mut can := ui.button(win, 'Cancel')
+	mut can := ui.button(text: 'Cancel')
 	can.set_bounds(20, 255, 60, 25)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Modal)

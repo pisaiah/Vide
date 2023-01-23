@@ -19,10 +19,10 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	vbox.set_bounds(16, 16, 0, 0)
 
 	modal.needs_init = false
-	mut close := ui.button(win, 'Save & Done')
+	mut close := ui.button(text: 'Save & Done')
 	close.set_bounds(130, 7, 250, 30)
 
-	mut can := ui.button(win, 'Cancel')
+	mut can := ui.button(text: 'Cancel')
 	can.set_bounds(21, 7, 100, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Page)
@@ -81,7 +81,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	folder := os.expand_tilde_to_home(workd)
 
 	mut work := ui.textfield(win, folder)
-	mut dialog_btn := ui.button(win, 'Choose Folder')
+	mut dialog_btn := ui.button(text: 'Choose Folder')
 
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
@@ -166,6 +166,45 @@ fn create_font_slider(win &ui.Window) &ui.VBox {
 	return vbox
 }
 
+fn create_zoom_slider(win &ui.Window) &ui.VBox {
+	mut fs_lbl := ui.label(win, 'Zoom scale:')
+	fs_lbl.set_bounds(4, 4, 100, 20)
+	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
+		lbl.text = 'Zoom/Scale (' + win.gg.scale.str() + '):'
+		lbl.width = ui.text_width(win, lbl.text)
+	}
+
+	mut scale_slider := ui.slider(win, 0, 1, .hor)
+	scale_slider.set_bounds(4, 4, 100, 30)
+	scale_slider.cur = 0
+	scale_slider.draw_event_fn = zoom_slider_draw
+
+	mut vbox := ui.vbox(win)
+	vbox.add_child(fs_lbl)
+	vbox.add_child(scale_slider)
+
+	return vbox
+}
+
+fn zoom_slider_draw(mut win ui.Window, com &ui.Component) {
+	mut this := *com
+	if mut this is ui.Slider {
+		// fs := win.gg.ft.scale
+
+		vv := this.cur + 1
+		vall := if vv > 1 { 1.01 } else { 1 }
+
+		new_val := vall // this.cur + 1
+		dump(new_val)
+		// if fs == new_val {
+		//		return
+		//}
+
+		mut conf := get_config(win)
+		conf.set('zoom', new_val.str())
+	}
+}
+
 fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 	mut this := *com
 	mut tree := &ui.Tree2(win.get_from_id('proj-tree'))
@@ -194,13 +233,7 @@ fn font_slider_draw(mut win ui.Window, com &ui.Component) {
 		mut conf := get_config(win)
 		conf.set('font_size', new_val.str())
 
-		// this.height = new_val + 4
-
 		win.font_size = new_val
-		win.graphics_context.set_cfg(size: new_val)
-
-		win.gg.ft.flush()
-		win.gg.ft.fons.reset_atlas(1024, 1024)
 	}
 }
 
@@ -233,14 +266,16 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	vbox.add_child(lbl)
 
 	font_size_box := create_font_slider(win)
+	zoom_size_box := create_zoom_slider(win)
 	tree_padding_box := create_tree_width_slider(win)
 
 	mut hbox := ui.hbox(win)
 
 	hbox.add_child(font_size_box)
+	hbox.add_child(zoom_size_box)
 	hbox.add_child(tree_padding_box)
 
-	hbox.set_bounds(0, 0, 400, 100)
+	hbox.set_bounds(0, 0, 600, 100)
 	hbox.set_width_as_percent(true, 99)
 
 	hbox.parent = vbox
