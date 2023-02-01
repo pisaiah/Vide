@@ -291,10 +291,6 @@ fn draw_code_suggest(ptr voidptr, current_line int, x int, y int) {
 	}
 }
 
-[deprecated: 'Replaced by draw_code_suggest for new TextArea']
-fn on_box_draw_1(mut win ui.Window, mut box ui.TextArea, tx int, ty int) {
-}
-
 fn match_fn(mut win ui.Window, mod string, str string) string {
 	if str.len <= 0 {
 		return ''

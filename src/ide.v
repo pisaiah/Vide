@@ -178,6 +178,7 @@ fn welcome_tab(mut window ui.Window, mut tb ui.Tabbox, folder string) {
 	window.id_map['vide_logo'] = &logo
 
 	logo1 := window.gg.create_image_from_byte_array(vide_png1.to_bytes())
+	window.id_map['vide_logo1'] = &logo1
 
 	mut logo_im := ui.image(window, logo1)
 	logo_im.set_bounds(0, 0, logo1.width, logo1.height)

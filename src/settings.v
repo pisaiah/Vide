@@ -13,17 +13,14 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut vbox := ui.vbox(win)
 
-	mut lbl := title_label(win, 'General')
-	vbox.add_child(lbl)
-
 	vbox.set_bounds(16, 16, 0, 0)
 
 	modal.needs_init = false
 	mut close := ui.button(text: 'Save & Done')
-	close.set_bounds(130, 7, 250, 30)
+	close.set_bounds(310, -54, 200, 30)
 
 	mut can := ui.button(text: 'Cancel')
-	can.set_bounds(21, 7, 100, 30)
+	can.set_bounds(220, -54, 80, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Page)
 	})
@@ -38,7 +35,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	vbox.draw_event_fn = fn (mut win ui.Window, mut com ui.Component) {
 		size := win.gg.window_size()
 		x_pos := (size.width / 3) - (com.width / 2)
-		ui.set_pos(mut com, x_pos, 24)
+		ui.set_pos(mut com, x_pos, 0)
 	}
 	win.id_map['setting_box'] = vbox
 
@@ -57,7 +54,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	sv.draw_event_fn = fn (mut win ui.Window, mut com ui.Component) {
 		size := win.gg.window_size()
-		ui.set_bounds(mut com, 20, 54, size.width - 40, size.height - 155)
+		ui.set_bounds(mut com, 5, 4, size.width - 10, size.height - 90)
 	}
 
 	modal.add_child(close)
@@ -94,11 +91,11 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 			'~')) // '
 	}
 
-	mut lib_lbl := ui.label(win, 'Path to VEXE')
+	mut lib_lbl := ui.label(win, 'Path to VEXE (ex: C:/v/v.exe)')
 	lib_lbl.pack()
 
 	home := os.home_dir().replace('\\', '/') // '
-	mut vlib := ui.textfield(win, get_v_exe(win).replace(home, '~'))
+	mut vlib := ui.text_field(text: get_v_exe(win).replace(home, '~'))
 
 	vlib.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(250, ui.text_width(win, work.text + 'a b'))
@@ -113,7 +110,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	}
 
 	work_lbl.set_bounds(32, 8, 0, 0)
-	lib_lbl.set_bounds(32, 8, 0, 0)
+	lib_lbl.set_bounds(32, 16, 0, 0)
 	work.set_bounds(32, 0, 0, 0)
 	vlib.set_bounds(32, 4, 0, 0)
 
@@ -140,10 +137,15 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	hbox.add_child(work)
 	hbox.add_child(dialog_btn)
 
-	vbox.add_child(work_lbl)
-	vbox.add_child(hbox)
-	vbox.add_child(lib_lbl)
-	vbox.add_child(vlib)
+	mut box := ui.vbox(win)
+	box.add_child(work_lbl)
+	box.add_child(hbox)
+	box.add_child(lib_lbl)
+	box.add_child(vlib)
+
+	mut tb := ui.title_box('General', [box])
+	tb.set_bounds(0, 16, 300, 100)
+	vbox.add_child(tb)
 }
 
 fn create_font_slider(win &ui.Window) &ui.VBox {
@@ -155,61 +157,21 @@ fn create_font_slider(win &ui.Window) &ui.VBox {
 	}
 
 	mut font_slider := ui.slider(win, 0, 28, .hor)
-	font_slider.set_bounds(4, 4, 100, 30)
+	font_slider.set_bounds(4, 4, 100, 25)
 	font_slider.cur = win.font_size - 10
 	font_slider.draw_event_fn = font_slider_draw
 
 	mut vbox := ui.vbox(win)
+	vbox.set_pos(16, 0)
 	vbox.add_child(fs_lbl)
 	vbox.add_child(font_slider)
 
 	return vbox
 }
 
-fn create_zoom_slider(win &ui.Window) &ui.VBox {
-	mut fs_lbl := ui.label(win, 'Zoom scale:')
-	fs_lbl.set_bounds(4, 4, 100, 20)
-	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		lbl.text = 'Zoom/Scale (' + win.gg.scale.str() + '):'
-		lbl.width = ui.text_width(win, lbl.text)
-	}
-
-	mut scale_slider := ui.slider(win, 0, 1, .hor)
-	scale_slider.set_bounds(4, 4, 100, 30)
-	scale_slider.cur = 0
-	scale_slider.draw_event_fn = zoom_slider_draw
-
-	mut vbox := ui.vbox(win)
-	vbox.add_child(fs_lbl)
-	vbox.add_child(scale_slider)
-
-	return vbox
-}
-
-fn zoom_slider_draw(mut win ui.Window, com &ui.Component) {
-	mut this := *com
-	if mut this is ui.Slider {
-		// fs := win.gg.ft.scale
-
-		vv := this.cur + 1
-		vall := if vv > 1 { 1.01 } else { 1 }
-
-		new_val := vall // this.cur + 1
-		dump(new_val)
-		// if fs == new_val {
-		//		return
-		//}
-
-		mut conf := get_config(win)
-		conf.set('zoom', new_val.str())
-	}
-}
-
 fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 	mut this := *com
 	mut tree := &ui.Tree2(win.get_from_id('proj-tree'))
-	// this.y = win.font_size - 12
-	// this.height = win.font_size + 4
 	if mut this is ui.Slider {
 		fs := tree.width
 		new_val := (int(this.cur) * 10) + 100
@@ -247,12 +209,13 @@ fn create_tree_width_slider(win &ui.Window) &ui.VBox {
 	}
 
 	mut tree_padding_slider := ui.slider(win, 0, 30, .hor)
-	tree_padding_slider.set_bounds(8, 8, 100, 30)
+	tree_padding_slider.set_bounds(8, 8, 100, 25)
 	tree := &ui.Tree2(win.get_from_id('proj-tree'))
 	tree_padding_slider.cur = (tree.width - 100) / 10
 	tree_padding_slider.draw_event_fn = tree_padding_slider_draw
 
 	mut vbox := ui.vbox(win)
+	vbox.set_pos(16, 0)
 	vbox.add_child(tree_padding_lbl)
 	vbox.add_child(tree_padding_slider)
 
@@ -260,39 +223,27 @@ fn create_tree_width_slider(win &ui.Window) &ui.VBox {
 }
 
 fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
-	// mut vbox := ui.vbox(win)
-
-	mut lbl := title_label(win, 'Appearance')
-	vbox.add_child(lbl)
-
 	font_size_box := create_font_slider(win)
-	zoom_size_box := create_zoom_slider(win)
 	tree_padding_box := create_tree_width_slider(win)
 
 	mut hbox := ui.hbox(win)
 
 	hbox.add_child(font_size_box)
-	hbox.add_child(zoom_size_box)
 	hbox.add_child(tree_padding_box)
 
 	hbox.set_bounds(0, 0, 600, 100)
-	hbox.set_width_as_percent(true, 99)
-
 	hbox.parent = vbox
 
 	// hbox.pack()
 
-	vbox.add_child(hbox)
-
 	font_lbl := ui.label(win, 'Main Font', ui.LabelConfig{
-		x: 32
+		x: 24
 		y: 16
 		should_pack: true
 	})
-	vbox.add_child(font_lbl)
 
 	mut font_box := ui.selector(win, 'Font', ui.SelectConfig{
-		bounds: ui.Bounds{32, 8, 250, 35}
+		bounds: ui.Bounds{24, 2, 250, 35}
 		items: [
 			'Default Font',
 			'Anomaly Mono',
@@ -303,9 +254,30 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	})
 	font_box.set_change(sel_change)
 
-	vbox.add_child(font_box)
+	mut box := ui.vbox(win)
+	box.add_child(hbox)
+	box.add_child(font_lbl)
+	box.add_child(font_box)
 
-	// tb.add_child('Appearance', vbox)
+	mut tb := ui.title_box('Appearance', [box])
+	tb.set_bounds(0, 16, 300, 100)
+	box.subscribe_event('draw', fn [mut tb] (mut e ui.DrawEvent) {
+		mut sb := e.target.children[2]
+		if mut sb is ui.Select {
+			mut hei := 0
+			for ch in e.target.children {
+				hei += ch.y + ch.height
+			}
+
+			if sb.show_items {
+				hei += (sb.items.len + 1) * sb.sub_height
+			}
+			e.target.height = hei
+			tb.height = hei
+		}
+	})
+
+	vbox.add_child(tb)
 }
 
 // Font selector change

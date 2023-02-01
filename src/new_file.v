@@ -5,7 +5,7 @@ import os
 // import extra
 
 fn new_file_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'New Project')
+	mut modal := ui.modal(win, 'New File')
 
 	mut des := nf_create_input(mut win, mut modal, 'File Name', 25, 80)
 	des.set_text_change(fn (win voidptr, box voidptr) {
@@ -17,9 +17,6 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut lic_lbl := ui.label(win, 'Project')
 	lic_lbl.set_bounds(25, 15, 500, 30)
-	lic_lbl.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = ui.text_width(win, work.text)
-	}
 	modal.add_child(lic_lbl)
 
 	mut fold_lbl := ui.label(win, ' ')
@@ -53,11 +50,11 @@ fn new_file_click(mut win ui.Window, com ui.MenuItem) {
 
 	mut close := ui.button(
 		text: 'Create'
-		bounds: ui.Bounds{75, (300) - 45, 145, 25}
+		bounds: ui.Bounds{100, 250, 200, 30}
 	)
 
 	mut can := ui.button(text: 'Cancel')
-	can.set_bounds(20, (300 - 45), 50, 25)
+	can.set_bounds(20, 250, 75, 30)
 	can.set_click(fn (mut win ui.Window, btn ui.Button) {
 		win.components = win.components.filter(mut it !is ui.Modal)
 	})

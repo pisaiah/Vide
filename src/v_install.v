@@ -47,15 +47,14 @@ fn show_installed_info(win &ui.Window, mut modal ui.Modal, data string) {
 	modal.add_child(lbl)
 
 	mut btn := ui.button(text: 'Update V')
-	btn.set_pos(24, 64)
+	btn.set_bounds(24, 64, 90, 25)
 	btn.set_click_fn(update_v, 0)
-	btn.pack()
 	modal.add_child(btn)
 }
 
 // If V not found
 fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
-	logo := &gg.Image(win.id_map['vide_logo'])
+	logo := &gg.Image(win.id_map['vide_logo1'])
 
 	modal.text = 'Vide Setup: Install V'
 	modal.in_width = 600
@@ -63,19 +62,19 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	modal.top_off = 20
 
 	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds((modal.in_width - 188) / 2, 20, 188, 75)
+	logo_im.set_bounds((modal.in_width - 230) / 2, 20, 230, 90)
 
 	lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the V compiler executable.\n\nWould you like to download V, or configure in Settings later'
 
 	lbl := ui.label(win, lbl_txt, ui.LabelConfig{
 		should_pack: true
 		x: 50
-		y: 90
+		y: 130
 	})
 
 	btn_width := 250
 	btn_x := (modal.in_width - btn_width) / 2
-	btn_y := 260
+	btn_y := 250
 
 	mut dlbtn := ui.button(text: 'Download latest V')
 	dlbtn.set_click_fn(download_v, 0)
