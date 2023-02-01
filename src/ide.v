@@ -6,7 +6,7 @@ import os
 import hc
 
 const (
-	version = '0.0.12-dev'
+	version = '0.0.13-dev'
 )
 
 struct App {
@@ -30,8 +30,8 @@ fn main() {
 	mut window := ui.make_window(
 		theme: ui.get_system_theme()
 		title: 'Vide - IDE for V'
-		width: 990
-		height: 600
+		width: 1080
+		height: 670
 		ui_mode: false
 	)
 

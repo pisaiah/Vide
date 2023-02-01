@@ -24,7 +24,7 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 		return
 	}
 
-	v_found := false // v_ver.starts_with('V ')
+	v_found := v_ver.starts_with('V ')
 
 	mut modal := ui.modal(win, 'V Manager (Non-finished Test)')
 
@@ -107,7 +107,7 @@ fn update_v(a voidptr, b voidptr, c voidptr) {
 fn run_update(path string, b voidptr) {
 	output := run_exec([path, 'up'])
 	mut btn := &ui.Button(b)
-	println(output)
+	dump(output)
 	btn.text = 'Updated V'
 }
 

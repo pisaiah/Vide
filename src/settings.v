@@ -43,6 +43,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 
 	general_section(win, mut conf, mut vbox)
 	appearance_section(win, mut conf, mut vbox)
+	cloud_section(win, mut conf, mut vbox)
 
 	// Spacer
 	spacer := title_label(win, '  ')
@@ -70,6 +71,23 @@ fn title_label(win &ui.Window, text string) &ui.Label {
 	return &lbl
 }
 
+fn cloud_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
+	mut box := ui.vbox(win)
+	box.set_pos(16, 0)
+
+	mut lbl := ui.label(win, 'Server URL')
+	mut field := ui.text_field(text: 'http://TODO-Comingsoon.linodeusercontent.com/')
+	lbl.set_bounds(8, 8, 200, 25)
+	lbl.pack()
+	field.set_bounds(8, 4, 400, 30)
+	box.add_child(lbl)
+	box.add_child(field)
+
+	mut tb := ui.title_box('Cloud Compile (*Coming soon*)', [box])
+	tb.set_bounds(0, 16, 600, 25)
+	vbox.add_child(tb)
+}
+
 fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.pack()
@@ -91,7 +109,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 			'~')) // '
 	}
 
-	mut lib_lbl := ui.label(win, 'Path to VEXE (ex: C:/v/v.exe)')
+	mut lib_lbl := ui.label(win, 'Path to VEXE (ex: C:/v/v.exe) (no shortcuts/symlinks)')
 	lib_lbl.pack()
 
 	home := os.home_dir().replace('\\', '/') // '
@@ -116,7 +134,8 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 
 	mut hbox := ui.hbox(win)
 	hbox.set_pos(0, 4)
-	hbox.pack()
+	hbox.width = 500
+	// hbox.pack()
 
 	/*
 	dialog_btn.set_click_fn(fn (a voidptr, b voidptr, c voidptr) {
@@ -144,7 +163,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	box.add_child(vlib)
 
 	mut tb := ui.title_box('General', [box])
-	tb.set_bounds(0, 16, 300, 100)
+	tb.set_bounds(0, 16, 600, 1)
 	vbox.add_child(tb)
 }
 
@@ -231,7 +250,7 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	hbox.add_child(font_size_box)
 	hbox.add_child(tree_padding_box)
 
-	hbox.set_bounds(0, 0, 600, 100)
+	hbox.set_bounds(0, 0, 500, 100)
 	hbox.parent = vbox
 
 	// hbox.pack()
@@ -260,7 +279,7 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	box.add_child(font_box)
 
 	mut tb := ui.title_box('Appearance', [box])
-	tb.set_bounds(0, 16, 300, 100)
+	tb.set_bounds(0, 16, 600, 100)
 	box.subscribe_event('draw', fn [mut tb] (mut e ui.DrawEvent) {
 		mut sb := e.target.children[2]
 		if mut sb is ui.Select {
