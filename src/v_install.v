@@ -28,6 +28,12 @@ fn show_install_modal(mut win ui.Window, com ui.MenuItem) {
 
 	mut modal := ui.modal(win, 'V Manager (Non-finished Test)')
 
+	$if debug ? {
+		show_install_info(win, mut modal, v_ver)
+		win.add_child(modal)
+		return
+	}
+
 	if v_found {
 		show_installed_info(win, mut modal, v_ver)
 	} else {
@@ -54,7 +60,7 @@ fn show_installed_info(win &ui.Window, mut modal ui.Modal, data string) {
 
 // If V not found
 fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
-	logo := &gg.Image(win.id_map['vide_logo1'])
+	logo := win.get[&gg.Image]('vide_logo1')
 
 	modal.text = 'Vide Setup: Install V'
 	modal.in_width = 600
@@ -64,7 +70,8 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	mut logo_im := ui.image(win, logo)
 	logo_im.set_bounds((modal.in_width - 230) / 2, 20, 230, 90)
 
-	lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the V compiler executable.\n\nWould you like to download V, or configure in Settings later'
+	// lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the path to V.\n\nWould you like to download V, or configure in Settings later'
+	lbl_txt := 'Welcome to Vide!\nUnfortunately, Vide was unable to find the path to V.\n\nPlease configure in Settings.'
 
 	lbl := ui.label(win, lbl_txt, ui.LabelConfig{
 		should_pack: true
@@ -80,13 +87,14 @@ fn show_install_info(win &ui.Window, mut modal ui.Modal, data string) {
 	dlbtn.set_click_fn(download_v, 0)
 	dlbtn.set_bounds(btn_x, btn_y, btn_width, 40)
 
-	mut ignore_btn := ui.button(text: 'Ignore / Configure later')
+	// mut ignore_btn := ui.button(text: 'Ignore / Configure later')
+	mut ignore_btn := ui.button(text: 'OK')
 	ignore_btn.set_click(ui.default_modal_close_fn)
 	ignore_btn.set_bounds(btn_x, btn_y + 45, btn_width, 40)
 
 	modal.add_child(logo_im)
 	modal.add_child(ignore_btn)
-	modal.add_child(dlbtn)
+	// modal.add_child(dlbtn)
 	modal.add_child(lbl)
 
 	modal.needs_init = false
@@ -157,7 +165,7 @@ pub fn extract_zip_to_dir(file string, dir string) ?bool {
 fn get_v_version(win &ui.Window) (string, string) {
 	output := get_v_version_1('v')
 
-	if output.starts_with('error') {
+	if output.starts_with('error') || !output.starts_with('V ') {
 		// Try Again with set path
 		v_exe := get_v_exe(win)
 		output_new := get_v_version_1(v_exe)

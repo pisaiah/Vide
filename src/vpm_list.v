@@ -14,8 +14,8 @@ mut:
 }
 
 fn (mut this Package) draw(ctx &ui.GraphicsContext) {
-	page := &ui.Page(ctx.win.get_from_id('vpm-modal'))
-	sear := &ui.TextField(ctx.win.get_from_id('vpm-search'))
+	page := ctx.win.get[&ui.Page]('vpm-modal')
+	sear := ctx.win.get[&ui.TextField]('vpm-search')
 
 	label_text := this.label.text.to_lower()
 	search_text := sear.text.to_lower()
@@ -74,12 +74,12 @@ fn vpm_click_(mut win ui.Window, com ui.MenuItem) {
 	modal.set_id(mut win, 'vpm-modal')
 
 	mut slbl := ui.label(win, 'Search: ')
-	mut tbox := ui.textfield(win, '')
+	mut tbox := ui.text_field(text: '')
 
 	mut vbox := ui.hbox(win)
 
 	tbox.draw_event_fn = fn (mut win ui.Window, mut box ui.Component) {
-		modal := &ui.Page(win.get_from_id('vpm-modal'))
+		modal := win.get[&ui.Page]('vpm-modal')
 		tw := ui.text_width(win, ' Search: ') + 20
 		box.x = tw
 		box.width = modal.width - (tw * 2) - 28
@@ -112,7 +112,7 @@ fn vpm_click_(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn vpm_vbox_draw(mut win ui.Window, mut com ui.Component) {
-	modal := &ui.Page(win.get_from_id('vpm-modal'))
+	modal := win.get[&ui.Page]('vpm-modal')
 
 	if modal.width < 900 {
 		com.width = modal.width - 8 - 28
@@ -122,7 +122,7 @@ fn vpm_vbox_draw(mut win ui.Window, mut com ui.Component) {
 }
 
 fn vpm_sv_draw_border(mut win ui.Window, mut com ui.Component) {
-	modal := &ui.Page(win.get_from_id('vpm-modal'))
+	modal := win.get[&ui.Page]('vpm-modal')
 	com.x = 1
 	com.width = modal.width - 2
 	com.height = modal.height - modal.top_off - 44
@@ -159,7 +159,7 @@ fn load_modules_(mut win ui.Window, mut vbox ui.HBox) {
 		mut pack := &Package{
 			win: win
 			label: lbl
-			btn: create_cmd_btn(btn_txt)
+			btn: ui.button(text: btn_txt)
 		}
 
 		update_comd_btn(mut win, btn_txt, name, mut pack)
@@ -203,9 +203,4 @@ fn module_exists(name string) bool {
 		}
 	}
 	return exists
-}
-
-fn create_cmd_btn(cmd string) &ui.Button {
-	mut btn := ui.button(text: cmd.title())
-	return btn
 }

@@ -27,8 +27,7 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(can)
 
 	close.set_click(fn (mut win ui.Window, btn ui.Button) {
-		mut conf := get_config(win)
-		conf.save()
+		config.save()
 		win.components = win.components.filter(mut it !is ui.Page)
 	})
 
@@ -39,11 +38,9 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	}
 	win.id_map['setting_box'] = vbox
 
-	mut conf := get_config(win)
-
-	general_section(win, mut conf, mut vbox)
-	appearance_section(win, mut conf, mut vbox)
-	cloud_section(win, mut conf, mut vbox)
+	general_section(win, mut vbox)
+	appearance_section(win, mut vbox)
+	cloud_section(win, mut vbox)
 
 	// Spacer
 	spacer := title_label(win, '  ')
@@ -71,41 +68,38 @@ fn title_label(win &ui.Window, text string) &ui.Label {
 	return &lbl
 }
 
-fn cloud_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
+fn cloud_section(win &ui.Window, mut vbox ui.VBox) {
 	mut box := ui.vbox(win)
 	box.set_pos(16, 0)
 
-	mut lbl := ui.label(win, 'Server URL')
-	mut field := ui.text_field(text: 'http://TODO-Comingsoon.linodeusercontent.com/')
-	lbl.set_bounds(8, 8, 200, 25)
-	lbl.pack()
-	field.set_bounds(8, 4, 400, 30)
-	box.add_child(lbl)
-	box.add_child(field)
+	mut field := ui.text_field(text: 'TODO  ')
+	field.set_bounds(8, 0, 400, 30)
+
+	mut fb := ui.title_box('Server URL', [field])
+	box.add_child(fb)
 
 	mut tb := ui.title_box('Cloud Compile (*Coming soon*)', [box])
 	tb.set_bounds(0, 16, 600, 25)
 	vbox.add_child(tb)
 }
 
-fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
+fn general_section(win &ui.Window, mut vbox ui.VBox) {
 	mut work_lbl := ui.label(win, 'Workspace Location')
 	work_lbl.pack()
 
-	workd := os.real_path(conf.get_value('workspace_dir').replace('\{user_home}', '~'))
+	workd := os.real_path(config.get_value('workspace_dir').replace('\{user_home}', '~'))
 	folder := os.expand_tilde_to_home(workd)
 
-	mut work := ui.textfield(win, folder)
-	mut dialog_btn := ui.button(text: 'Choose Folder')
+	mut work := ui.text_field(text: folder)
+	mut dialog_btn := ui.button(text: 'Pick Folder')
 
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = math.max(ui.text_width(win, work.text + 'a b'), 300)
 		work.height = win.graphics_context.line_height + 8
 	}
 	work.text_change_event_fn = fn (a voidptr, b voidptr) {
-		mut conf := get_config(&ui.Window(a))
 		work := &ui.TextField(b)
-		conf.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
+		config.set('workspace_dir', work.text.replace(os.home_dir().replace('\\', '/'),
 			'~')) // '
 	}
 
@@ -123,8 +117,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 		mut win := &ui.Window(win_ptr)
 		work := &ui.TextField(box_ptr)
 
-		mut conf := get_config(win)
-		conf.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~')) // '
+		config.set('v_exe', work.text.replace(os.home_dir().replace('\\', '/'), '~')) // '
 	}
 
 	work_lbl.set_bounds(32, 8, 0, 0)
@@ -150,7 +143,7 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 				'~')) // '
 		}
 	}, work)*/
-	dialog_btn.set_pos(4, 0)
+	dialog_btn.set_pos(2, 0)
 	dialog_btn.pack()
 
 	hbox.add_child(work)
@@ -167,30 +160,36 @@ fn general_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	vbox.add_child(tb)
 }
 
-fn create_font_slider(win &ui.Window) &ui.VBox {
-	mut fs_lbl := ui.label(win, 'Font size:')
-	fs_lbl.set_bounds(4, 4, 100, 20)
-	fs_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		lbl.text = 'Font Size (' + win.font_size.str() + '):'
-		lbl.width = ui.text_width(win, lbl.text)
-	}
+fn create_font_slider(win &ui.Window) &ui.Titlebox {
+	mut vbox := ui.hbox(win)
+	vbox.set_bounds(4, 0, 140, 37)
 
-	mut font_slider := ui.slider(win, 0, 28, .hor)
-	font_slider.set_bounds(4, 4, 100, 25)
-	font_slider.cur = win.font_size - 10
-	font_slider.draw_event_fn = font_slider_draw
+	mut field := ui.numeric_field(win.font_size)
+	field.set_bounds(4, 0, 90, 35)
+	vbox.add_child(field)
 
-	mut vbox := ui.vbox(win)
-	vbox.set_pos(16, 0)
-	vbox.add_child(fs_lbl)
-	vbox.add_child(font_slider)
+	mut btn := ui.button(
+		text: 'Set'
+		bounds: ui.Bounds{2, 0, 40, 35}
+	)
+	btn.parent = &ui.Component_A(field)
+	btn.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
+		txt := e.target.parent.text
+		e.ctx.win.font_size = txt.int()
+		e.ctx.font_size = txt.int()
+		config.set('font_size', txt)
+	})
+	vbox.add_child(btn)
 
-	return vbox
+	mut tb := ui.title_box('Font Size', [vbox])
+	tb.set_pos(16, 0)
+
+	return tb
 }
 
 fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 	mut this := *com
-	mut tree := &ui.Tree2(win.get_from_id('proj-tree'))
+	mut tree := win.get[&ui.Tree2]('proj-tree')
 	if mut this is ui.Slider {
 		fs := tree.width
 		new_val := (int(this.cur) * 10) + 100
@@ -202,46 +201,24 @@ fn tree_padding_slider_draw(mut win ui.Window, com &ui.Component) {
 	}
 }
 
-fn font_slider_draw(mut win ui.Window, com &ui.Component) {
-	mut this := *com
-	if mut this is ui.Slider {
-		fs := win.font_size
-		new_val := int(this.cur) + 10
-		if fs == new_val {
-			return
-		}
-
-		mut conf := get_config(win)
-		conf.set('font_size', new_val.str())
-
-		win.font_size = new_val
-	}
-}
-
-fn create_tree_width_slider(win &ui.Window) &ui.VBox {
-	mut tree_padding_lbl := ui.label(win, 'Project Tree Padding')
-	tree_padding_lbl.set_bounds(4, 4, 100, 20)
-	tree_padding_lbl.draw_event_fn = fn (mut win ui.Window, mut lbl ui.Component) {
-		tree := &ui.Tree2(win.get_from_id('proj-tree'))
-		lbl.text = 'Project Tree Width (${tree.width}):'
-		lbl.width = ui.text_width(win, lbl.text)
-	}
-
+fn create_tree_width_slider(win &ui.Window) &ui.Titlebox {
 	mut tree_padding_slider := ui.slider(win, 0, 30, .hor)
 	tree_padding_slider.set_bounds(8, 8, 100, 25)
-	tree := &ui.Tree2(win.get_from_id('proj-tree'))
+	tree := win.get[&ui.Tree2]('proj-tree')
 	tree_padding_slider.cur = (tree.width - 100) / 10
 	tree_padding_slider.draw_event_fn = tree_padding_slider_draw
 
-	mut vbox := ui.vbox(win)
-	vbox.set_pos(16, 0)
-	vbox.add_child(tree_padding_lbl)
-	vbox.add_child(tree_padding_slider)
+	mut tb := ui.title_box('File Tree Width', [tree_padding_slider])
+	tb.subscribe_event('draw', fn (mut e ui.DrawEvent) {
+		tree := e.ctx.win.get[&ui.Tree2]('proj-tree')
+		e.target.text = 'File Tree Width (${tree.width}):'
+	})
+	tb.set_bounds(16, 0, 200, 30)
 
-	return vbox
+	return tb
 }
 
-fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
+fn appearance_section(win &ui.Window, mut vbox ui.VBox) {
 	font_size_box := create_font_slider(win)
 	tree_padding_box := create_tree_width_slider(win)
 
@@ -253,16 +230,8 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 	hbox.set_bounds(0, 0, 500, 100)
 	hbox.parent = vbox
 
-	// hbox.pack()
-
-	font_lbl := ui.label(win, 'Main Font', ui.LabelConfig{
-		x: 24
-		y: 16
-		should_pack: true
-	})
-
 	mut font_box := ui.selector(win, 'Font', ui.SelectConfig{
-		bounds: ui.Bounds{24, 2, 250, 35}
+		bounds: ui.Bounds{8, 2, 200, 35}
 		items: [
 			'Default Font',
 			'Anomaly Mono',
@@ -275,13 +244,17 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 
 	mut box := ui.vbox(win)
 	box.add_child(hbox)
-	box.add_child(font_lbl)
-	box.add_child(font_box)
+
+	mut fb := ui.title_box('Main Font', [font_box])
+	fb.set_pos(16, 8)
+
+	box.add_child(fb)
 
 	mut tb := ui.title_box('Appearance', [box])
 	tb.set_bounds(0, 16, 600, 100)
 	box.subscribe_event('draw', fn [mut tb] (mut e ui.DrawEvent) {
-		mut sb := e.target.children[2]
+		mut fb := e.target.children[1]
+		mut sb := fb.children[0]
 		if mut sb is ui.Select {
 			mut hei := 0
 			for ch in e.target.children {
@@ -289,9 +262,11 @@ fn appearance_section(win &ui.Window, mut conf Config, mut vbox ui.VBox) {
 			}
 
 			if sb.show_items {
-				hei += (sb.items.len + 1) * sb.sub_height
+				subs := (sb.items.len + 1) * sb.sub_height
+				fb.height = subs + (e.ctx.line_height * 2)
+			} else {
+				fb.height = sb.height
 			}
-			e.target.height = hei
 			tb.height = hei
 		}
 	})
@@ -319,8 +294,7 @@ fn sel_change(mut win ui.Window, com ui.Select, old_val string, new_val string) 
 
 	font := win.add_font(new_val, path)
 	win.graphics_context.font = font
-	mut conf := get_config(win)
-	conf.set('main_font', path)
+	config.set('main_font', path)
 }
 
 // Downloads JetBrainsMono

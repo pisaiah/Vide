@@ -82,7 +82,7 @@ fn on_draw(mut win ui.Window, mut tb ui.Component) {
 	mut spv := &ui.SplitView(win.get_from_id('spv'))
 	spv.width = width
 
-	height := ws.height - spv.y - 5
+	height := ws.height - spv.y - 1
 
 	if spv.height != height {
 		spv.height = height

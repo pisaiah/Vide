@@ -10,6 +10,7 @@ const (
 		'workspace_dir = ~/vide/workspace',
 		'v_flags = -skip-unused',
 	].join_lines()
+	config         = make_config()
 )
 
 // Make Config as a 'Fake' Component
@@ -19,17 +20,14 @@ pub mut:
 	conf map[string]string
 }
 
-fn config(mut win ui.Window) &Config {
-	mut config := &Config{}
-	config.set_id(mut win, 'vide-config')
-	win.add_child(config)
-	config.read()
-	return config
+fn make_config() &Config {
+	mut conf := &Config{}
+	conf.read()
+	return conf
 }
 
 fn get_config(win &ui.Window) &Config {
-	conf := win.get_from_id('vide-config')
-	return &Config(conf)
+	return config
 }
 
 fn (mut this Config) read() {
@@ -52,14 +50,16 @@ fn (mut this Config) read() {
 	ui.debug('Vide: Loaded config.')
 }
 
-fn (mut this Config) get_value(key string) string {
+fn (this &Config) get_value(key string) string {
 	if key in this.conf {
 		return this.conf[key]
 	} else {
 		for line in default_config.split_into_lines() {
 			if line.starts_with(key) {
 				spl := line.split('=')
-				this.conf[spl[0].trim_space()] = spl[1].trim_space()
+				unsafe {
+					this.conf[spl[0].trim_space()] = spl[1].trim_space()
+				}
 				return spl[1].trim_space()
 			}
 		}
@@ -67,11 +67,13 @@ fn (mut this Config) get_value(key string) string {
 	return ''
 }
 
-fn (mut this Config) set(key string, val string) {
-	this.conf[key] = val
+fn (this &Config) set(key string, val string) {
+	unsafe {
+		this.conf[key] = val
+	}
 }
 
-fn (mut this Config) save() {
+fn (this &Config) save() {
 	mut con := '# Vide Configuration\n# Last Modified: ' + time.now().str()
 	for key, val in this.conf {
 		con = con + '\n' + key + ' = ' + val

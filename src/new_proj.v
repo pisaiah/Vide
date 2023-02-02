@@ -37,17 +37,19 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 	mut close := ui.button(text: 'Create')
 	close.set_bounds(86, 255, 145, 25)
 
-	mut can := ui.button(text: 'Cancel')
-	can.set_bounds(20, 255, 60, 25)
-	can.set_click(fn (mut win ui.Window, btn ui.Button) {
-		win.components = win.components.filter(mut it !is ui.Modal)
+	mut can := ui.button(
+		text: 'Cancel'
+		bounds: ui.Bounds{20, 255, 60, 25}
+	)
+	can.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
+		e.ctx.win.components = e.ctx.win.components.filter(mut it !is ui.Modal)
 	})
 	modal.add_child(can)
 
 	close.set_click(fn (mut win ui.Window, btn ui.Button) {
-		name := &ui.TextField(win.get_from_id('NewProj-Name')).text
-		des := &ui.TextField(win.get_from_id('NewProj-Description')).text
-		ver := &ui.TextField(win.get_from_id('NewProj-Version')).text
+		name := win.get[&ui.TextField]('NewProj-Name').text
+		des := win.get[&ui.TextField]('NewProj-Description').text
+		ver := win.get[&ui.TextField]('NewProj-Version').text
 
 		lic := win.extra_map['np-lic']
 		dir := win.extra_map['workspace']
@@ -57,7 +59,7 @@ fn new_project_click(mut win ui.Window, com ui.MenuItem) {
 
 		win.components = win.components.filter(mut it !is ui.Modal)
 
-		mut com := &ui.Tree2(win.get_from_id('proj-tree'))
+		mut com := win.get[&ui.Tree2]('proj-tree')
 		refresh_tree(mut win, dir, mut com)
 	})
 
@@ -74,7 +76,7 @@ fn create_input(mut win ui.Window, mut vbox ui.VBox, title string, x int, y int)
 	work_lbl.pack()
 	vbox.add_child(work_lbl)
 
-	mut work := ui.textfield(win, '')
+	mut work := ui.text_field(text: '')
 	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
 		work.width = int(f64_max(200, ui.text_width(win, work.text) + work.text.len))
 		work.height = ui.text_height(win, 'A{0|') + 8

@@ -58,7 +58,7 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 	jump_sv(mut win, tb.height, tb.lines.len)
 
 	if is_enter {
-		mut tbox := &ui.TextArea(win.get_from_id('vermbox'))
+		mut tbox := win.get[&ui.TextArea]('vermbox')
 		tbox.last_letter = ''
 
 		mut txt := tb.lines[tb.caret_top]
@@ -75,7 +75,7 @@ fn before_txt_change(mut win ui.Window, tb ui.TextArea) bool {
 }
 
 fn jump_sv(mut win ui.Window, tbh int, lines int) {
-	mut sv := &ui.ScrollView(win.get_from_id('vermsv'))
+	mut sv := win.get[&ui.ScrollView]('vermsv')
 	val := tbh - sv.height
 	if lines <= 1 {
 		sv.scroll_i = 0
@@ -87,7 +87,7 @@ fn jump_sv(mut win ui.Window, tbh int, lines int) {
 fn on_cmd(mut win ui.Window, box ui.TextArea, cmd string) {
 	args := cmd.split(' ')
 
-	mut tbox := &ui.TextArea(win.get_from_id('vermbox'))
+	mut tbox := win.get[&ui.TextArea]('vermbox')
 	if args[0] == 'cd' {
 		cmd_cd(mut win, mut tbox, args)
 		add_new_input_line(mut tbox)

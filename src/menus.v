@@ -119,9 +119,8 @@ fn (mut app App) set_theme_from_save() {
 
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	theme := ui.theme_by_name(com.text)
-	mut conf := get_config(win)
-	conf.set('theme', com.text)
-	conf.save()
+	config.set('theme', com.text)
+	config.save()
 	win.set_theme(theme)
 }
 

@@ -370,8 +370,8 @@ fn find_all_fn_in_vlib(mut win ui.Window, mod string) []string {
 }
 
 fn get_v_exe(win &ui.Window) string {
-	mut conf := get_config(win)
-	mut saved := conf.get_value('v_exe').replace('\{user_home}', '~')
+	mut saved := config.get_value('v_exe').replace('\{user_home}', '~')
+	dump(saved)
 	saved = saved.replace('~', os.home_dir().replace('\\', '/'))
 
 	if saved.len <= 0 {
@@ -383,8 +383,8 @@ fn get_v_exe(win &ui.Window) string {
 			vexe = os.environ()['VEXE'].replace('\\', '/')
 		}
 		vexe = vexe.replace(os.home_dir().replace('\\', '/'), '~')
-		conf.set('v_exe', vexe)
-		conf.save()
+		config.set('v_exe', vexe)
+		config.save()
 		return vexe
 	} else {
 		return saved

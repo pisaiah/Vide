@@ -6,7 +6,7 @@ import os
 import hc
 
 const (
-	version = '0.0.13-dev'
+	version = '0.0.14-dev'
 )
 
 struct App {
@@ -35,17 +35,15 @@ fn main() {
 		ui_mode: false
 	)
 
-	mut conf := config(mut window)
-
 	mut app := &App{
 		win: window
-		conf: conf
+		conf: config
 	}
 
 	// our custom config
 	get_v_exe(window)
 
-	fs := conf.get_value('font_size')
+	fs := config.get_value('font_size')
 	if fs.len > 0 {
 		window.font_size = fs.int()
 	}
@@ -56,7 +54,7 @@ fn main() {
 	// Set Saved Theme
 	app.set_theme_from_save()
 
-	workd := conf.get_value('workspace_dir').replace('\{user_home}', '~').replace('\\',
+	workd := config.get_value('workspace_dir').replace('\{user_home}', '~').replace('\\',
 		'/') // '
 	folder := os.expand_tilde_to_home(workd).replace('~', os.home_dir())
 
@@ -83,7 +81,7 @@ fn main() {
 		if 'font_load' !in win.extra_map {
 			download_jbm()
 			mut conf := get_config(win)
-			saved_font := conf.get_value('main_font')
+			saved_font := config.get_value('main_font')
 			if saved_font.len > 0 {
 				font := win.add_font('Saved Font', saved_font)
 				win.graphics_context.font = font
@@ -103,7 +101,6 @@ fn main() {
 	mut console_box := create_box(window)
 	console_box.z_index = 2
 	console_box.set_id(mut window, 'consolebox')
-	// window.add_child(console_box)
 
 	mut sv := ui.scroll_view(
 		view: console_box
@@ -122,7 +119,7 @@ fn main() {
 		h1: 70
 		h2: 20
 		bounds: ui.Bounds{
-			y: 28
+			y: 30
 			x: 4
 		}
 	)
@@ -143,9 +140,9 @@ fn main() {
 
 fn setup_tree(mut window ui.Window, folder string) &ui.Tree2 {
 	mut tree2 := ui.tree2('Projects')
-	tree2.set_bounds(4, 28, 300, 200)
+	tree2.set_bounds(4, 30, 300, 200)
 	tree2.draw_event_fn = fn (mut win ui.Window, mut tree ui.Component) {
-		tree.height = gg.window_size().height - 30
+		tree.height = gg.window_size().height - 32
 	}
 
 	files := os.ls(folder) or { [] }
