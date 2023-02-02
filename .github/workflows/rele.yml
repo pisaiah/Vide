@@ -155,7 +155,7 @@ jobs:
           tag: ${{ steps.split.outputs._2 }}
           name: ${{ steps.split.outputs._2 }}
           commit: ${{ github.sha }}
-          draft: true
+          draft: false
           prerelease: false
 
   publish:
