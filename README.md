@@ -15,7 +15,7 @@
 <kbd><img src="https://user-images.githubusercontent.com/16439221/198676647-0e86a02d-4309-4221-a126-72e58701a358.png" height="260px"><br>Dark Theme</kbd><br>
 
 <kbd><img src="https://user-images.githubusercontent.com/16439221/198677448-14c37d2f-1b77-4388-87a1-527b99767fbb.png" height="180px"><br>UI for VPM</kbd>
-<kbd><img src="https://v-ide.com/assets/new-proj.png" height="180px"><br>Multiple Projects</kbd>
+<kbd><img src="https://user-images.githubusercontent.com/16439221/230800228-faf85de6-3db7-4aad-ba88-9a00085fedde.png" height="180px"><br>Multiple Projects</kbd>
 <kbd><img src="https://user-images.githubusercontent.com/16439221/198676998-57874962-f79f-4cf2-b224-e1841c949d34.png" height="180px"><br>Autocomplete (Beta)</kbd>
 
 
