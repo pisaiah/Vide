@@ -14,9 +14,9 @@ fn (mut app App) make_menubar() {
 	mut window := app.win
 	window.bar = ui.menu_bar()
 
-	file_img := $embed_file('assets/icons8-file-48.png')
+	file_img := $embed_file('assets/file-icon.png')
 	edit_img := $embed_file('assets/icons8-edit-24.png')
-	help_img := $embed_file('assets/icons8-help-24.png')
+	help_img := $embed_file('assets/help-icon.png')
 	save_img := $embed_file('assets/icons8-save-24.png')
 	theme_img := $embed_file('assets/icons8-change-theme-24.png')
 
@@ -32,36 +32,31 @@ fn (mut app App) make_menubar() {
 		children: [
 			ui.menu_item(
 				text: 'New Project..'
-				click_event_fn: new_project_click
+				click_event_fn: app.new_project_click
 			),
 			ui.menu_item(
 				text: 'New File...'
-				click_event_fn: new_file_click
+				// click_event_fn: new_file_click
 			),
 			ui.menu_item(
 				text: 'Save'
-				click_event_fn: save_click
+				// click_event_fn: save_click
 			),
 			ui.menu_item(
 				text: 'Run'
-				click_event_fn: run_click
+				// click_event_fn: run_click
 			),
-			/*
-			ui.menu_item(
-				text: 'Vpm UI'
-				click_event_fn: vpm_click
-			),*/
 			ui.menu_item(
 				text: 'Manage Modules..'
-				click_event_fn: vpm_click_
+				// click_event_fn: vpm_click_
 			),
 			ui.menu_item(
 				text: 'Settings'
-				click_event_fn: settings_click
+				// click_event_fn: settings_click
 			),
 			ui.menu_item(
 				text: 'Manage V'
-				click_event_fn: show_install_modal
+				// click_event_fn: show_install_modal
 			),
 		]
 	)
@@ -80,6 +75,14 @@ fn (mut app App) make_menubar() {
 				click_event_fn: about_click
 			),
 			ui.menu_item(
+				text: 'Github'
+				click_event_fn: gh_click
+			),
+			ui.menu_item(
+				text: 'Discord'
+				click_event_fn: dis_click
+			),
+			ui.menu_item(
 				text: 'About iUI'
 			),
 		]
@@ -93,6 +96,14 @@ fn (mut app App) make_menubar() {
 		item := ui.menu_item(text: theme2.name, click_event_fn: on_theme_click)
 		theme_menu.add_child(item)
 	}
+
+	mut vt := vide_dark_theme()
+	item := ui.menu_item(text: 'Vide Default Dark', click_event_fn: on_theme_click)
+	theme_menu.add_child(item)
+
+	mut vlt := vide_light_theme()
+	item_ := ui.menu_item(text: 'Vide Light Theme', click_event_fn: on_theme_click)
+	theme_menu.add_child(item_)
 
 	save_menu := ui.menu_item(
 		text: 'Save'
@@ -109,42 +120,62 @@ fn (mut app App) make_menubar() {
 }
 
 fn (mut app App) set_theme_from_save() {
+	/*
 	name := app.get_saved_value('theme')
 	if name.len > 1 {
 		theme := ui.theme_by_name(name)
 		app.win.set_theme(theme)
 		theme.setup_fn(mut app.win)
-	}
+	}*/
 }
 
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
+	if com.text == 'Vide Default Dark' {
+		mut vt := vide_dark_theme()
+		win.set_theme(vt)
+		return
+	}
+	if com.text == 'Vide Light Theme' {
+		mut vt := vide_light_theme()
+		win.set_theme(vt)
+		return
+	}
+
 	theme := ui.theme_by_name(com.text)
-	config.set('theme', com.text)
-	config.save()
+	// config.set('theme', com.text)
+	// config.save()
 	win.set_theme(theme)
+}
+
+fn gh_click(mut win ui.Window, com ui.MenuItem) {
+	ui.open_url('https://github.com/isaiahpatton/vide')
+}
+
+fn dis_click(mut win ui.Window, com ui.MenuItem) {
+	ui.open_url('https://discord.gg/NruVtYBf5g')
 }
 
 fn about_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'About VIDE')
+
 	mut vbox := ui.vbox(win)
 	vbox.set_pos(50, 16)
 
-	logo := &gg.Image(win.id_map['vide_logo'])
-	mut logo_im := ui.image(win, logo)
-	logo_im.set_bounds(4, 2, logo.width, logo.height)
+	// logo := &gg.Image(win.id_map['vide_logo'])
+	// mut logo_im := ui.image(win, logo)
+	// logo_im.set_bounds(4, 2, logo.width, logo.height)
 
-	mut label := ui.label(win,
-		'Simple IDE for the V Programming Language made in V.\n\nVersion: ' + version +
+	mut label := ui.label(win, 'Simple IDE for the V Language made in V.\n\nVersion: ' + version +
 		'\nUI Version: ' + ui.version)
 
 	label.set_pos(4, 16)
 	label.pack()
 
 	mut copy := ui.label(win, 'Copyright © 2021-2023 by Isaiah.')
-	copy.set_pos(265, 225)
+	copy.set_pos(54, 225)
 	copy.set_config(14, true, false)
 
-	vbox.add_child(logo_im)
+	// vbox.add_child(logo_im)
 	vbox.add_child(label)
 	modal.add_child(copy)
 	modal.add_child(vbox)
@@ -158,6 +189,7 @@ fn save_click(mut win ui.Window, item ui.MenuItem) {
 fn do_save(mut win ui.Window) {
 	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
+	/*
 	mut tab := com.kids[com.active_tab]
 	for mut sv in tab {
 		if mut sv is ui.ScrollView {
@@ -169,7 +201,7 @@ fn do_save(mut win ui.Window) {
 				}
 			}
 		}
-	}
+	}*/
 }
 
 fn run_click(mut win ui.Window, item ui.MenuItem) {
@@ -178,5 +210,5 @@ fn run_click(mut win ui.Window, item ui.MenuItem) {
 	txt := com.active_tab
 	dir := os.dir(txt)
 
-	spawn run_v(dir, mut win)
+	// spawn run_v(dir, mut win)
 }

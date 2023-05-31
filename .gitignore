@@ -1,13 +1,25 @@
-.settings/
-bin/
-*.jar
+# Binaries for programs and plugins
+main
+vide2
 *.exe
-include/
-1include/
+*.exe~
+*.so
+*.dylib
 *.dll
-assets/
-!src/assets/
-!example-plugin/*.dll
-*.a
-*.h
 *.def
+
+# Ignore binary output folders
+bin/
+
+# Ignore common editor/system specific metadata
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# ENV
+.env
+
+# vweb and database
+*.db
+*.js

@@ -1,11 +1,5 @@
 <a target="_blank" href="https://icons8.com/icon/ntzOTcUNLZTF/save">Save</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-<a target="_blank" href="https://icons8.com/icon/IchwUEgoxNcw/help">Help</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-<a target="_blank" href="https://icons8.com/icon/qu5s1Ou3hLx3/themes">Themes</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 <a href="https://icons8.com/icon/OWRPl8fxkRvG/edit">Edit icon by Icons8</a>
-
-DroidSansMono.ttf - See Apache License.txt
 
 Anomaly Mono:
 	https://github.com/benbusby/anomaly-mono/
-KARISMA_:
-	https://www.1001fonts.com/karisma-font.html
