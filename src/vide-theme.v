@@ -38,7 +38,7 @@ pub fn vide_dark_theme() &ui.Theme {
 	return &ui.Theme{
 		name: 'Vide Default Dark'
 		text_color: gx.rgb(230, 230, 230)
-		background: gx.rgb(37,37,39)//gx.rgb(40, 55, 71)
+		background: gx.rgb(37, 37, 39) // gx.rgb(40, 55, 71)
 		button_bg_normal: gx.rgb(10, 10, 10)
 		button_bg_hover: gx.rgb(70, 70, 70)
 		button_bg_click: gx.rgb(50, 50, 50)
@@ -50,7 +50,7 @@ pub fn vide_dark_theme() &ui.Theme {
 		dropdown_background: gx.rgb(83, 107, 138)
 		dropdown_border: gx.rgb(93, 135, 191)
 		textbox_background: gx.rgb(34, 39, 46)
-		textbox_border: gx.rgb(93, 135, 191)//gx.blue//gx.rgb(130, 130, 130)
+		textbox_border: gx.rgb(93, 135, 191) // gx.blue//gx.rgb(130, 130, 130)
 		checkbox_selected: gx.rgb(130, 170, 220)
 		checkbox_bg: gx.rgb(5, 5, 5)
 		progressbar_fill: gx.rgb(130, 130, 130)

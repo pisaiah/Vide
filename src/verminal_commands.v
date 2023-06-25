@@ -75,7 +75,9 @@ fn cmd_exec_unix(mut win ui.Window, mut tbox ui.Textbox, args []string) {
 
 // Windows
 fn cmd_exec_win(mut win ui.Window, mut tbox ui.Textbox, args []string) {
-	mut pro := os.new_process('cmd')
+	mut pro := os.new_process('C:\\Windows\\System32\\cmd.exe')
+
+	varg := args[1..].join(' ')
 
 	mut argsa := ['/min', '/c', args.join(' ')]
 	pro.set_args(argsa)
@@ -85,6 +87,14 @@ fn cmd_exec_win(mut win ui.Window, mut tbox ui.Textbox, args []string) {
 
 	for pro.is_alive() {
 		mut out := pro.stdout_read()
+		mut oute := pro.stderr_read()
+
+		if oute.len > 0 {
+			for line in oute.split_into_lines() {
+				tbox.lines << line.trim_space()
+			}
+		}
+
 		if out.len > 0 {
 			for line in out.split_into_lines() {
 				tbox.lines << line.trim_space()

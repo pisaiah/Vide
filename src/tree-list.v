@@ -41,9 +41,8 @@ fn make_tree2(fold string) &ui.TreeNode {
 fn tree2_click(mut ctx ui.GraphicsContext, tree &ui.Tree2, node &ui.TreeNode) {
 	txt := node.text
 	dump(txt)
-	path := os.real_path(txt)	
+	path := os.real_path(txt)
 	dump(path)
-
 	if !os.is_dir(path) {
 		new_tab(mut ctx.win, txt)
 	}
@@ -54,9 +53,8 @@ fn refresh_tree(mut window ui.Window, fold string, mut tree ui.Tree2) {
 	// TODO
 	dump('REFRESH')
 	tree.children.clear()
-	
-	dump(fold)
 
+	dump(fold)
 	files := os.ls(fold) or { [] }
 	tree.click_event_fn = tree2_click
 

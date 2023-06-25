@@ -21,13 +21,13 @@ fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 	modal.add_child(vbox)
 
 	mut lic := make_license_section(win)
-	
+
 	lic_sv := ui.scroll_view(
 		view: lic
 		bounds: ui.Bounds{-5, 0, 210, 150}
 		padding: 0
 	)
-	
+
 	mut lic_tb := ui.title_box('License', [lic_sv])
 	lic_tb.set_bounds(25, 125, 5, 25)
 	modal.add_child(lic_tb)
@@ -65,10 +65,9 @@ fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 		lic := win.extra_map['np-lic']
 		dir := app.confg.workspace_dir
 		templ := win.extra_map['np-templ']
-		
+
 		dump(lic)
 		dump(templ)
-
 		args := [name, des, ver, lic]
 
 		new_project(
@@ -108,7 +107,7 @@ fn make_license_section(window &ui.Window) &ui.VBox {
 	group.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
 		e.ctx.win.extra_map['np-lic'] = e.target.text
 	})
-	
+
 	group.setup()
 	hbox.pack()
 	return hbox
@@ -128,11 +127,11 @@ fn make_templ_section(window &ui.Window) &ui.VBox {
 		group.add(box)
 		hbox.add_child(box)
 	}
-	
+
 	group.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
 		e.ctx.win.extra_map['np-templ'] = e.target.text
 	})
-	
+
 	group.setup()
 	hbox.pack()
 	return hbox

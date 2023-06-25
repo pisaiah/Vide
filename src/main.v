@@ -32,10 +32,10 @@ fn main() {
 	confg := make_config()
 
 	mut win := ui.make_window(
-		width: 910
-		height: 520
+		width: 930
+		height: 530
 		title: 'Vide'
-		font_size: 16
+		font_size: 18
 		font_path: confg.font_path
 	)
 
@@ -58,7 +58,7 @@ fn main() {
 	hbox.add_child(activity_bar)
 
 	hbox.add_child(tree)
-	
+
 	// Search box
 	search := app.setup_search(mut win, folder)
 	hbox.add_child(search)
@@ -111,26 +111,26 @@ fn main() {
 fn (mut app App) make_activity_bar() &ui.VBox {
 	mut activity_bar := ui.vbox(app.win)
 	activity_bar.set_bounds(0, 25, 41, 100)
-	
+
 	activity_bar.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		hei := e.ctx.gg.window_size().height
 		e.ctx.theme.menu_bar_fill_fn(e.target.x, e.target.y, e.target.width, hei, e.ctx)
 	})
-	
+
 	// Explore Button
 	img_wide_file := $embed_file('assets/explore.png')
 	mut calb := app.icon_btn(img_wide_file.to_bytes(), app.win)
 
 	activity_bar.add_child(calb)
-	
+
 	calb.subscribe_event('mouse_up', app.calb_click)
-	
+
 	// Search Button
 	img_search_file := $embed_file('assets/search.png')
 	mut serb := app.icon_btn(img_search_file.to_bytes(), app.win)
 
 	activity_bar.add_child(serb)
-	
+
 	serb.subscribe_event('mouse_up', app.serb_click)
 
 	// Git Commit satus Button
@@ -138,7 +138,7 @@ fn (mut app App) make_activity_bar() &ui.VBox {
 	mut gitb := app.icon_btn(img_gitm_file.to_bytes(), app.win)
 
 	activity_bar.add_child(gitb)
-	
+
 	gitb.subscribe_event('mouse_up', app.calb_click)
 
 	return activity_bar
@@ -146,9 +146,7 @@ fn (mut app App) make_activity_bar() &ui.VBox {
 
 fn (mut app App) icon_btn(data []u8, win &ui.Window) &ui.Button {
 	mut ggc := win.gg
-	gg_im := ggc.create_image_from_byte_array(data) or {
-		return ui.button(text: 'NO IMG')
-	}
+	gg_im := ggc.create_image_from_byte_array(data) or { return ui.button(text: 'NO IMG') }
 	cim := ggc.cache_image(gg_im)
 	mut btn := ui.button_with_icon(cim)
 
@@ -187,7 +185,6 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 }
 
 fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollView {
-	
 	mut search_box := &ui.Panel{
 		x: 2
 		y: 0
@@ -195,22 +192,23 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 		height: 250
 		layout: ui.FlowLayout{}
 	}
-	
+
 	search_box.set_layout(ui.BoxLayout{ ori: 1 })
-	
+
 	search_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
-		e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height, gx.blue)
+		e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
+			gx.blue)
 	})
-	
+
 	search_field := ui.text_field(
 		text: 'Search ...'
 		bounds: ui.Bounds{1, 1, 190, 25}
 	)
 	search_box.add_child(search_field)
-	
+
 	mut stb := ui.title_box('Search', [search_box])
 	stb.set_bounds(4, 4, 200, 250)
-	
+
 	// hbox.add_child(stb)
 
 	mut sv := ui.scroll_view(

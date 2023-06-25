@@ -9,7 +9,7 @@ mut:
 	workspace_dir string
 	vexe          string
 	font_path     string
-	font_size     int    = 16
+	font_size     int    = 18
 	theme         string = 'Vide Default Dark'
 }
 

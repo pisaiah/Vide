@@ -26,7 +26,7 @@ fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
 			e.target.width -= app.activty_speed
 		}
 		if e.target.width < app.activty_speed {
-			e.target.width = 1
+			e.target.width = 0
 		}
 	} else {
 		if e.target.width < 250 {
@@ -62,7 +62,7 @@ fn (mut app App) search_pane_draw(mut e ui.DrawEvent) {
 			e.target.width -= app.activty_speed
 		}
 		if e.target.width < app.activty_speed {
-			e.target.width = 1
+			e.target.width = 0
 		}
 	} else {
 		if e.target.width < 250 {

@@ -107,16 +107,8 @@ fn new_tab(mut window ui.Window, file string) {
 
 	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
-	mut code_box := ui.text_box(lines) // ui.textarea(window, lines)
-	// mut code_box := ui.textarea(window, lines)
+	mut code_box := ui.text_box(lines)
 
-	// code_box.text_change_event_fn = codebox_text_change
-	// code_box.after_draw_event_fn = on_text_area_draw
-	// code_box.line_draw_event_fn = draw_code_suggest
-	// code_box.active_line_draw_event = text_area_testing
-	// code_box.hide_border = true
-	// code_box.padding_x = 8
-	// code_box.padding_y = 8
 	code_box.set_bounds(0, 0, 620, 250)
 
 	mut scroll_view := ui.scroll_view(
@@ -126,7 +118,8 @@ fn new_tab(mut window ui.Window, file string) {
 		padding: 0
 	)
 
-	// scroll_view.after_draw_event_fn = on_runebox_draw
+	scroll_view.set_border_painted(false)
+
 	scroll_view.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
 		e.target.width = tb.width
@@ -146,12 +139,12 @@ fn new_tab(mut window ui.Window, file string) {
 			} else if cb.height < min {
 				cb.height = min
 			}
-			
+
 			// Do save
 			if cb.ctrl_down && cb.last_letter == 's' {
 				cb.ctrl_down = false
 				os.write_file(file, cb.lines.join('\n')) or {}
-				
+
 				execute_syntax_check(file)
 			}
 		}
@@ -168,7 +161,6 @@ fn execute_syntax_check(file string) {
 	res := os.execute('${vexe} -check-syntax ${file}')
 	dump(res)
 }
-
 
 fn code_textarea_draw_line_event(mut e ui.DrawTextlineEvent) {
 	mut cb := e.target

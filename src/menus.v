@@ -20,11 +20,14 @@ fn (mut app App) make_menubar() {
 	save_img := $embed_file('assets/icons8-save-24.png')
 	theme_img := $embed_file('assets/icons8-change-theme-24.png')
 
-	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), 24, 22)
-	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), 24, 22)
-	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), 24, 22)
-	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), 24, 22)
-	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), 24, 22)
+	i_w := 26
+	i_h := 26
+
+	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), i_w, i_h)
+	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), i_w, i_h)
+	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), i_w, i_h)
+	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), i_w, i_h)
+	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), i_w, i_h)
 
 	file_menu := ui.menu_item(
 		text: 'File'
@@ -40,11 +43,11 @@ fn (mut app App) make_menubar() {
 			),
 			ui.menu_item(
 				text: 'Save'
-				// click_event_fn: save_click
+				click_event_fn: save_click
 			),
 			ui.menu_item(
 				text: 'Run'
-				// click_event_fn: run_click
+				click_event_fn: run_click
 			),
 			ui.menu_item(
 				text: 'Manage Modules..'
@@ -189,26 +192,38 @@ fn save_click(mut win ui.Window, item ui.MenuItem) {
 fn do_save(mut win ui.Window) {
 	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
-	/*
 	mut tab := com.kids[com.active_tab]
 	for mut sv in tab {
 		if mut sv is ui.ScrollView {
 			for mut child in sv.children {
-				if mut child is ui.TextArea {
+				if mut child is ui.Textbox {
 					os.write_file(com.active_tab, child.lines.join('\n')) or {
-						set_console_text(mut win, 'Unable to save file!')
+						// set_console_text(mut win, 'Unable to save file!')
 					}
 				}
 			}
 		}
-	}*/
+	}
 }
 
 fn run_click(mut win ui.Window, item ui.MenuItem) {
 	com := &ui.Tabbox(win.get_from_id('main-tabs'))
 
 	txt := com.active_tab
-	dir := os.dir(txt)
+	mut dir := os.dir(txt)
 
-	// spawn run_v(dir, mut win)
+	if dir.ends_with('src') {
+		dir = os.dir(dir)
+	}
+
+	args := ['v', '-skip-unused', 'run', dir]
+
+	mut tbox := win.get[&ui.Textbox]('vermbox')
+
+	spawn verminal_cmd_exec(mut win, mut tbox, args)
+
+	jump_sv(mut win, tbox.height, tbox.lines.len)
+
+	win.extra_map['update_scroll'] = 'true'
+	win.extra_map['lastcmd'] = args.join(' ')
 }
