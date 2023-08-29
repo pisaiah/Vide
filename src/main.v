@@ -23,6 +23,8 @@ mut:
 	confg           &Config
 }
 
+pub fn C.emscripten_run_script(&char)
+
 fn main() {
 	vide_home := os.join_path(os.home_dir(), '.vide')
 	folder := os.join_path(vide_home, 'workspace')
@@ -32,8 +34,8 @@ fn main() {
 	confg := make_config()
 
 	mut win := ui.make_window(
-		width: 930
-		height: 530
+		width: 900
+		height: 550
 		title: 'Vide'
 		font_size: 18
 		font_path: confg.font_path
@@ -46,6 +48,8 @@ fn main() {
 		tb: ui.tabbox(win)
 		confg: confg
 	}
+	
+	win.id_map['app'] = app
 
 	app.make_menubar()
 
@@ -68,7 +72,7 @@ fn main() {
 	app.tb.set_bounds(0, 0, 400, 200)
 	app.welcome_tab('')
 
-	mut console_box := create_box(win)
+	mut console_box := create_box(mut win)
 	console_box.z_index = 2
 	console_box.set_id(mut win, 'consolebox')
 
@@ -107,6 +111,8 @@ fn main() {
 	win.add_child(hbox)
 	win.gg.run()
 }
+
+// fn C.emscripten_run_script()
 
 fn (mut app App) make_activity_bar() &ui.VBox {
 	mut activity_bar := ui.vbox(app.win)
@@ -158,7 +164,7 @@ fn (mut app App) icon_btn(data []u8, win &ui.Window) &ui.Button {
 }
 
 fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView {
-	mut tree2 := ui.tree2('My Workspace')
+	mut tree2 := ui.tree('My Workspace')
 	tree2.set_bounds(0, 0, 250, 200)
 	tree2.needs_pack = true
 
@@ -176,7 +182,7 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 		// padding: 0
 	)
 	sv.subscribe_event('draw', app.proj_tree_draw)
-	tree2.subscribe_event('draw', fn [mut app] (mut e ui.DrawEvent) {
+	tree2.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		e.target.width = e.target.parent.width
 	})
 
@@ -217,7 +223,7 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 		// padding: 0
 	)
 	sv.subscribe_event('draw', app.search_pane_draw)
-	stb.subscribe_event('draw', fn [mut app] (mut e ui.DrawEvent) {
+	stb.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		e.target.width = e.target.parent.width - 7
 	})
 

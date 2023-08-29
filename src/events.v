@@ -1,9 +1,7 @@
 module main
 
 import iui as ui
-import os
 import gg
-import gx
 
 // Change the width of the project tree to correspond with the collapse state.
 fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
@@ -14,7 +12,6 @@ fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
 
 	if app.collapse_tree {
 		mx := app.win.mouse_x
-		my := app.win.mouse_y
 		if mx < e.target.width || mx < e.target.x {
 			if e.target.width < 250 {
 				e.target.width += app.activty_speed
@@ -50,7 +47,6 @@ fn (mut app App) search_pane_draw(mut e ui.DrawEvent) {
 
 	if app.collapse_search {
 		mx := app.win.mouse_x
-		my := app.win.mouse_y
 		if mx < e.target.width || mx < e.target.x {
 			if e.target.width < 250 {
 				e.target.width += app.activty_speed

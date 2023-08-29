@@ -19,6 +19,8 @@ fn (mut app App) make_menubar() {
 	help_img := $embed_file('assets/help-icon.png')
 	save_img := $embed_file('assets/icons8-save-24.png')
 	theme_img := $embed_file('assets/icons8-change-theme-24.png')
+	run_img := $embed_file('assets/run.png')
+	fmt_img := $embed_file('assets/fmt.png')
 
 	i_w := 26
 	i_h := 26
@@ -28,6 +30,8 @@ fn (mut app App) make_menubar() {
 	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), i_w, i_h)
 	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), i_w, i_h)
 	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), i_w, i_h)
+	run_icon := ui.image_from_bytes(mut window, run_img.to_bytes(), i_w, i_h)
+	fmt_icon := ui.image_from_bytes(mut window, fmt_img.to_bytes(), i_w, i_h)
 
 	file_menu := ui.menu_item(
 		text: 'File'
@@ -55,7 +59,7 @@ fn (mut app App) make_menubar() {
 			),
 			ui.menu_item(
 				text: 'Settings'
-				// click_event_fn: settings_click
+				click_event_fn: settings_click
 			),
 			ui.menu_item(
 				text: 'Manage V'
@@ -100,11 +104,9 @@ fn (mut app App) make_menubar() {
 		theme_menu.add_child(item)
 	}
 
-	mut vt := vide_dark_theme()
 	item := ui.menu_item(text: 'Vide Default Dark', click_event_fn: on_theme_click)
 	theme_menu.add_child(item)
 
-	mut vlt := vide_light_theme()
 	item_ := ui.menu_item(text: 'Vide Light Theme', click_event_fn: on_theme_click)
 	theme_menu.add_child(item_)
 
@@ -114,12 +116,26 @@ fn (mut app App) make_menubar() {
 		click_event_fn: save_click
 	)
 
+	run_menu := ui.menu_item(
+		text: 'Run'
+		icon: run_icon
+		click_event_fn: run_click
+	)
+
+	fmt_menu := ui.menu_item(
+		text: 'v fmt'
+		icon: fmt_icon
+		click_event_fn: fmt_click
+	)
+
 	window.bar.add_child(file_menu)
 	window.bar.add_child(edit_menu)
 	window.bar.add_child(help_menu)
 	window.bar.add_child(theme_menu)
 
 	window.bar.add_child(save_menu)
+	window.bar.add_child(run_menu)
+	window.bar.add_child(fmt_menu)
 }
 
 fn (mut app App) set_theme_from_save() {
@@ -130,6 +146,12 @@ fn (mut app App) set_theme_from_save() {
 		app.win.set_theme(theme)
 		theme.setup_fn(mut app.win)
 	}*/
+}
+
+fn settings_click(mut win ui.Window, com ui.MenuItem) {
+	mut app := win.get[&App]('app')
+	file := os.join_path(app.confg.cfg_dir, 'config.yml')
+	new_tab(win, file)
 }
 
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
@@ -145,8 +167,10 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	}
 
 	theme := ui.theme_by_name(com.text)
-	// config.set('theme', com.text)
-	// config.save()
+	
+	mut app := win.get[&App]('app')
+	app.confg.theme = com.text
+	app.confg.save()
 	win.set_theme(theme)
 }
 
@@ -190,14 +214,14 @@ fn save_click(mut win ui.Window, item ui.MenuItem) {
 }
 
 fn do_save(mut win ui.Window) {
-	mut com := &ui.Tabbox(win.get_from_id('main-tabs'))
+	mut com := win.get[&ui.Tabbox]('main-tabs')
 
 	mut tab := com.kids[com.active_tab]
 	for mut sv in tab {
 		if mut sv is ui.ScrollView {
 			for mut child in sv.children {
 				if mut child is ui.Textbox {
-					os.write_file(com.active_tab, child.lines.join('\n')) or {
+					write_file(com.active_tab, child.lines.join('\n')) or {
 						// set_console_text(mut win, 'Unable to save file!')
 					}
 				}
@@ -207,7 +231,7 @@ fn do_save(mut win ui.Window) {
 }
 
 fn run_click(mut win ui.Window, item ui.MenuItem) {
-	com := &ui.Tabbox(win.get_from_id('main-tabs'))
+	com := win.get[&ui.Tabbox]('main-tabs')
 
 	txt := com.active_tab
 	mut dir := os.dir(txt)
@@ -217,6 +241,29 @@ fn run_click(mut win ui.Window, item ui.MenuItem) {
 	}
 
 	args := ['v', '-skip-unused', 'run', dir]
+
+	mut tbox := win.get[&ui.Textbox]('vermbox')
+
+	spawn verminal_cmd_exec(mut win, mut tbox, args)
+
+	jump_sv(mut win, tbox.height, tbox.lines.len)
+
+	win.extra_map['update_scroll'] = 'true'
+	win.extra_map['lastcmd'] = args.join(' ')
+}
+
+fn fmt_click(mut win ui.Window, item ui.MenuItem) {
+	com := win.get[&ui.Tabbox]('main-tabs')
+
+	txt := com.active_tab
+	/*
+	mut dir := os.dir(txt)
+
+	if dir.ends_with('src') {
+		dir = os.dir(dir)
+	}*/
+
+	args := ['v', 'fmt', '-w', txt]
 
 	mut tbox := win.get[&ui.Textbox]('vermbox')
 

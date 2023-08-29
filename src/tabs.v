@@ -6,20 +6,23 @@ import gx
 import os
 
 fn (mut app App) welcome_tab(folder string) {
-	mut title_lbl := ui.label(app.win, 'V')
-	mut title2 := ui.label(app.win, 'IDE')
+	mut title_lbl := ui.Label.new(text: 'V')
+	mut title2 := ui.Label.new(text: 'IDE')
 	title_lbl.set_config(58, true, true)
 	title2.set_config(42, true, false)
 
-	mut info_lbl := ui.label(app.win,
-		'Welcome to Vide!\nSimple IDE for the V Language made in V.\n\nVersion: ' + version +
-		', UI version: ' + ui.version)
+	mut info_lbl := ui.Label.new(
+		text: 'Welcome to Vide!\nSimple IDE for the V Language made in V.\n\nVersion: ${version}, UI version: ${ui.version}'
+	)
 	info_lbl.set_config(0, false, true)
 
-	padding_left := 28
 	padding_top := 25
 
-	mut vbox := ui.vbox(app.win)
+	mut vbox := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 1
+		)
+	)
 
 	title_lbl.set_bounds(0, 0, 28, 50)
 	title2.set_bounds(0, 11, 200, 50)
@@ -35,26 +38,32 @@ fn (mut app App) welcome_tab(folder string) {
 	vbox.add_child(hbox)
 	vbox.add_child(info_lbl)
 
-	vbox.pack()
-
 	mut lbox := app.links_box()
-	lbox.set_pos(50, 0)
+	lbox.set_pos(1, 0)
 
-	mut box := ui.hbox(app.win)
-	box.set_pos(padding_left, padding_top)
+	mut box := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 0
+			hgap: 25
+		)
+	)
+	box.set_pos(0, padding_top)
 
 	box.add_child(vbox)
 	box.add_child(lbox)
-	box.pack()
 
 	app.tb.add_child('Welcome', box)
 }
 
-fn (mut app App) links_box() &ui.VBox {
-	mut box := ui.vbox(app.win)
+fn (mut app App) links_box() &ui.Panel {
+	mut box := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 1
+		)
+	)
 
-	mut title := ui.label(app.win, 'Useful Links:')
-	title.set_config(4, false, false)
+	mut title := ui.Label.new(text: 'Useful Links:')
+	title.set_config(2, false, false)
 	title.pack()
 	box.add_child(title)
 
@@ -83,13 +92,12 @@ fn (mut app App) links_box() &ui.VBox {
 		box.add_child(link)
 	}
 
-	box.pack()
 	return box
 }
 
-fn new_tab(mut window ui.Window, file string) {
+fn new_tab(window &ui.Window, file string) {
 	dump('opening ' + file)
-	mut tb := &ui.Tabbox(window.get_from_id('main-tabs'))
+	mut tb := window.get[&ui.Tabbox]('main-tabs')
 
 	if file in tb.kids {
 		// Don't remake already open tab
@@ -108,6 +116,7 @@ fn new_tab(mut window ui.Window, file string) {
 	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
 	mut code_box := ui.text_box(lines)
+	code_box.text = file
 
 	code_box.set_bounds(0, 0, 620, 250)
 
@@ -126,9 +135,10 @@ fn new_tab(mut window ui.Window, file string) {
 		e.target.height = tb.height - 30
 	})
 
-	code_box.subscribe_event('draw', fn [file] (mut e ui.DrawEvent) {
+	code_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
 		mut cb := e.target
+		file := e.target.text
 
 		if mut cb is ui.Textbox {
 			e.target.width = tb.width
@@ -143,8 +153,7 @@ fn new_tab(mut window ui.Window, file string) {
 			// Do save
 			if cb.ctrl_down && cb.last_letter == 's' {
 				cb.ctrl_down = false
-				os.write_file(file, cb.lines.join('\n')) or {}
-
+				write_file(file, cb.lines.join('\n')) or {}
 				execute_syntax_check(file)
 			}
 		}

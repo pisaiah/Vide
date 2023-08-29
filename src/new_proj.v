@@ -68,7 +68,6 @@ fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 
 		dump(lic)
 		dump(templ)
-		args := [name, des, ver, lic]
 
 		new_project(
 			name: name
@@ -139,10 +138,6 @@ fn make_templ_section(window &ui.Window) &ui.VBox {
 
 fn checkbox_pack_height(mut e ui.DrawEvent) {
 	e.target.height = e.ctx.line_height + 8
-}
-
-fn lic_change(mut win ui.Window, com ui.Select, old_val string, new_val string) {
-	win.extra_map['np-lic'] = new_val
 }
 
 fn create_input(mut win ui.Window, mut vbox ui.VBox, title string, val string) &ui.TextField {

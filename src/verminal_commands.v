@@ -77,8 +77,6 @@ fn cmd_exec_unix(mut win ui.Window, mut tbox ui.Textbox, args []string) {
 fn cmd_exec_win(mut win ui.Window, mut tbox ui.Textbox, args []string) {
 	mut pro := os.new_process('C:\\Windows\\System32\\cmd.exe')
 
-	varg := args[1..].join(' ')
-
 	mut argsa := ['/min', '/c', args.join(' ')]
 	pro.set_args(argsa)
 

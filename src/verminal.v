@@ -7,9 +7,7 @@ module main
 import iui as ui
 import os
 
-pub fn create_box(win_ptr voidptr) &ui.Textbox {
-	mut win := &ui.Window(win_ptr)
-
+pub fn create_box(mut win ui.Window) &ui.Textbox {
 	path := os.real_path(os.home_dir())
 	win.extra_map['path'] = path
 
@@ -118,6 +116,16 @@ fn on_cmd(mut win ui.Window, box ui.Textbox, cmd string) {
 		mut path := win.extra_map['path']
 		cmd_dir(mut tbox, path, args)
 		add_new_input_line(mut tbox, win)
+	} else if args[0] == 'loadfiles' {
+		$if emscripten ? {
+			C.emscripten_run_script(c'mui.trigger = "lloadfiles"')
+		}
+		mut com := win.get[&ui.Tree2]('proj-tree')
+		if args.len == 1 {
+			refresh_tree(mut win, '/home/web_user/.vide/workspace', mut com)
+		} else {
+			refresh_tree(mut win, args[1], mut com)
+		}
 	} else if args[0] == 'v' || args[0] == 'dir' || args[0] == 'git' {
 		spawn verminal_cmd_exec(mut win, mut tbox, args)
 	} else if args[0].len == 2 && args[0].ends_with(':') {
@@ -132,6 +140,20 @@ fn on_cmd(mut win ui.Window, box ui.Textbox, cmd string) {
 
 	win.extra_map['update_scroll'] = 'true'
 	win.extra_map['lastcmd'] = cmd
+}
+
+fn wasm_save_files() {
+	$if emscripten ? {
+		C.emscripten_run_script(c'mui.trigger = "savefiles"')
+	}
+}
+
+fn write_file(path string, text string) ! {
+	println('Writing content to ${path}')
+	os.write_file(path, text)!
+	if path.ends_with('.v') || path.ends_with('.mod') {
+		wasm_save_files()
+	}
 }
 
 fn add_new_input_line(mut tbox ui.Textbox, win &ui.Window) {

@@ -273,7 +273,7 @@ indent_size = 4
 fn (c &Create) write_vmod(new bool) {
 	mut vmod_path := if new { '${c.name}/v.mod' } else { 'v.mod' }
 	vmod_path = os.join_path(c.app.confg.workspace_dir, vmod_path)
-	os.write_file(vmod_path, vmod_content(c)) or { panic(err) }
+	write_file(vmod_path, vmod_content(c)) or { panic(err) }
 }
 
 fn (c &Create) write_gitattributes(new bool) {
@@ -282,7 +282,7 @@ fn (c &Create) write_gitattributes(new bool) {
 	if !new && os.exists(gitattributes_path) {
 		return
 	}
-	os.write_file(gitattributes_path, gitattributes_content()) or { panic(err) }
+	write_file(gitattributes_path, gitattributes_content()) or { panic(err) }
 }
 
 fn (c &Create) write_editorconfig(new bool) {
@@ -291,7 +291,7 @@ fn (c &Create) write_editorconfig(new bool) {
 	if !new && os.exists(editorconfig_path) {
 		return
 	}
-	os.write_file(editorconfig_path, editorconfig_content()) or { panic(err) }
+	write_file(editorconfig_path, editorconfig_content()) or { panic(err) }
 }
 
 fn (c &Create) create_git_repo(dir string) {
@@ -299,13 +299,17 @@ fn (c &Create) create_git_repo(dir string) {
 	if !os.is_dir('${dir}/.git') {
 		res := os.execute('git init ${dir}')
 		if res.exit_code != 0 {
-			cerror('Unable to create git repo')
-			exit(4)
+			$if emscripten ? {
+				println('Unable to run "git init"')
+			} $else {
+				cerror('Unable to create git repo')
+				exit(4)
+			}
 		}
 	}
 	gitignore_path := '${dir}/.gitignore'
 	if !os.exists(gitignore_path) {
-		os.write_file(gitignore_path, gen_gitignore(c.name)) or {}
+		write_file(gitignore_path, gen_gitignore(c.name)) or {}
 	}
 }
 
@@ -321,7 +325,7 @@ fn (mut c Create) create_files_and_directories() {
 
 		fp := os.join_path(c.app.confg.workspace_dir, file.path)
 
-		os.write_file(fp, file.content) or { panic(err) }
+		write_file(fp, file.content) or { panic(err) }
 	}
 }
 

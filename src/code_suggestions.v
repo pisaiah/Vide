@@ -1,7 +1,6 @@
 module main
 
 import iui as ui
-import gg
 import gx
 import os
 
@@ -38,8 +37,6 @@ fn find_all_dot_match(sub string, mut e ui.DrawTextlineEvent) ([]string, int, in
 	dot := sub[0..(doti + 1)]
 	aft := sub[(doti + 1)..]
 
-	line_height := ui.get_line_height(e.ctx)
-
 	dw := e.ctx.gg.text_width(dot)
 	sw := e.ctx.gg.text_width(sub)
 	wid := sw - dw
@@ -60,10 +57,10 @@ fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
 
 		line_height := ui.get_line_height(e.ctx)
 
-		mut mats, mut dw, mut wid := []string{}, 0, 0
+		mut mats, mut dw, _ := []string{}, 0, 0
 
 		if sub.index('.') or { -1 } != -1 {
-			mats, dw, wid = find_all_dot_match(sub, mut e)
+			mats, dw, _ = find_all_dot_match(sub, mut e)
 		}
 
 		if sub.starts_with('import ') && sub.len > 'import '.len {
@@ -97,7 +94,7 @@ fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
 		e.ctx.gg.draw_rect_filled(x, e.y + line_height + 2, max_wid, height, bg)
 		e.ctx.gg.draw_rect_empty(x, e.y + line_height + 2, max_wid, height, gx.blue)
 
-		r := ((e.ctx.theme.text_color.r / 2) + bg.r) / 2
+		r := e.ctx.theme.text_color.r // ((e.ctx.theme.text_color.r / 2) + bg.r) / 2
 		color := gx.rgb(r, r, r)
 		conf := gx.TextCfg{
 			color: color
