@@ -38,14 +38,12 @@ fn find_all_dot_match(sub string, mut e ui.DrawTextlineEvent) ([]string, int, in
 	aft := sub[(doti + 1)..]
 
 	dw := e.ctx.gg.text_width(dot)
-	sw := e.ctx.gg.text_width(sub)
-	wid := sw - dw
 
 	trim := dot.trim_space()
 
 	mut mats := find_all_matches(mut e.ctx.win, trim, aft)
 	mats.sort(a.len > b.len)
-	return mats, dw, wid
+	return mats, dw, aft.len
 }
 
 fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
@@ -57,10 +55,16 @@ fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
 
 		line_height := ui.get_line_height(e.ctx)
 
-		mut mats, mut dw, _ := []string{}, 0, 0
+		mut mats, mut dw, mut aft := []string{}, 0, 0
 
 		if sub.index('.') or { -1 } != -1 {
-			mats, dw, _ = find_all_dot_match(sub, mut e)
+			mats, dw, aft = find_all_dot_match(sub, mut e)
+		}
+
+		mut app := e.ctx.win.get[&App]('app')
+
+		if app.popup.shown {
+			app.popup.hide(e.ctx)
 		}
 
 		if sub.starts_with('import ') && sub.len > 'import '.len {
@@ -74,37 +78,60 @@ fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
 				return
 			}
 			dw = e.ctx.text_width('import ')
+			aft = spl.len
 		}
 
 		if mats.len == 0 {
+			if app.popup.shown {
+				app.popup.hide(e.ctx)
+			}
 			return
 		}
 
-		mut max_wid := e.ctx.gg.text_width(mats[0] + ' ')
-		if max_wid < 200 {
-			max_wid = 200
+		if mats.len == 1 {
+			if sub.ends_with(mats[0]) {
+				return
+			}
 		}
 
-		height := line_height * mats.len
-		bg := e.ctx.theme.background
+		mut max_wid := e.ctx.gg.text_width(mats[0] + ' ')
+		if max_wid < 100 {
+			max_wid = 100
+		}
+
+		for mat in mats {
+			mw := e.ctx.gg.text_width(mat)
+			if mw > max_wid {
+				max_wid = mw
+			}
+		}
 
 		x := e.x + dw - 4
 
-		e.ctx.gg.draw_rect_empty(x, e.y, max_wid, line_height, gx.blue)
-		e.ctx.gg.draw_rect_filled(x, e.y + line_height + 2, max_wid, height, bg)
-		e.ctx.gg.draw_rect_empty(x, e.y + line_height + 2, max_wid, height, gx.blue)
+		e.ctx.gg.draw_rect_empty(x, e.y, max_wid, line_height, e.ctx.theme.button_border_normal)
 
-		r := e.ctx.theme.text_color.r // ((e.ctx.theme.text_color.r / 2) + bg.r) / 2
-		color := gx.rgb(r, r, r)
-		conf := gx.TextCfg{
-			color: color
-			size: e.ctx.win.font_size + box.fs
+		px := e.x + dw - e.target.x - 4
+		py := e.y + line_height - e.target.y
+
+		if app.popup.shown {
+			app.popup.hide(e.ctx)
 		}
 
-		for i, mat in mats {
-			e.ctx.draw_text(e.x + dw, e.y + line_height + 2 + (line_height * i), mat,
-				e.ctx.font, conf)
+		app.popup.width = max_wid
+		app.popup.sv.width = max_wid
+		app.popup.p.width = max_wid
+		ph := line_height * mats.len
+		app.popup.p.height = ph
+		if ph < 150 {
+			app.popup.height = ph
+			app.popup.sv.height = ph
+		} else {
+			app.popup.height = 150
+			app.popup.sv.height = 150
 		}
+
+		app.popup.set_texts(mut box, mats, aft)
+		app.popup.show(box, px, py, e.ctx)
 	}
 }
 

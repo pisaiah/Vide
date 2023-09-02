@@ -6,7 +6,7 @@ import gg
 // Change the width of the project tree to correspond with the collapse state.
 fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
 	if app.shown_activity != 0 {
-		e.target.width = 0
+		e.target.width = -1
 		return
 	}
 
@@ -22,7 +22,7 @@ fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
 		if e.target.width > app.activty_speed {
 			e.target.width -= app.activty_speed
 		}
-		if e.target.width < app.activty_speed {
+		if e.target.width <= app.activty_speed {
 			e.target.width = 0
 		}
 	} else {
@@ -41,7 +41,7 @@ fn (mut app App) proj_tree_draw(mut e ui.DrawEvent) {
 // Change the width of the project tree to correspond with the collapse state.
 fn (mut app App) search_pane_draw(mut e ui.DrawEvent) {
 	if app.shown_activity != 1 {
-		e.target.width = 0
+		e.target.width = -1
 		return
 	}
 
@@ -57,7 +57,7 @@ fn (mut app App) search_pane_draw(mut e ui.DrawEvent) {
 		if e.target.width > app.activty_speed {
 			e.target.width -= app.activty_speed
 		}
-		if e.target.width < app.activty_speed {
+		if e.target.width <= app.activty_speed {
 			e.target.width = 0
 		}
 	} else {
@@ -115,10 +115,8 @@ fn splitview_fill(mut e ui.DrawEvent) {
 }
 
 // Have the main HBox's size be set to the window size
+[deprecated: 'Not needed with latest ui, as we use Panel now']
 fn content_pane_fill_window(mut e ui.DrawEvent) {
-	size := e.ctx.gg.window_size()
-	e.target.width = size.width
-	e.target.height = size.height
 }
 
 // Have Tabbox take up the full width of the SplitView

@@ -103,7 +103,7 @@ fn on_cmd(mut win ui.Window, box ui.Textbox, cmd string) {
 		tbox.lines << win.extra_map['verm-help']
 		add_new_input_line(mut tbox, win)
 	} else if args[0] == 'version' || args[0] == 'ver' {
-		tbox.lines << 'Verminal: 0.5, UI: ' + ui.version
+		tbox.lines << 'Verminal: 0.5'
 		add_new_input_line(mut tbox, win)
 	} else if args[0] == 'cls' || args[0] == 'clear' {
 		tbox.lines.clear()

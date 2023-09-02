@@ -31,38 +31,6 @@ struct ProjectFiles {
 	content string
 }
 
-fn main_() {
-	cmd := os.args[1]
-	match cmd {
-		'new' {
-			// list of models allowed
-			project_models := ['web', 'hello_world']
-			if os.args.len == 4 {
-				// validation
-				if os.args.last() !in project_models {
-					mut error_str := 'It is not possible create a "${os.args[os.args.len - 2]}" project.\n'
-					error_str += 'See the list of allowed projects:\n'
-					for model in project_models {
-						error_str += 'v new ${os.args[os.args.len - 2]} ${model}\n'
-					}
-					eprintln(error_str)
-					exit(1)
-				}
-			}
-
-			// new_project(os.args[2..])
-		}
-		'init' {
-			init_project()
-		}
-		else {
-			cerror('unknown command: ${cmd}')
-			exit(1)
-		}
-	}
-	println('Complete!')
-}
-
 [params]
 struct CreateConfig {
 	name        string
@@ -79,7 +47,7 @@ fn new_project(cfg CreateConfig) {
 		app: cfg.app
 	}
 
-	// c.name = check_name(if args.len > 0 { args[0] } else { os.input('Input your project name: ') })
+	// project name
 	c.name = check_name(cfg.name)
 
 	if c.name == '' {
@@ -97,12 +65,10 @@ fn new_project(cfg CreateConfig) {
 		exit(3)
 	}
 
-	// c.description = if args.len > 1 { args[1] } else { os.input('Input your project description: ') }
 	c.description = cfg.description
 
 	default_version := '0.0.0'
 
-	// c.version = os.input('Input your project version: (${default_version}) ')
 	c.version = cfg.version
 	if c.version == '' {
 		c.version = default_version
@@ -110,7 +76,6 @@ fn new_project(cfg CreateConfig) {
 
 	default_license := os.getenv_opt('VLICENSE') or { 'MIT' }
 
-	// c.license = os.input('Input your project license: (${default_license}) ')
 	c.license = cfg.license
 	if c.license == '' {
 		c.license = default_license
@@ -153,24 +118,8 @@ fn new_project(cfg CreateConfig) {
 	c.create_git_repo(gdir)
 }
 
+[deprecated: 'Not used in Vide']
 fn init_project() {
-	mut c := Create{}
-	c.name = check_name(os.file_name(os.getwd()))
-	if !os.exists('v.mod') {
-		c.description = ''
-		c.write_vmod(false)
-		println('Change the description of your project in `v.mod`')
-	}
-	if !os.exists('src/main.v') {
-		c.files << ProjectFiles{
-			path: 'src/main.v'
-			content: hello_world_content()
-		}
-	}
-	c.create_files_and_directories()
-	c.write_gitattributes(false)
-	c.write_editorconfig(false)
-	c.create_git_repo('.')
 }
 
 fn cerror(e string) {

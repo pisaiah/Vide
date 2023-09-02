@@ -5,20 +5,19 @@ import iui as ui
 fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'New Project')
 
-	dump(modal.top_off)
-	dump(modal.in_height)
 	modal.top_off = 10
 	modal.in_height = 370
 
-	mut vbox := ui.vbox(win)
+	mut ip := ui.Panel.new(
+		layout: ui.BoxLayout.new(ori: 1)
+	)
 
-	create_input(mut win, mut vbox, 'Name', 'my project')
-	create_input(mut win, mut vbox, 'Description', 'Hello world!')
-	create_input(mut win, mut vbox, 'Version', '0.0.0')
+	ip.add_child(create_input(mut win, 'Name', 'my project'))
+	ip.add_child(create_input(mut win, 'Description', 'Hello world!'))
+	ip.add_child(create_input(mut win, 'Version', '0.0.0'))
 
-	vbox.set_pos(25, 10)
-	vbox.pack()
-	modal.add_child(vbox)
+	ip.set_pos(25, 5)
+	modal.add_child(ip)
 
 	mut lic := make_license_section(win)
 
@@ -57,39 +56,41 @@ fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 	win.extra_map['np-lic'] = 'MIT'
 	win.extra_map['np-templ'] = 'hello_world'
 
-	close.set_click(fn [mut app] (mut win ui.Window, btn ui.Button) {
-		name := win.get[&ui.TextField]('NewProj-Name').text
-		des := win.get[&ui.TextField]('NewProj-Description').text
-		ver := win.get[&ui.TextField]('NewProj-Version').text
-
-		lic := win.extra_map['np-lic']
-		dir := app.confg.workspace_dir
-		templ := win.extra_map['np-templ']
-
-		dump(lic)
-		dump(templ)
-
-		new_project(
-			name: name
-			description: des
-			version: ver
-			license: lic
-			template: templ
-			app: app
-		)
-
-		win.components = win.components.filter(mut it !is ui.Modal)
-
-		mut com := win.get[&ui.Tree2]('proj-tree')
-		refresh_tree(mut win, dir, mut com)
-	})
+	close.subscribe_event('mouse_up', app.new_project_click_close)
 
 	modal.add_child(close)
 	win.add_child(modal)
 }
 
-fn make_license_section(window &ui.Window) &ui.VBox {
-	mut hbox := ui.vbox(window)
+fn (mut app App) new_project_click_close(mut e ui.MouseEvent) {
+	mut win := e.ctx.win
+	name := win.get[&ui.TextField]('NewProj-Name').text
+	des := win.get[&ui.TextField]('NewProj-Description').text
+	ver := win.get[&ui.TextField]('NewProj-Version').text
+
+	lic := win.extra_map['np-lic']
+	dir := app.confg.workspace_dir
+	templ := win.extra_map['np-templ']
+
+	new_project(
+		name: name
+		description: des
+		version: ver
+		license: lic
+		template: templ
+		app: app
+	)
+
+	win.components = win.components.filter(mut it !is ui.Modal)
+
+	mut com := win.get[&ui.Tree2]('proj-tree')
+	refresh_tree(mut win, dir, mut com)
+}
+
+fn make_license_section(window &ui.Window) &ui.Panel {
+	mut p := ui.Panel.new(
+		layout: ui.BoxLayout.new(ori: 1)
+	)
 
 	choices := ['MIT', 'Unlicense / CC0', 'GPL', 'Apache', 'Mozilla Public', 'All Rights Reserved']
 
@@ -100,7 +101,7 @@ fn make_license_section(window &ui.Window) &ui.VBox {
 		box.subscribe_event('draw', checkbox_pack_height)
 
 		group.add(box)
-		hbox.add_child(box)
+		p.add_child(box)
 	}
 
 	group.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
@@ -108,12 +109,13 @@ fn make_license_section(window &ui.Window) &ui.VBox {
 	})
 
 	group.setup()
-	hbox.pack()
-	return hbox
+	return p
 }
 
-fn make_templ_section(window &ui.Window) &ui.VBox {
-	mut hbox := ui.vbox(window)
+fn make_templ_section(window &ui.Window) &ui.Panel {
+	mut hbox := ui.Panel.new(
+		layout: ui.BoxLayout.new(ori: 1)
+	)
 
 	choices := ['hello_world', 'web']
 
@@ -132,33 +134,36 @@ fn make_templ_section(window &ui.Window) &ui.VBox {
 	})
 
 	group.setup()
-	hbox.pack()
 	return hbox
 }
 
 fn checkbox_pack_height(mut e ui.DrawEvent) {
-	e.target.height = e.ctx.line_height + 8
+	e.target.height = e.ctx.line_height + 4
 }
 
-fn create_input(mut win ui.Window, mut vbox ui.VBox, title string, val string) &ui.TextField {
-	mut box := ui.hbox(win)
-	mut work_lbl := ui.label(win, title)
+fn create_input(mut win ui.Window, title string, val string) &ui.Panel {
+	mut box := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 0
+			vgap: 1
+		)
+	)
 
-	work_lbl.set_bounds(0, 0, 100, 30)
+	mut work_lbl := ui.Label.new(text: title)
+
+	work_lbl.set_bounds(0, 0, 125, 30)
 	box.add_child(work_lbl)
 
-	mut work := ui.text_field(text: val)
-	work.draw_event_fn = fn (mut win ui.Window, mut work ui.Component) {
-		work.width = int(f64_max(200, ui.text_width(win, work.text) + work.text.len))
-		work.height = ui.text_height(win, 'A{0|') + 8
-	}
+	mut work := ui.TextField.new(text: val)
+
+	work.subscribe_event('draw', fn (mut e ui.DrawEvent) {
+		txt := e.target.text
+		e.target.width = int(f64_max(200, e.ctx.text_width(txt) + txt.len))
+		e.target.height = e.ctx.line_height + 8
+	})
 
 	work.set_id(mut win, 'NewProj-' + title)
 	box.add_child(work)
 
-	box.set_pos(0, 5)
-	box.pack()
-	vbox.add_child(box)
-
-	return work
+	return box
 }

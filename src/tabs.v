@@ -12,11 +12,11 @@ fn (mut app App) welcome_tab(folder string) {
 	title2.set_config(42, true, false)
 
 	mut info_lbl := ui.Label.new(
-		text: 'Welcome to Vide!\nSimple IDE for the V Language made in V.\n\nVersion: ${version}, UI version: ${ui.version}'
+		text: 'Welcome to Vide!\nSimple IDE for V made in V.\n\nVersion: ${version}, iUI: ${ui.version}'
 	)
 	info_lbl.set_config(0, false, true)
 
-	padding_top := 25
+	padding_top := 20
 
 	mut vbox := ui.Panel.new(
 		layout: ui.BoxLayout.new(
@@ -29,11 +29,16 @@ fn (mut app App) welcome_tab(folder string) {
 	info_lbl.set_pos(5, 4)
 	info_lbl.pack()
 
-	mut hbox := ui.hbox(app.win)
+	mut hbox := ui.Panel.new(
+		layout: ui.FlowLayout.new(
+			hgap: 0
+			vgap: 0
+		)
+	)
 
 	hbox.add_child(title_lbl)
 	hbox.add_child(title2)
-	hbox.pack()
+	hbox.set_bounds(0, 0, 230, 51)
 
 	vbox.add_child(hbox)
 	vbox.add_child(info_lbl)
@@ -67,11 +72,6 @@ fn (mut app App) links_box() &ui.Panel {
 	title.pack()
 	box.add_child(title)
 
-	padding := ui.Bounds{
-		x: 12
-		y: 12
-	}
-
 	links := [
 		'V Documentation|vlang.io/docs',
 		'V stdlib docs|modules.vlang.io',
@@ -83,12 +83,11 @@ fn (mut app App) links_box() &ui.Panel {
 
 	for val in links {
 		spl := val.split('|')
-		link := ui.link(
+		mut link := ui.link(
 			text: spl[0]
 			url: 'https://' + spl[1]
-			bounds: padding
-			pack: true
 		)
+		link.set_bounds(5, 0, 150, 25)
 		box.add_child(link)
 	}
 

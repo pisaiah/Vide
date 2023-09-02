@@ -19,8 +19,9 @@ mut:
 	collapse_tree   bool
 	collapse_search bool = true
 	shown_activity  int
-	activty_speed   int = 20
+	activty_speed   int = 30
 	confg           &Config
+	popup           &MyPopup
 }
 
 pub fn C.emscripten_run_script(&char)
@@ -33,11 +34,11 @@ fn main() {
 
 	confg := make_config()
 
-	mut win := ui.make_window(
+	mut win := ui.Window.new(
 		width: 900
 		height: 550
 		title: 'Vide'
-		font_size: 18
+		font_size: confg.font_size
 		font_path: confg.font_path
 	)
 
@@ -47,14 +48,19 @@ fn main() {
 		win: win
 		tb: ui.tabbox(win)
 		confg: confg
+		popup: code_popup()
 	}
-	
+
 	win.id_map['app'] = app
 
 	app.make_menubar()
 
-	mut hbox := ui.hbox(win)
-	hbox.overflow_full = false
+	mut hbox := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			hgap: 0
+			vgap: 0
+		)
+	)
 
 	tree := app.setup_tree(mut win, folder)
 
@@ -76,7 +82,7 @@ fn main() {
 	console_box.z_index = 2
 	console_box.set_id(mut win, 'consolebox')
 
-	mut sv := ui.scroll_view(
+	mut sv := ui.ScrollView.new(
 		view: console_box
 		increment: 5
 		bounds: ui.Bounds{
@@ -87,21 +93,20 @@ fn main() {
 	)
 	sv.set_id(mut win, 'vermsv')
 
-	mut spv := ui.split_view(
+	mut spv := ui.SplitView.new(
 		first: app.tb
 		second: sv
 		min_percent: 20
 		h1: 70
 		h2: 20
 		bounds: ui.Bounds{
-			y: 28
+			y: 3
 			x: 2
 			width: 400
 			height: 400
 		}
 	)
 
-	hbox.subscribe_event('draw', content_pane_fill_window)
 	app.tb.subscribe_event('draw', tabbox_fill_width)
 	sv.subscribe_event('draw', terminal_scrollview_fill)
 	spv.subscribe_event('draw', splitview_fill)
@@ -112,11 +117,14 @@ fn main() {
 	win.gg.run()
 }
 
-// fn C.emscripten_run_script()
-
-fn (mut app App) make_activity_bar() &ui.VBox {
-	mut activity_bar := ui.vbox(app.win)
-	activity_bar.set_bounds(0, 25, 41, 100)
+fn (mut app App) make_activity_bar() &ui.Panel {
+	mut activity_bar := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 1
+			hgap: 4
+		)
+	)
+	activity_bar.set_bounds(0, 0, 41, 200)
 
 	activity_bar.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		hei := e.ctx.gg.window_size().height
@@ -154,10 +162,11 @@ fn (mut app App) icon_btn(data []u8, win &ui.Window) &ui.Button {
 	mut ggc := win.gg
 	gg_im := ggc.create_image_from_byte_array(data) or { return ui.button(text: 'NO IMG') }
 	cim := ggc.cache_image(gg_im)
-	mut btn := ui.button_with_icon(cim)
+	mut btn := ui.Button.new(icon: cim)
 
-	btn.set_bounds(4, 5, 33, 46)
+	btn.set_bounds(0, 5, 33, 46)
 	btn.z_index = 5
+	// btn.border_radius = -1
 	btn.set_area_filled(false)
 	btn.icon_height = 32
 	return btn
@@ -178,7 +187,7 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 
 	mut sv := ui.scroll_view(
 		view: tree2
-		bounds: ui.Bounds{1, 28, 250, 200}
+		bounds: ui.Bounds{1, 3, 250, 200}
 		// padding: 0
 	)
 	sv.subscribe_event('draw', app.proj_tree_draw)
@@ -191,15 +200,11 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 }
 
 fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollView {
-	mut search_box := &ui.Panel{
-		x: 2
-		y: 0
-		width: 200
-		height: 250
-		layout: ui.FlowLayout{}
-	}
-
-	search_box.set_layout(ui.BoxLayout{ ori: 1 })
+	mut search_box := ui.Panel.new(
+		layout: ui.BoxLayout.new(
+			ori: 1
+		)
+	)
 
 	search_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
@@ -219,7 +224,7 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 
 	mut sv := ui.scroll_view(
 		view: stb
-		bounds: ui.Bounds{1, 28, 240, 200}
+		bounds: ui.Bounds{1, 4, 240, 200}
 		// padding: 0
 	)
 	sv.subscribe_event('draw', app.search_pane_draw)

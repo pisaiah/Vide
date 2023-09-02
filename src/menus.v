@@ -95,8 +95,10 @@ fn (mut app App) make_menubar() {
 		]
 	)
 
-	mut theme_menu := ui.menuitem('Themes')
-	theme_menu.icon = theme_icon
+	mut theme_menu := ui.menu_item(
+		text: 'Themes'
+		icon: theme_icon
+	)
 
 	themes := ui.get_all_themes()
 	for theme2 in themes {
@@ -150,8 +152,9 @@ fn (mut app App) set_theme_from_save() {
 
 fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	mut app := win.get[&App]('app')
-	file := os.join_path(app.confg.cfg_dir, 'config.yml')
-	new_tab(win, file)
+	// file := os.join_path(app.confg.cfg_dir, 'config.yml')
+	// new_tab(win, file)
+	app.show_settings()
 }
 
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
@@ -167,7 +170,7 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	}
 
 	theme := ui.theme_by_name(com.text)
-	
+
 	mut app := win.get[&App]('app')
 	app.confg.theme = com.text
 	app.confg.save()
@@ -185,27 +188,26 @@ fn dis_click(mut win ui.Window, com ui.MenuItem) {
 fn about_click(mut win ui.Window, com ui.MenuItem) {
 	mut modal := ui.modal(win, 'About VIDE')
 
-	mut vbox := ui.vbox(win)
-	vbox.set_pos(50, 16)
+	modal.in_width = 430
+	modal.in_height = 250
 
-	// logo := &gg.Image(win.id_map['vide_logo'])
-	// mut logo_im := ui.image(win, logo)
-	// logo_im.set_bounds(4, 2, logo.width, logo.height)
+	mut p := ui.Panel.new()
+	p.set_pos(8, 16)
 
-	mut label := ui.label(win, 'Simple IDE for the V Language made in V.\n\nVersion: ' + version +
-		'\nUI Version: ' + ui.version)
+	mut label := ui.Label.new(
+		text: 'Simple IDE for the V Language made in V.\n\nVersion: ${version}\niUI: ${ui.version}'
+	)
 
 	label.set_pos(4, 16)
 	label.pack()
 
-	mut copy := ui.label(win, 'Copyright © 2021-2023 by Isaiah.')
-	copy.set_pos(54, 225)
+	mut copy := ui.Label.new(text: 'Copyright © 2021-2023 by Isaiah.')
+	copy.set_pos(16, 175)
 	copy.set_config(14, true, false)
 
-	// vbox.add_child(logo_im)
-	vbox.add_child(label)
+	p.add_child(label)
 	modal.add_child(copy)
-	modal.add_child(vbox)
+	modal.add_child(p)
 	win.add_child(modal)
 }
 
