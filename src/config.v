@@ -116,13 +116,6 @@ fn (mut app App) show_settings() {
 	p.add_child(sfp)
 	p.add_child(sfs)
 
-	/*
-	mut save_btn := ui.Button.new(
-		text: 'Save'
-	)
-	save_btn.set_bounds(0, 0, 170, 30)
-	p.add_child(save_btn)*/
-
 	mut sv := ui.ScrollView.new(
 		view: p
 	)

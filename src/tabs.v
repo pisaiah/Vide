@@ -6,65 +6,101 @@ import gx
 import os
 
 fn (mut app App) welcome_tab(folder string) {
-	mut title_lbl := ui.Label.new(text: 'V')
-	mut title2 := ui.Label.new(text: 'IDE')
-	title_lbl.set_config(58, true, true)
-	title2.set_config(42, true, false)
+	mut logo := ui.image_from_bytes(mut app.win, vide_png1.to_bytes(), 229, 90)
+	logo.set_bounds(-10, 0, 229, 90)
 
 	mut info_lbl := ui.Label.new(
-		text: 'Welcome to Vide!\nSimple IDE for V made in V.\n\nVersion: ${version}, iUI: ${ui.version}'
+		text: 'Simple IDE for V made in V.'
 	)
 	info_lbl.set_config(0, false, true)
 
-	padding_top := 20
+	padding_top := 5
 
 	mut vbox := ui.Panel.new(
-		layout: ui.BoxLayout.new(
-			ori: 1
-		)
+		layout: ui.BoxLayout.new(ori: 1, vgap: 10)
 	)
 
-	title_lbl.set_bounds(0, 0, 28, 50)
-	title2.set_bounds(0, 11, 200, 50)
-	info_lbl.set_pos(5, 4)
+	info_lbl.set_pos(0, 0)
 	info_lbl.pack()
 
 	mut hbox := ui.Panel.new(
-		layout: ui.FlowLayout.new(
-			hgap: 0
-			vgap: 0
-		)
+		layout: ui.BoxLayout.new(hgap: 0, vgap: 0)
 	)
 
-	hbox.add_child(title_lbl)
-	hbox.add_child(title2)
+	hbox.add_child(logo)
 	hbox.set_bounds(0, 0, 230, 51)
 
 	vbox.add_child(hbox)
 	vbox.add_child(info_lbl)
 
+	mut sw := ui.Titlebox.new(text: 'Start', children: [app.start_with()])
+	vbox.add_child(sw)
+
 	mut lbox := app.links_box()
 	lbox.set_pos(1, 0)
 
 	mut box := ui.Panel.new(
-		layout: ui.BoxLayout.new(
-			ori: 0
-			hgap: 25
-		)
+		layout: ui.BorderLayout.new(hgap: 25)
 	)
-	box.set_pos(0, padding_top)
+	box.set_bounds(0, padding_top, 550, 350)
+	box.subscribe_event('draw', center_box)
 
-	box.add_child(vbox)
-	box.add_child(lbox)
+	mut sbox := app.south_panel()
 
-	app.tb.add_child('Welcome', box)
+	box.add_child_with_flag(vbox, ui.borderlayout_center)
+	box.add_child_with_flag(lbox, ui.borderlayout_east)
+	box.add_child_with_flag(sbox, ui.borderlayout_south)
+
+	mut sv := ui.ScrollView.new(
+		view: box
+	)
+
+	app.tb.add_child('Welcome', sv)
+}
+
+fn center_box(mut e ui.DrawEvent) {
+	pw := e.target.parent.width
+	x := (pw / 2) - (e.target.width / 2)
+	if pw > 550 {
+		e.target.set_x(x / 2)
+	}
+}
+
+fn (mut app App) start_with() &ui.Panel {
+	mut p := ui.Panel.new(layout: ui.BoxLayout.new())
+
+	mut btn := ui.Button.new(text: 'New Project')
+	btn.set_bounds(0, 0, 150, 25)
+	btn.subscribe_event('mouse_up', fn [mut app] (mut e ui.MouseEvent) {
+		app.new_project(mut e.ctx.win)
+	})
+
+	p.set_bounds(0, 0, 160, 50)
+	p.add_child(btn)
+	return p
+}
+
+fn (mut app App) south_panel() &ui.Panel {
+	mut p := ui.Panel.new()
+
+	res := os.execute('${app.confg.vexe} version')
+
+	mut out := res.output
+	if !out.contains('V ') {
+		out = 'Error executing "v version"\nPlease see Settings'
+	}
+
+	mut btn := ui.Label.new(text: 'Compiler: ${out}')
+	btn.set_config(14, true, true)
+	btn.pack()
+
+	p.add_child(btn)
+	return p
 }
 
 fn (mut app App) links_box() &ui.Panel {
 	mut box := ui.Panel.new(
-		layout: ui.BoxLayout.new(
-			ori: 1
-		)
+		layout: ui.BoxLayout.new(ori: 1, vgap: 6)
 	)
 
 	mut title := ui.Label.new(text: 'Useful Links:')
@@ -87,10 +123,17 @@ fn (mut app App) links_box() &ui.Panel {
 			text: spl[0]
 			url: 'https://' + spl[1]
 		)
-		link.set_bounds(5, 0, 150, 25)
+		link.set_bounds(4, 0, 150, 25)
 		box.add_child(link)
 	}
 
+	mut vv := ui.Label.new(text: 'Vide™ ${version}\niUI ${ui.version}')
+	vv.set_pos(0, 10)
+	// vv.pack()
+	vv.set_config(14, true, false)
+	vv.set_bounds(5, 8, 150, 40)
+
+	box.add_child(vv)
 	return box
 }
 
@@ -170,6 +213,7 @@ fn execute_syntax_check(file string) {
 	dump(res)
 }
 
+/*
 fn code_textarea_draw_line_event(mut e ui.DrawTextlineEvent) {
 	mut cb := e.target
 
@@ -179,3 +223,4 @@ fn code_textarea_draw_line_event(mut e ui.DrawTextlineEvent) {
 		}
 	}
 }
+*/

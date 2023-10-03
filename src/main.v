@@ -46,7 +46,7 @@ fn main() {
 
 	mut app := &App{
 		win: win
-		tb: ui.tabbox(win)
+		tb: ui.Tabbox.new()
 		confg: confg
 		popup: code_popup()
 	}
@@ -185,10 +185,9 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 		tree2.add_child(node)
 	}
 
-	mut sv := ui.scroll_view(
+	mut sv := ui.ScrollView.new(
 		view: tree2
 		bounds: ui.Bounds{1, 3, 250, 200}
-		// padding: 0
 	)
 	sv.subscribe_event('draw', app.proj_tree_draw)
 	tree2.subscribe_event('draw', fn (mut e ui.DrawEvent) {
@@ -217,7 +216,7 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 	)
 	search_box.add_child(search_field)
 
-	mut stb := ui.title_box('Search', [search_box])
+	mut stb := ui.Titlebox.new(text: 'Search', children: [search_box])
 	stb.set_bounds(4, 4, 200, 250)
 
 	// hbox.add_child(stb)

@@ -8,8 +8,8 @@ pub fn vide_light_theme() &ui.Theme {
 	return &ui.Theme{
 		name: 'Vide Light'
 		text_color: gx.black
-		background: gx.rgb(210, 210, 210)
-		button_bg_normal: gx.rgb(230, 230, 230)
+		background: gx.rgb(230, 230, 230)
+		button_bg_normal: gx.rgb(240, 240, 240)
 		button_bg_hover: gx.rgb(229, 241, 251)
 		button_bg_click: gx.rgb(204, 228, 247)
 		button_border_normal: gx.rgb(190, 190, 190)
@@ -69,17 +69,17 @@ pub fn vide_theme_setup(mut win ui.Window) {
 	mut o_icons := win.create_gg_image(o_file.data(), o_file.len)
 	ctx.icon_cache['vide_theme-btn'] = win.gg.cache_image(o_icons)
 
-	mut o_file1 := $embed_file('assets/theme/bar.png')
-	o_icons = win.create_gg_image(o_file1.data(), o_file1.len)
-	ctx.icon_cache['vide_theme-bar'] = ctx.gg.cache_image(o_icons)
+	// mut o_file1 := $embed_file('assets/theme/bar.png')
+	// o_icons = win.create_gg_image(o_file1.data(), o_file1.len)
+	// ctx.icon_cache['vide_theme-bar'] = ctx.gg.cache_image(o_icons)
 
 	mut o_file2 := $embed_file('assets/theme/menu.png')
 	o_icons = win.create_gg_image(o_file2.data(), o_file2.len)
 	ctx.icon_cache['vide_theme-menu'] = ctx.gg.cache_image(o_icons)
 
-	mut o_file3 := $embed_file('assets/theme/barw.png')
-	o_icons = win.create_gg_image(o_file3.data(), o_file3.len)
-	ctx.icon_cache['vide_theme-bar-w'] = ctx.gg.cache_image(o_icons)
+	// mut o_file3 := $embed_file('assets/theme/barw.png')
+	// o_icons = win.create_gg_image(o_file3.data(), o_file3.len)
+	// ctx.icon_cache['vide_theme-bar-w'] = ctx.gg.cache_image(o_icons)
 }
 
 pub fn vide_theme_button_fill_fn(x int, y int, w int, h int, r int, bg gx.Color, ctx &ui.GraphicsContext) {
@@ -91,14 +91,17 @@ pub fn vide_theme_button_fill_fn(x int, y int, w int, h int, r int, bg gx.Color,
 }
 
 pub fn vide_theme_bar_fill_fn(x int, y f32, w int, h f32, hor bool, ctx &ui.GraphicsContext) {
-	id := if hor { ctx.icon_cache['vide_theme-bar-w'] } else { ctx.icon_cache['vide_theme-bar'] }
-
 	if hor {
-		ctx.gg.draw_image_by_id(x, y - 2, w, h + 4, id)
-		ctx.gg.draw_rect_empty(x, y - 2, w, h + 4, ctx.theme.scroll_bar_color)
+		hh := h / 2
+		ctx.gg.draw_rect_filled(x, y, w, hh, gx.rgb(88, 128, 181))
+		ctx.gg.draw_rect_filled(x, y + hh, w, hh, gx.rgb(68, 100, 140))
+		ctx.gg.draw_rect_empty(x, y, w, h, ctx.theme.scroll_bar_color)
 	} else {
-		ctx.gg.draw_image_by_id(x - 1, y, w + 3, h, id)
-		ctx.gg.draw_rect_empty(x - 2, y, w + 5, h, ctx.theme.scroll_bar_color)
+		xx := x - 1
+		ww := (w + 2) / 2
+
+		ctx.gg.draw_rect_filled(xx, y, w + 3, h, gx.rgb(88, 128, 181))
+		ctx.gg.draw_rect_filled(xx + ww, y, ww + 1, h, gx.rgb(68, 100, 140))
 	}
 }
 

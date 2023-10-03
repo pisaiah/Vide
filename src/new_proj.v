@@ -3,7 +3,11 @@ module main
 import iui as ui
 
 fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'New Project')
+	app.new_project(mut win)
+}
+
+fn (mut app App) new_project(mut win ui.Window) {
+	mut modal := ui.Modal.new(title: 'New Project')
 
 	modal.top_off = 10
 	modal.in_height = 370
@@ -16,22 +20,16 @@ fn (mut app App) new_project_click(mut win ui.Window, com ui.MenuItem) {
 	ip.add_child(create_input(mut win, 'Description', 'Hello world!'))
 	ip.add_child(create_input(mut win, 'Version', '0.0.0'))
 
-	ip.set_pos(25, 5)
+	ip.set_pos(10, 5)
 	modal.add_child(ip)
 
-	mut lic := make_license_section(win)
+	mut lic := make_license_section()
 
-	lic_sv := ui.scroll_view(
-		view: lic
-		bounds: ui.Bounds{-5, 0, 210, 150}
-		padding: 0
-	)
-
-	mut lic_tb := ui.title_box('License', [lic_sv])
+	mut lic_tb := ui.title_box('License', [lic])
 	lic_tb.set_bounds(25, 125, 5, 25)
 	modal.add_child(lic_tb)
 
-	mut templ := make_templ_section(win)
+	mut templ := make_templ_section()
 	mut templ_tb := ui.title_box('Template', [templ])
 	templ_tb.set_bounds(260, 125, 5, 25)
 	modal.add_child(templ_tb)
@@ -87,32 +85,36 @@ fn (mut app App) new_project_click_close(mut e ui.MouseEvent) {
 	refresh_tree(mut win, dir, mut com)
 }
 
-fn make_license_section(window &ui.Window) &ui.Panel {
+fn make_license_section() &ui.Panel {
 	mut p := ui.Panel.new(
 		layout: ui.BoxLayout.new(ori: 1)
 	)
 
-	choices := ['MIT', 'Unlicense / CC0', 'GPL', 'Apache', 'Mozilla Public', 'All Rights Reserved']
+	choices := [
+		'MIT',
+		'Unlicense/CC0',
+		'GPL',
+		'Apache',
+		'Mozilla Public',
+		'All Rights Reserved',
+		'Other',
+	]
 
-	mut group := ui.buttongroup[ui.Checkbox]()
-	for choice in choices {
-		mut box := ui.check_box(text: choice)
-		box.set_bounds(5, 4, 190, 30)
-		box.subscribe_event('draw', checkbox_pack_height)
+	mut box := ui.Selectbox.new(
+		text: 'MIT'
+		items: choices
+	)
+	box.set_bounds(-5, 0, 200, 0)
 
-		group.add(box)
-		p.add_child(box)
-	}
-
-	group.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
+	box.subscribe_event('item_change', fn (mut e ui.ItemChangeEvent) {
 		e.ctx.win.extra_map['np-lic'] = e.target.text
 	})
 
-	group.setup()
+	p.add_child(box)
 	return p
 }
 
-fn make_templ_section(window &ui.Window) &ui.Panel {
+fn make_templ_section() &ui.Panel {
 	mut hbox := ui.Panel.new(
 		layout: ui.BoxLayout.new(ori: 1)
 	)
@@ -143,22 +145,19 @@ fn checkbox_pack_height(mut e ui.DrawEvent) {
 
 fn create_input(mut win ui.Window, title string, val string) &ui.Panel {
 	mut box := ui.Panel.new(
-		layout: ui.BoxLayout.new(
-			ori: 0
-			vgap: 1
-		)
+		layout: ui.BoxLayout.new(ori: 0, vgap: 1)
 	)
 
 	mut work_lbl := ui.Label.new(text: title)
 
-	work_lbl.set_bounds(0, 0, 125, 30)
+	work_lbl.set_bounds(0, 4, 125, 30)
 	box.add_child(work_lbl)
 
 	mut work := ui.TextField.new(text: val)
 
 	work.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		txt := e.target.text
-		e.target.width = int(f64_max(200, e.ctx.text_width(txt) + txt.len))
+		e.target.width = int(f64_max(300, e.ctx.text_width(txt) + txt.len))
 		e.target.height = e.ctx.line_height + 8
 	})
 
