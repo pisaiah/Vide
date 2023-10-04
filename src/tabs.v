@@ -4,6 +4,7 @@ import iui as ui
 import gg
 import gx
 import os
+import clipboard
 
 fn (mut app App) welcome_tab(folder string) {
 	mut logo := ui.image_from_bytes(mut app.win, vide_png1.to_bytes(), 229, 90)
@@ -70,7 +71,7 @@ fn (mut app App) start_with() &ui.Panel {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new())
 
 	mut btn := ui.Button.new(text: 'New Project')
-	btn.set_bounds(0, 0, 150, 25)
+	btn.set_bounds(0, 0, 150, 30)
 	btn.subscribe_event('mouse_up', fn [mut app] (mut e ui.MouseEvent) {
 		app.new_project(mut e.ctx.win)
 	})
@@ -129,7 +130,6 @@ fn (mut app App) links_box() &ui.Panel {
 
 	mut vv := ui.Label.new(text: 'Vide™ ${version}\niUI ${ui.version}')
 	vv.set_pos(0, 10)
-	// vv.pack()
 	vv.set_config(14, true, false)
 	vv.set_bounds(5, 8, 150, 40)
 
@@ -149,9 +149,9 @@ fn new_tab(window &ui.Window, file string) {
 
 	if file.ends_with('.png') {
 		// Test
-		// comp := make_image_view(file, mut window)
-		// tb.add_child(file, comp)
-		// tb.active_tab = file
+		p := image_view(file)
+		tb.add_child(file, p)
+		tb.active_tab = file
 		return
 	}
 
@@ -177,31 +177,11 @@ fn new_tab(window &ui.Window, file string) {
 		e.target.height = tb.height - 30
 	})
 
-	code_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
-		mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
-		mut cb := e.target
-		file := e.target.text
-
-		if mut cb is ui.Textbox {
-			e.target.width = tb.width
-			hei := ui.get_line_height(e.ctx) * (cb.lines.len + 1)
-			min := tb.height - 30
-			if hei > min {
-				cb.height = hei
-			} else if cb.height < min {
-				cb.height = min
-			}
-
-			// Do save
-			if cb.ctrl_down && cb.last_letter == 's' {
-				cb.ctrl_down = false
-				write_file(file, cb.lines.join('\n')) or {}
-				execute_syntax_check(file)
-			}
-		}
-	})
+	code_box.subscribe_event('draw', code_box_draw)
 
 	code_box.subscribe_event('current_line_draw', text_box_active_line_draw)
+
+	code_box.before_txtc_event_fn = text_change
 
 	tb.add_child(file, scroll_view)
 	tb.active_tab = file
@@ -213,14 +193,121 @@ fn execute_syntax_check(file string) {
 	dump(res)
 }
 
-/*
-fn code_textarea_draw_line_event(mut e ui.DrawTextlineEvent) {
-	mut cb := e.target
+fn image_view(path string) &ui.ScrollView {
+	mut p := ui.Panel.new()
 
-	if mut cb is ui.TextArea {
-		if cb.caret_top == e.line {
-			dump(e.line)
+	mut im := ui.Image.new(file: path)
+	p.add_child(im)
+
+	return ui.ScrollView.new(
+		view: p
+	)
+}
+
+fn code_box_draw(mut e ui.DrawEvent) {
+	mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
+	mut cb := e.target
+	file := e.target.text
+
+	if mut cb is ui.Textbox {
+		e.target.width = tb.width
+		hei := ui.get_line_height(e.ctx) * (cb.lines.len + 1)
+		min := tb.height - 30
+		if hei > min {
+			cb.height = hei
+		} else if cb.height < min {
+			cb.height = min
+		}
+
+		// Do save
+		if cb.ctrl_down && cb.last_letter == 's' {
+			cb.ctrl_down = false
+			write_file(file, cb.lines.join('\n')) or {}
+			execute_syntax_check(file)
+		}
+
+		// Copy
+		if cb.ctrl_down && cb.last_letter == 'c' {
+			cb.ctrl_down = false
+			// dump(cb.sel)
+		}
+
+		// Paste
+		if cb.ctrl_down && cb.last_letter == 'v' {
+			do_paste(mut cb)
 		}
 	}
 }
-*/
+
+fn do_paste(mut cb ui.Textbox) {
+	cb.ctrl_down = false
+	mut c := clipboard.new()
+
+	cl := cb.lines[cb.caret_y]
+	be := cl[..cb.caret_x]
+	af := cl[cb.caret_x..]
+
+	plines := c.get_text().split_into_lines()
+
+	if plines.len == 0 {
+		c.destroy()
+		return
+	}
+
+	if plines.len == 1 {
+		cb.lines[cb.caret_y] = be + plines[0] + af
+	} else {
+		cb.lines[cb.caret_y] = be + plines[0]
+		for i in 1 .. plines.len - 1 {
+			cb.lines.insert(cb.caret_y + i, plines[i])
+		}
+		cb.lines.insert(cb.caret_y + (plines.len - 1), plines[plines.len - 1] + af)
+		cb.caret_y = cb.caret_y + (plines.len - 1)
+		cb.caret_x = plines[plines.len - 1].len
+	}
+
+	c.destroy()
+}
+
+fn text_change(mut w ui.Window, cb ui.Textbox) bool {
+	if cb.ctrl_down && cb.last_letter == 'c' {
+		mut x0 := cb.sel.x0
+		mut y0 := cb.sel.y0
+
+		mut x1 := cb.sel.x1
+		mut y1 := cb.sel.y1
+
+		if y1 > cb.lines.len - 1 {
+			y1 = cb.lines.len - 1
+		}
+
+		if y1 < y0 {
+			sy := if y1 > y0 { y0 } else { y1 }
+			ey := if y1 > y0 { y1 } else { y0 }
+			y0 = sy
+			y1 = ey
+			sx := x1
+			ex := x0
+			x0 = sx
+			x1 = ex
+		}
+
+		mut lines := []string{}
+
+		fl := cb.lines[y0][x0..]
+		el := cb.lines[y1][..x1]
+
+		lines << fl
+		for i in (y0 + 1) .. y1 {
+			lines << cb.lines[i]
+		}
+		lines << el
+
+		mut c := clipboard.new()
+		c.copy(lines.join('\n'))
+		c.destroy()
+
+		return true
+	}
+	return false
+}

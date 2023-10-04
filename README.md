@@ -1,10 +1,10 @@
-# <img src="./src/assets/ezgif.com-gif-maker(5).png" width="280px"> 
+# <img src="./src/assets/word.png" width="220px"> 
 
  A simple IDE for the [V Programming Language](https://vlang.io/) made in V.
 
 ![licence](http://img.shields.io/badge/licence-MIT-blue?style=for-the-badge)
-[![GitHub all releases](http://img.shields.io/github/downloads/IsaiahPatton/Vide/total?style=for-the-badge)](https://github.com/IsaiahPatton/Vide/releases)
-![vlang](http://img.shields.io/badge/V-0.3-%236d8fc5?style=for-the-badge) 
+[![GitHub all releases](http://img.shields.io/github/downloads/pisaiah/Vide/total?style=for-the-badge)](https://github.com/pisaiah/Vide/releases)
+![vlang](http://img.shields.io/badge/V-0.4-%236d8fc5?style=for-the-badge) 
     </h1>
 
 <div></div>
@@ -21,9 +21,10 @@
 
 ## Resource Requirements
 
-| IDE     | Disk    | RAM     |
-|---------|---------|---------|
+| IDE     | Disk    | RAM     | Render   |
+|---------|---------|---------|----------|
 |         |         |         |
-| Vide    | < 5MB   | ~ 70MB  |
-| VS Code | 300MB   | ~ 300MB |
-|         |         |         |
+| Vide    | < 5MB   | ~ 70MB  | GG/Sokol |
+| Vide    | < 5MB   | ~ 4MB   | [Win32](https://github.com/pisaiah/v/tree/win32-native-rendering) |
+| VS Code | 300MB   | ~ 300MB | Electron |
+|         |         |         |          |
