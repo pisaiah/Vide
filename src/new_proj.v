@@ -25,12 +25,12 @@ fn (mut app App) new_project(mut win ui.Window) {
 
 	mut lic := make_license_section()
 
-	mut lic_tb := ui.title_box('License', [lic])
+	mut lic_tb := ui.Titlebox.new(text: 'License', children: [lic])
 	lic_tb.set_bounds(25, 125, 5, 25)
 	modal.add_child(lic_tb)
 
 	mut templ := make_templ_section()
-	mut templ_tb := ui.title_box('Template', [templ])
+	mut templ_tb := ui.Titlebox.new(text: 'Template', children: [templ])
 	templ_tb.set_bounds(260, 125, 5, 25)
 	modal.add_child(templ_tb)
 

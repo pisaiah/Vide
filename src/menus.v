@@ -2,7 +2,6 @@ module main
 
 import iui as ui
 import os
-import gg
 
 const (
 	vide_png0 = $embed_file('assets/ezgif.com-gif-maker(5).png')

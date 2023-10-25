@@ -221,7 +221,7 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 
 	// hbox.add_child(stb)
 
-	mut sv := ui.scroll_view(
+	mut sv := ui.ScrollView.new(
 		view: stb
 		bounds: ui.Bounds{1, 4, 240, 200}
 		// padding: 0

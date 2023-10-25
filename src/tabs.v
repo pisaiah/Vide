@@ -1,8 +1,6 @@
 module main
 
 import iui as ui
-import gg
-import gx
 import os
 import clipboard
 
@@ -270,6 +268,9 @@ fn do_paste(mut cb ui.Textbox) {
 }
 
 fn text_change(mut w ui.Window, cb ui.Textbox) bool {
+	if cb.last_letter == 'backspace' {
+	}
+
 	if cb.ctrl_down && cb.last_letter == 'c' {
 		mut x0 := cb.sel.x0
 		mut y0 := cb.sel.y0
