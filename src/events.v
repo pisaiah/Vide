@@ -103,7 +103,7 @@ fn terminal_scrollview_fill(mut e ui.DrawEvent) {
 fn splitview_fill(mut e ui.DrawEvent) {
 	size := e.ctx.gg.window_size()
 
-	w := size.width - e.target.rx - 5
+	w := size.width - e.target.rx - 1
 	h := size.height - 30
 
 	if w < 0 || h < 0 {
@@ -115,14 +115,14 @@ fn splitview_fill(mut e ui.DrawEvent) {
 }
 
 // Have the main HBox's size be set to the window size
-[deprecated: 'Not needed with latest ui, as we use Panel now']
+@[deprecated: 'Not needed with latest ui, as we use Panel now']
 fn content_pane_fill_window(mut e ui.DrawEvent) {
 }
 
 // Have Tabbox take up the full width of the SplitView
 fn tabbox_fill_width(mut e ui.DrawEvent) {
 	size := e.ctx.gg.window_size()
-	wid := size.width - e.target.x - 4
+	wid := size.width - e.target.x - 1
 	if wid < 0 {
 		return
 	}

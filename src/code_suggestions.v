@@ -52,7 +52,7 @@ fn text_box_active_line_draw(mut e ui.DrawTextlineEvent) {
 
 		sub := txt[0..box.caret_x].replace('\t', ' '.repeat(8))
 
-		line_height := ui.get_line_height(e.ctx)
+		line_height := ui.get_line_height(e.ctx) + 5
 
 		mut mats, mut dw, mut aft := []string{}, 0, 0
 

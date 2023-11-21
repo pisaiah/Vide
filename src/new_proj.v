@@ -115,11 +115,11 @@ fn make_license_section() &ui.Panel {
 }
 
 fn make_templ_section() &ui.Panel {
-	mut hbox := ui.Panel.new(
+	mut p := ui.Panel.new(
 		layout: ui.BoxLayout.new(ori: 1)
 	)
 
-	choices := ['hello_world', 'web']
+	choices := ['hello_world', 'web', 'basic_window', 'border_layout']
 
 	mut group := ui.buttongroup[ui.Checkbox]()
 	for choice in choices {
@@ -128,7 +128,7 @@ fn make_templ_section() &ui.Panel {
 		box.subscribe_event('draw', checkbox_pack_height)
 
 		group.add(box)
-		hbox.add_child(box)
+		p.add_child(box)
 	}
 
 	group.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
@@ -136,11 +136,11 @@ fn make_templ_section() &ui.Panel {
 	})
 
 	group.setup()
-	return hbox
+	return p
 }
 
 fn checkbox_pack_height(mut e ui.DrawEvent) {
-	e.target.height = e.ctx.line_height + 4
+	e.target.height = e.ctx.line_height + 5
 }
 
 fn create_input(mut win ui.Window, title string, val string) &ui.Panel {

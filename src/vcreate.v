@@ -31,7 +31,7 @@ struct ProjectFiles {
 	content string
 }
 
-[params]
+@[params]
 struct CreateConfig {
 	name        string
 	description string
@@ -96,6 +96,12 @@ fn new_project(cfg CreateConfig) {
 			'hello_world' {
 				c.set_hello_world_project_files()
 			}
+			'basic_window' {
+				c.set_basic_window_files()
+			}
+			'border_layout' {
+				c.set_border_layout_files()
+			}
 			else {
 				eprintln('${templ} model not exist')
 				exit(1)
@@ -118,7 +124,7 @@ fn new_project(cfg CreateConfig) {
 	c.create_git_repo(gdir)
 }
 
-[deprecated: 'Not used in Vide']
+@[deprecated: 'Not used in Vide']
 fn init_project() {
 }
 
@@ -163,6 +169,74 @@ fn hello_world_content() string {
 
 fn main() {
 	println('Hello World!')
+}
+"
+}
+
+fn basic_window_content() string {
+	return "module main
+
+import iui as ui // // v install https://github.com/pisaiah/ui
+
+fn main() {
+	// Create Window
+	mut window := ui.Window.new(
+		title: 'My Window'
+		width: 520
+		height: 400
+		theme: ui.theme_default()
+	)
+	
+	// A content pane
+	mut p := ui.Panel.new()
+	
+	window.add_child(p)
+
+	// Run window
+	window.run()
+}
+"
+}
+
+fn border_layout_content() string {
+	return "module main
+
+import iui as ui // v install https://github.com/pisaiah/ui
+
+struct App {
+mut:
+	p &ui.Panel
+}
+
+fn main() {
+	mut win := ui.Window.new(
+		title: 'BorderLayoutDemo'
+		width: 450
+		height: 295
+	)
+
+	mut pan := ui.Panel.new(layout: ui.BorderLayout.new())
+
+	mut app := &App{
+		p: pan
+	}
+
+	app.make_button('1 (NORTH)', ui.borderlayout_north)
+	app.make_button('2 (WEST)', ui.borderlayout_west)
+	app.make_button('3 (EAST)', ui.borderlayout_east)
+	app.make_button('4 (SOUTH)', ui.borderlayout_south)
+	app.make_button('5 (CENTER)', ui.borderlayout_center)
+
+	win.add_child(pan)
+	win.gg.run()
+}
+
+fn (mut app App) make_button(id string, constrain int) &ui.Button {
+	mut btn := ui.Button.new(
+		text: 'Button ' + id
+	)
+	app.p.add_child_with_flag(btn, constrain)
+	return btn
 }
 "
 }
@@ -283,6 +357,20 @@ fn (mut c Create) set_hello_world_project_files() {
 	c.files << ProjectFiles{
 		path: '${c.name}/src/main.v'
 		content: hello_world_content()
+	}
+}
+
+fn (mut c Create) set_basic_window_files() {
+	c.files << ProjectFiles{
+		path: '${c.name}/src/main.v'
+		content: basic_window_content()
+	}
+}
+
+fn (mut c Create) set_border_layout_files() {
+	c.files << ProjectFiles{
+		path: '${c.name}/src/main.v'
+		content: border_layout_content()
 	}
 }
 

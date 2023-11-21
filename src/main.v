@@ -11,7 +11,7 @@ const (
 	version = '0.1-pre'
 )
 
-[heap]
+@[heap]
 struct App {
 mut:
 	win             &ui.Window
@@ -124,7 +124,7 @@ fn (mut app App) make_activity_bar() &ui.Panel {
 			hgap: 4
 		)
 	)
-	activity_bar.set_bounds(0, 0, 41, 200)
+	activity_bar.set_bounds(0, 0, 40, 200)
 
 	activity_bar.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		hei := e.ctx.gg.window_size().height

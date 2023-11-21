@@ -32,7 +32,7 @@ fn (mut app App) welcome_tab(folder string) {
 	vbox.add_child(hbox)
 	vbox.add_child(info_lbl)
 
-	mut sw := ui.Titlebox.new(text: 'Start', children: [app.start_with()])
+	mut sw := ui.Titlebox.new(text: 'Start', children: [app.start_with()], padding: 4)
 	vbox.add_child(sw)
 
 	mut lbox := app.links_box()
@@ -74,7 +74,6 @@ fn (mut app App) start_with() &ui.Panel {
 		app.new_project(mut e.ctx.win)
 	})
 
-	p.set_bounds(0, 0, 160, 50)
 	p.add_child(btn)
 	return p
 }
@@ -145,6 +144,10 @@ fn new_tab(window &ui.Window, file string) {
 		return
 	}
 
+	if file.ends_with('.vide_test') {
+		// TODO
+	}
+
 	if file.ends_with('.png') {
 		// Test
 		p := image_view(file)
@@ -172,7 +175,7 @@ fn new_tab(window &ui.Window, file string) {
 	scroll_view.subscribe_event('draw', fn (mut e ui.DrawEvent) {
 		mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
 		e.target.width = tb.width
-		e.target.height = tb.height - 30
+		e.target.height = tb.height - 26
 	})
 
 	code_box.subscribe_event('draw', code_box_draw)
