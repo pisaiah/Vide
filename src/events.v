@@ -127,4 +127,26 @@ fn tabbox_fill_width(mut e ui.DrawEvent) {
 		return
 	}
 	e.target.width = wid
+
+	// TODO: add open/close tab event.
+
+	mut app := e.ctx.win.get[&App]('app')
+	mut tb := e.ctx.win.get[&ui.Tabbox]('main-tabs')
+
+	if app.confg.open_paths.len != tb.kids.len {
+		// dump('need update')
+
+		for name in tb.kids.keys() {
+			if name !in app.confg.open_paths {
+				app.confg.open_paths << name
+			}
+		}
+
+		for i, name in app.confg.open_paths {
+			if name !in tb.kids.keys() {
+				app.confg.open_paths.delete(i, name)
+			}
+		}
+		app.confg.save()
+	}
 }

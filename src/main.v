@@ -78,6 +78,12 @@ fn main() {
 	app.tb.set_bounds(0, 0, 400, 200)
 	app.welcome_tab('')
 
+	for name in app.confg.open_paths {
+		if os.exists(name) {
+			new_tab(win, name)
+		}
+	}
+
 	mut console_box := create_box(mut win)
 	console_box.z_index = 2
 	console_box.set_id(mut win, 'consolebox')

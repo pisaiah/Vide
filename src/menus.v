@@ -177,7 +177,7 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn gh_click(mut win ui.Window, com ui.MenuItem) {
-	ui.open_url('https://github.com/isaiahpatton/vide')
+	ui.open_url('https://github.com/pisaiah/vide')
 }
 
 fn dis_click(mut win ui.Window, com ui.MenuItem) {
@@ -231,6 +231,28 @@ fn do_save(mut win ui.Window) {
 	}
 }
 
+fn refresh_current_tab(mut win ui.Window, file string) {
+	mut com := win.get[&ui.Tabbox]('main-tabs')
+
+	mut tab := com.kids[com.active_tab]
+	for mut sv in tab {
+		if mut sv is ui.ScrollView {
+			for mut child in sv.children {
+				if mut child is ui.Textbox {
+					old_x := child.caret_x
+					old_y := child.caret_y
+
+					lines := os.read_lines(file) or { child.lines }
+					child.lines = lines
+
+					child.caret_x = old_x
+					child.caret_y = old_y
+				}
+			}
+		}
+	}
+}
+
 fn run_click(mut win ui.Window, item ui.MenuItem) {
 	com := win.get[&ui.Tabbox]('main-tabs')
 
@@ -264,13 +286,17 @@ fn fmt_click(mut win ui.Window, item ui.MenuItem) {
 		dir = os.dir(dir)
 	}*/
 
+	do_save(mut win)
+
 	args := ['v', 'fmt', '-w', txt]
 
 	mut tbox := win.get[&ui.Textbox]('vermbox')
 
-	spawn verminal_cmd_exec(mut win, mut tbox, args)
+	verminal_cmd_exec(mut win, mut tbox, args)
 
 	jump_sv(mut win, tbox.height, tbox.lines.len)
+
+	refresh_current_tab(mut win, txt)
 
 	win.extra_map['update_scroll'] = 'true'
 	win.extra_map['lastcmd'] = args.join(' ')

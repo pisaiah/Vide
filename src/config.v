@@ -11,6 +11,7 @@ mut:
 	font_path     string
 	font_size     int    = 18
 	theme         string = 'Vide Default Dark'
+	open_paths    []string
 }
 
 fn make_config() &Config {
@@ -45,6 +46,7 @@ fn (mut this Config) load_from_file() {
 			'font_path' { this.font_path = spl[1] }
 			'font_size' { this.font_size = spl[1].int() }
 			'theme' { this.theme = spl[1] }
+			'open_paths' { this.open_paths = spl[1].split(',') }
 			else {}
 		}
 	}
@@ -61,6 +63,7 @@ fn (mut this Config) save() {
 		'font_path: ${this.font_path}',
 		'font_size: ${this.font_size}',
 		'theme: ${this.theme}',
+		'open_paths: ${this.open_paths.join(',')}',
 	]
 
 	mut lic := ['\n\n# LICENSE.txt:', '#', '# Copyright (c) 2021-2023 Isaiah\n#',
