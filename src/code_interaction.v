@@ -1,7 +1,6 @@
 module main
 
 import iui as ui
-import gg
 
 struct MyPopup {
 	ui.Popup

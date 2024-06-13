@@ -3,33 +3,30 @@ module main
 import iui as ui
 import os
 
-const (
-	modules = ['arrays', 'benchmark', 'bitfield', 'cli', 'clipboard', 'clipboard.dummy',
-		'clipboard.x11', 'compress', 'compress.deflate', 'compress.gzip', 'compress.zlib', 'context',
-		'context.onecontext', 'crypto', 'crypto.aes', 'crypto.bcrypt', 'crypto.blowfish',
-		'crypto.cipher', 'crypto.des', 'crypto.ed25519', 'crypto.ed25519.internal.edwards25519',
-		'crypto.hmac', 'crypto.internal.subtle', 'crypto.md5', 'crypto.pem', 'crypto.rand',
-		'crypto.rc4', 'crypto.sha1', 'crypto.sha256', 'crypto.sha512', 'datatypes', 'datatypes.fsm',
-		'main', 'db', 'db.mssql', 'db.mysql', 'db.pg', 'db.sqlite', 'dl', 'dl.loader', 'dlmalloc',
-		'encoding', 'encoding.base32', 'encoding.base58', 'encoding.base64', 'encoding.binary',
-		'encoding.csv', 'encoding.hex', 'encoding.html', 'encoding.leb128', 'encoding.utf8',
-		'encoding.utf8.east_asian', 'eventbus', 'flag', 'fontstash', 'gg', 'gg.m4', 'gx', 'hash',
-		'hash.crc32', 'hash.fnv1a', 'io', 'io.util', 'json', 'json.cjson', 'log', 'maps', 'math',
-		'math.big', 'math.bits', 'math.complex', 'math.fractions', 'math.internal', 'math.stats',
-		'math.unsigned', 'math.vec', 'mssql', 'mysql', 'net', 'net.conv', 'net.ftp', 'net.html',
-		'net.http', 'net.http.chunked', 'net.http.mime', 'net.mbedtls', 'net.openssl', 'net.smtp',
-		'net.ssl', 'net.unix', 'net.urllib', 'net.websocket', 'orm', 'os', 'os.cmdline',
-		'os.filelock', 'os.font', 'os.notify', 'pg', 'picoev', 'picohttpparser', 'rand',
-		'rand.buffer', 'rand.config', 'rand.constants', 'rand.mt19937', 'rand.musl', 'rand.pcg32',
-		'rand.seed', 'rand.splitmix64', 'rand.sys', 'rand.wyrand', 'rand.xoroshiro128pp', 'readline',
-		'regex', 'runtime', 'semver', 'sokol', 'sokol.audio', 'sokol.c', 'sokol.f', 'sokol.gfx',
-		'sokol.memory', 'sokol.sapp', 'sokol.sfons', 'sokol.sgl', 'sqlite', 'stbi', 'strconv',
-		'strings', 'strings.textscanner', 'sync', 'sync.pool', 'sync.stdatomic', 'szip', 'term',
-		'term.termios', 'term.ui', 'time', 'time.misc', 'toml', 'toml.ast', 'toml.ast.walker',
-		'toml.checker', 'toml.decoder', 'toml.input', 'toml.parser', 'toml.scanner', 'toml.to',
-		'toml.token', 'toml.util', 'vweb', 'vweb.assets', 'vweb.csrf', 'vweb.sse', 'wasm', 'x',
-		'x.json2', 'x.ttf']
-)
+const modules = ['arrays', 'benchmark', 'bitfield', 'cli', 'clipboard', 'clipboard.dummy',
+	'clipboard.x11', 'compress', 'compress.deflate', 'compress.gzip', 'compress.zlib', 'context',
+	'context.onecontext', 'crypto', 'crypto.aes', 'crypto.bcrypt', 'crypto.blowfish', 'crypto.cipher',
+	'crypto.des', 'crypto.ed25519', 'crypto.ed25519.internal.edwards25519', 'crypto.hmac',
+	'crypto.internal.subtle', 'crypto.md5', 'crypto.pem', 'crypto.rand', 'crypto.rc4', 'crypto.sha1',
+	'crypto.sha256', 'crypto.sha512', 'datatypes', 'datatypes.fsm', 'main', 'db', 'db.mssql',
+	'db.mysql', 'db.pg', 'db.sqlite', 'dl', 'dl.loader', 'dlmalloc', 'encoding', 'encoding.base32',
+	'encoding.base58', 'encoding.base64', 'encoding.binary', 'encoding.csv', 'encoding.hex',
+	'encoding.html', 'encoding.leb128', 'encoding.utf8', 'encoding.utf8.east_asian', 'eventbus',
+	'flag', 'fontstash', 'gg', 'gg.m4', 'gx', 'hash', 'hash.crc32', 'hash.fnv1a', 'io', 'io.util',
+	'json', 'json.cjson', 'log', 'maps', 'math', 'math.big', 'math.bits', 'math.complex',
+	'math.fractions', 'math.internal', 'math.stats', 'math.unsigned', 'math.vec', 'mssql', 'mysql',
+	'net', 'net.conv', 'net.ftp', 'net.html', 'net.http', 'net.http.chunked', 'net.http.mime',
+	'net.mbedtls', 'net.openssl', 'net.smtp', 'net.ssl', 'net.unix', 'net.urllib', 'net.websocket',
+	'orm', 'os', 'os.cmdline', 'os.filelock', 'os.font', 'os.notify', 'pg', 'picoev',
+	'picohttpparser', 'rand', 'rand.buffer', 'rand.config', 'rand.constants', 'rand.mt19937',
+	'rand.musl', 'rand.pcg32', 'rand.seed', 'rand.splitmix64', 'rand.sys', 'rand.wyrand',
+	'rand.xoroshiro128pp', 'readline', 'regex', 'runtime', 'semver', 'sokol', 'sokol.audio',
+	'sokol.c', 'sokol.f', 'sokol.gfx', 'sokol.memory', 'sokol.sapp', 'sokol.sfons', 'sokol.sgl',
+	'sqlite', 'stbi', 'strconv', 'strings', 'strings.textscanner', 'sync', 'sync.pool',
+	'sync.stdatomic', 'szip', 'term', 'term.termios', 'term.ui', 'time', 'time.misc', 'toml',
+	'toml.ast', 'toml.ast.walker', 'toml.checker', 'toml.decoder', 'toml.input', 'toml.parser',
+	'toml.scanner', 'toml.to', 'toml.token', 'toml.util', 'vweb', 'vweb.assets', 'vweb.csrf',
+	'vweb.sse', 'wasm', 'x', 'x.json2', 'x.ttf']
 
 fn find_all_dot_match(sub string, mut e ui.DrawTextlineEvent) ([]string, int, int) {
 	doti := sub.index('.') or { return [''], 0, 0 }
