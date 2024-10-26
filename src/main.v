@@ -4,15 +4,12 @@ module main
 
 import iui as ui
 import os
-import gg
 import gx
 
-const (
-	version = '0.1-pre'
-)
+const version = '0.1-pre'
 
 @[heap]
-struct App {
+pub struct App {
 mut:
 	win             &ui.Window
 	tb              &ui.Tabbox

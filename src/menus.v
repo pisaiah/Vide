@@ -3,10 +3,8 @@ module main
 import iui as ui
 import os
 
-const (
-	vide_png0 = $embed_file('assets/ezgif.com-gif-maker(5).png')
-	vide_png1 = $embed_file('assets/word.png')
-)
+const vide_png0 = $embed_file('assets/ezgif.com-gif-maker(5).png')
+const vide_png1 = $embed_file('assets/word.png')
 
 fn (mut app App) make_menubar() {
 	// Setup Menubar and items
