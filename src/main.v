@@ -1,5 +1,5 @@
 // Vɪᴅᴇ - A simple IDE for V
-// (c) 2021-2023 Isaiah.
+// (c) 2021-2024 Isaiah.
 module main
 
 import iui as ui
@@ -28,7 +28,7 @@ pub fn C.emscripten_run_script(&char)
 
 fn main() {
 	vide_home := os.join_path(os.home_dir(), '.vide')
-	folder := os.join_path(vide_home, 'workspace')
+	mut folder := os.join_path(vide_home, 'workspace')
 
 	os.mkdir_all(folder) or {}
 
@@ -40,7 +40,16 @@ fn main() {
 		title: 'Vide'
 		font_size: confg.font_size
 		font_path: confg.font_path
+		ui_mode: true
 	)
+	
+	$if windows {
+		ui.set_power_save(true)
+	}
+	
+	if os.exists(confg.workspace_dir) {
+		folder = confg.workspace_dir
+	}
 
 	win.set_theme(vide_dark_theme())
 
@@ -212,15 +221,36 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 	)
 
 	search_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
-		e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
-			gx.blue)
+		//e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
+		//	gx.blue)
+		e.target.width = 200
+		e.target.height = 100 + e.target.children[1].height
 	})
 
-	search_field := ui.text_field(
+
+	mut search_field := ui.text_field(
 		text: 'Search ...'
 		bounds: ui.Bounds{1, 1, 190, 25}
 	)
 	search_box.add_child(search_field)
+	
+	mut search_out := ui.Panel.new(layout: ui.BoxLayout.new(ori: 1))
+	search_box.add_child(search_out)
+	search_out.set_bounds(0, 0, 200, 0)
+	
+	search_field.subscribe_event('before_text_change', fn [mut app, mut search_field, mut search_out] (mut e ui.TextChangeEvent) {
+		
+		if search_field.last_letter != 'enter' {
+			return
+		}
+		search_out.children.clear()
+		
+		txt := e.target.text
+		dir := app.confg.workspace_dir
+		read_files(dir, txt, mut search_out)
+		
+		dump(e.target.text)
+	})
 
 	mut stb := ui.Titlebox.new(text: 'Search', children: [search_box])
 	stb.set_bounds(4, 4, 200, 250)
@@ -239,6 +269,33 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 
 	stb.set_id(mut window, 'stb')
 	return sv // tree2
+}
+
+fn read_files(dir string, txt string, mut search_out &ui.Panel) {
+	ls := os.ls(dir) or { [] }
+	
+	for file in ls {
+		jp := os.join_path(dir, file)
+		if os.is_dir(jp) {
+			read_files(jp, txt, mut search_out)
+			continue
+		}
+		
+		if !(file.ends_with('.v') || file.ends_with('.md') || file.ends_with('.c')) {
+			continue
+		}
+		
+		lines := os.read_lines(jp) or { [] }
+		for i, line in lines {
+			if line.contains(txt) {
+				mut btn := ui.Button.new(text: '${file}: ${i+1}: ${line}')
+				search_out.add_child(btn)
+			}
+		}
+	}
+	if search_out.children.len > 0 {
+		search_out.set_bounds(0, 0, 200, search_out.children.len * search_out.children[0].height)
+	}
 }
 
 fn get_v_exe() string {

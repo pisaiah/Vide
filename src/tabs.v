@@ -6,7 +6,7 @@ import clipboard
 
 fn (mut app App) welcome_tab(folder string) {
 	mut logo := ui.image_from_bytes(mut app.win, vide_png1.to_bytes(), 229, 90)
-	logo.set_bounds(-10, 0, 229, 90)
+	logo.set_bounds(0, 0, 229, 90)
 
 	mut info_lbl := ui.Label.new(
 		text: 'Simple IDE for V made in V.'
@@ -16,7 +16,7 @@ fn (mut app App) welcome_tab(folder string) {
 	padding_top := 5
 
 	mut vbox := ui.Panel.new(
-		layout: ui.BoxLayout.new(ori: 1, vgap: 10)
+		layout: ui.BoxLayout.new(ori: 1, vgap: 15)
 	)
 
 	info_lbl.set_pos(0, 0)
@@ -53,6 +53,7 @@ fn (mut app App) welcome_tab(folder string) {
 	mut sv := ui.ScrollView.new(
 		view: box
 	)
+	sv.set_border_painted(false)
 
 	app.tb.add_child('Welcome', sv)
 }
@@ -66,15 +67,24 @@ fn center_box(mut e ui.DrawEvent) {
 }
 
 fn (mut app App) start_with() &ui.Panel {
-	mut p := ui.Panel.new(layout: ui.BoxLayout.new())
+	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 1))
 
 	mut btn := ui.Button.new(text: 'New Project')
 	btn.set_bounds(0, 0, 150, 30)
 	btn.subscribe_event('mouse_up', fn [mut app] (mut e ui.MouseEvent) {
 		app.new_project(mut e.ctx.win)
 	})
+	
+	mut btn2 := ui.Button.new(text: 'V Documentation')
+	btn2.set_bounds(0, 0, 150, 30)
+	btn2.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
+		//app.new_project(mut e.ctx.win)
+		ui.open_url('https://vlang.io/docs')
+		// new_tab(e.ctx.win, 'C:\\v\\doc\\docs.md')
+	})
 
 	p.add_child(btn)
+	p.add_child(btn2)
 	return p
 }
 
@@ -110,7 +120,7 @@ fn (mut app App) links_box() &ui.Panel {
 		'V Documentation|vlang.io/docs',
 		'V stdlib docs|modules.vlang.io',
 		'V on Github|github.com/vlang/v',
-		'Vide on Github|github.com/isaiahpatton/vide',
+		'Vide on Github|github.com/pisaiah/vide',
 		'Vide on Discord|discord.gg/NruVtYBf5g',
 		'r/vlang|reddit.com/r/vlang',
 	]
@@ -192,17 +202,6 @@ fn execute_syntax_check(file string) {
 	vexe := get_v_exe()
 	res := os.execute('${vexe} -check-syntax ${file}')
 	dump(res)
-}
-
-fn image_view(path string) &ui.ScrollView {
-	mut p := ui.Panel.new()
-
-	mut im := ui.Image.new(file: path)
-	p.add_child(im)
-
-	return ui.ScrollView.new(
-		view: p
-	)
 }
 
 fn code_box_draw(mut e ui.DrawEvent) {

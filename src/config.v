@@ -119,6 +119,12 @@ fn (mut app App) show_settings() {
 	p.add_child(sfp)
 	p.add_child(sfs)
 
+	p.subscribe_event('draw', fn (mut e ui.DrawEvent) {
+		pw := e.target.parent.width
+		size := if pw < 990 { pw } else { int(pw * f32(0.65)) }
+		e.target.width = size - 10
+	})
+
 	mut sv := ui.ScrollView.new(
 		view: p
 	)
@@ -127,7 +133,19 @@ fn (mut app App) show_settings() {
 	app.win.add_child(page)
 }
 
-fn (mut app App) s_cfg_dir() &ui.Titlebox {
+fn set_field_width(mut e ui.DrawEvent) {
+	tw := e.ctx.text_width(e.target.text) + 20
+	e.target.width = if tw > 100 { tw } else { 100 }
+	e.target.height = 30
+	
+	mut wid := 0
+	for kid in e.target.parent.children {
+		wid += kid.width
+	}
+	e.target.parent.width = wid + 20
+}
+
+fn (mut app App) s_cfg_dir() &ui.SettingsCard {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 0, vgap: 0))
 
 	mut tf := ui.TextField.new(text: app.confg.cfg_dir)
@@ -136,17 +154,24 @@ fn (mut app App) s_cfg_dir() &ui.Titlebox {
 		app.confg.cfg_dir = tf.text
 		app.confg.save()
 	})
-	tf.set_bounds(0, 0, 400, 30)
+	
+	tf.subscribe_event('draw', set_field_width)
 	sb.set_bounds(0, 0, 100, 30)
 
 	p.add_child(tf)
 	p.add_child(sb)
 
-	mut ttf := ui.Titlebox.new(text: 'cfg_dir', children: [p])
-	return ttf
+	mut card := ui.SettingsCard.new(
+		text: 'Config Directory'
+		description: 'Where Vide stores files'
+		stretch: true
+	)
+	card.add_child(p)
+	
+	return card
 }
 
-fn (mut app App) s_workspace_dir() &ui.Titlebox {
+fn (mut app App) s_workspace_dir() &ui.SettingsCard {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 0, vgap: 0))
 
 	mut tf := ui.TextField.new(text: app.confg.workspace_dir)
@@ -155,17 +180,22 @@ fn (mut app App) s_workspace_dir() &ui.Titlebox {
 		app.confg.workspace_dir = tf.text
 		app.confg.save()
 	})
-	tf.set_bounds(0, 0, 400, 30)
+	tf.subscribe_event('draw', set_field_width)
 	sb.set_bounds(0, 0, 100, 30)
 
 	p.add_child(tf)
 	p.add_child(sb)
-
-	mut ttf := ui.Titlebox.new(text: 'workspace_dir', children: [p])
-	return ttf
+	
+	mut card := ui.SettingsCard.new(
+		text: 'Workspace Directory'
+		description: 'The directory that is opened in the file tree'
+		stretch: true
+	)
+	card.add_child(p)
+	return card
 }
 
-fn (mut app App) s_vexe() &ui.Titlebox {
+fn (mut app App) s_vexe() &ui.SettingsCard {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 0, vgap: 0))
 
 	mut tf := ui.TextField.new(text: app.confg.vexe)
@@ -174,18 +204,24 @@ fn (mut app App) s_vexe() &ui.Titlebox {
 		app.confg.vexe = tf.text
 		app.confg.save()
 	})
+	
+	mut card := ui.SettingsCard.new(
+		text: 'V Executable Path'
+		description: 'Path to the V executable'
+		stretch: true
+	)
+	card.add_child(p)
 
-	mut ttf := ui.Titlebox.new(text: 'vexe', children: [p])
 	mut teb := ui.Button.new(text: 'Test')
-	teb.subscribe_event('mouse_up', fn [mut app, tf, mut ttf] (mut e ui.MouseEvent) {
+	teb.subscribe_event('mouse_up', fn [mut app, tf, mut card] (mut e ui.MouseEvent) {
 		app.confg.vexe = tf.text
 		app.confg.save()
 		res := os.execute('${app.confg.vexe} version')
 		app.win.tooltip = res.output
-		ttf.text = 'vexe (test: ${res.output})'
+		card.desc = card.desc.split('(')[0] + ' (test: ${res.output})'
 	})
 
-	tf.set_bounds(0, 0, 335, 30)
+	tf.subscribe_event('draw', set_field_width)
 	sb.set_bounds(0, 0, 95, 30)
 	teb.set_bounds(0, 0, 65, 30)
 
@@ -193,10 +229,10 @@ fn (mut app App) s_vexe() &ui.Titlebox {
 	p.add_child(sb)
 	p.add_child(teb)
 
-	return ttf
+	return card
 }
 
-fn (mut app App) s_font_path() &ui.Titlebox {
+fn (mut app App) s_font_path() &ui.SettingsCard {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 0, vgap: 0))
 
 	mut tf := ui.TextField.new(text: app.confg.font_path)
@@ -205,17 +241,22 @@ fn (mut app App) s_font_path() &ui.Titlebox {
 		app.confg.font_path = tf.text
 		app.confg.save()
 	})
-	tf.set_bounds(0, 0, 400, 30)
+	tf.subscribe_event('draw', set_field_width)
 	sb.set_bounds(0, 0, 100, 30)
 
 	p.add_child(tf)
 	p.add_child(sb)
 
-	mut ttf := ui.Titlebox.new(text: 'font_path', children: [p])
-	return ttf
+	mut card := ui.SettingsCard.new(
+		text: 'Font Path'
+		description: 'Path to the font file used'
+		stretch: true
+	)
+	card.add_child(p)
+	return card
 }
 
-fn (mut app App) s_font_size() &ui.Titlebox {
+fn (mut app App) s_font_size() &ui.SettingsCard {
 	mut p := ui.Panel.new(layout: ui.BoxLayout.new(ori: 0, vgap: 0))
 
 	mut tf := ui.numeric_field(app.confg.font_size)
@@ -244,8 +285,13 @@ fn (mut app App) s_font_size() &ui.Titlebox {
 	p.add_child(ib)
 	p.add_child(db)
 
-	mut ttf := ui.Titlebox.new(text: 'font_size', children: [p])
-	return ttf
+	mut card := ui.SettingsCard.new(
+		text: 'Font Size'
+		description: 'The font size used'
+		stretch: true
+	)
+	card.add_child(p)
+	return card
 }
 
 fn (mut app App) set_fs(fs int) {
