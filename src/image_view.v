@@ -12,6 +12,6 @@ fn image_view(path string) &ui.ScrollView {
 		view: p
 	)
 	sv.set_border_painted(false)
-	
+
 	return sv
 }

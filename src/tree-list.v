@@ -31,7 +31,7 @@ fn make_tree2(fold string) &ui.TreeNode {
 	}
 
 	mut node := &ui.TreeNode{
-		text: fold
+		text:  fold
 		nodes: nodes
 	}
 

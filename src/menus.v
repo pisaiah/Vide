@@ -6,124 +6,148 @@ import os
 const vide_png0 = $embed_file('assets/ezgif.com-gif-maker(5).png')
 const vide_png1 = $embed_file('assets/word.png')
 
+const i_w = 24
+const i_h = 24
+
+pub fn (mut app App) iicon(c bool, b []u8) &ui.Image {
+	if !c {
+		return unsafe { nil }
+	}
+	return ui.image_from_bytes(mut app.win, b, i_w, i_h)
+}
+
 fn (mut app App) make_menubar() {
 	// Setup Menubar and items
 	mut window := app.win
-	window.bar = ui.menu_bar()
+	window.bar = ui.Menubar.new()
+	window.bar.set_padding(4)
 
-	file_img := $embed_file('assets/file-icon.png')
-	edit_img := $embed_file('assets/icons8-edit-24.png')
-	help_img := $embed_file('assets/help-icon.png')
+	// file_img := $embed_file('assets/file-icon.png')
+	// edit_img := $embed_file('assets/icons8-edit-24.png')
+	// help_img := $embed_file('assets/help-icon.png')
 	save_img := $embed_file('assets/icons8-save-24.png')
-	theme_img := $embed_file('assets/icons8-change-theme-24.png')
+	// theme_img := $embed_file('assets/icons8-change-theme-24.png')
 	run_img := $embed_file('assets/run.png')
 	fmt_img := $embed_file('assets/fmt.png')
 
-	i_w := 26
-	i_h := 26
+	colored := true
 
-	file_icon := ui.image_from_bytes(mut window, file_img.to_bytes(), i_w, i_h)
-	edit_icon := ui.image_from_bytes(mut window, edit_img.to_bytes(), i_w, i_h)
-	help_icon := ui.image_from_bytes(mut window, help_img.to_bytes(), i_w, i_h)
-	save_icon := ui.image_from_bytes(mut window, save_img.to_bytes(), i_w, i_h)
-	theme_icon := ui.image_from_bytes(mut window, theme_img.to_bytes(), i_w, i_h)
-	run_icon := ui.image_from_bytes(mut window, run_img.to_bytes(), i_w, i_h)
-	fmt_icon := ui.image_from_bytes(mut window, fmt_img.to_bytes(), i_w, i_h)
+	// file_icon := app.iicon(colored, file_img.to_bytes())
+	// edit_icon := app.iicon(colored, edit_img.to_bytes())
+	// help_icon := app.iicon(colored, help_img.to_bytes())
+	save_icon := app.iicon(colored, save_img.to_bytes())
+	// theme_icon := app.iicon(colored, theme_img.to_bytes())
+	run_icon := app.iicon(colored, run_img.to_bytes())
+	fmt_icon := app.iicon(colored, fmt_img.to_bytes())
 
-	file_menu := ui.menu_item(
+	file_menu := ui.MenuItem.new(
 		text: 'File'
-		icon: file_icon
+		// icon:     file_icon
+		uicon:    '\uE132'
 		children: [
-			ui.menu_item(
-				text: 'New Project..'
+			ui.MenuItem.new(
+				text:           'New Project..'
+				uicon:          '\uE9AF'
 				click_event_fn: app.new_project_click
 			),
-			ui.menu_item(
-				text: 'New File...'
+			ui.MenuItem.new(
+				text:  'New File...'
+				uicon: '\uE132'
 				// click_event_fn: new_file_click
 			),
-			ui.menu_item(
-				text: 'Save'
+			ui.MenuItem.new(
+				uicon:          '\uE105'
+				text:           'Save'
 				click_event_fn: save_click
 			),
-			ui.menu_item(
-				text: 'Run'
+			ui.MenuItem.new(
+				text:           'Run'
+				uicon:          '\uEA16'
 				click_event_fn: run_click
 			),
-			ui.menu_item(
-				text: 'Manage Modules..'
+			ui.MenuItem.new(
+				text:  'Manage Modules..'
+				uicon: '\uEAE8'
 				// click_event_fn: vpm_click_
 			),
-			ui.menu_item(
-				text: 'Settings'
+			ui.MenuItem.new(
+				text:           'Settings'
+				uicon:          '\uF8B0'
 				click_event_fn: settings_click
 			),
-			ui.menu_item(
-				text: 'Manage V'
+			ui.MenuItem.new(
+				text:  'Manage V'
+				uicon: '\uEC7A'
 				// click_event_fn: show_install_modal
 			),
 		]
 	)
 
-	edit_menu := ui.menu_item(
+	edit_menu := ui.MenuItem.new(
 		text: 'Edit'
-		icon: edit_icon
+		// icon: edit_icon
+		uicon: '\uE104'
 	)
 
-	help_menu := ui.menu_item(
-		text: 'Help'
-		icon: help_icon
+	help_menu := ui.MenuItem.new(
+		text:  'Help'
+		uicon: '\uEA0D'
+		// icon:     help_icon
 		children: [
-			ui.menu_item(
-				text: 'About Vide'
+			ui.MenuItem.new(
+				text:           'About Vide'
 				click_event_fn: about_click
 			),
-			ui.menu_item(
-				text: 'Github'
+			ui.MenuItem.new(
+				text:           'Github'
 				click_event_fn: gh_click
 			),
-			ui.menu_item(
-				text: 'Discord'
+			ui.MenuItem.new(
+				text:           'Discord'
 				click_event_fn: dis_click
 			),
-			ui.menu_item(
+			ui.MenuItem.new(
 				text: 'About iUI'
 			),
 		]
 	)
 
-	mut theme_menu := ui.menu_item(
+	mut theme_menu := ui.MenuItem.new(
 		text: 'Themes'
-		icon: theme_icon
+		// icon: theme_icon
+		uicon: '\uE9D7'
 	)
 
 	themes := ui.get_all_themes()
 	for theme2 in themes {
-		item := ui.menu_item(text: theme2.name, click_event_fn: on_theme_click)
+		item := ui.MenuItem.new(text: theme2.name, click_event_fn: on_theme_click)
 		theme_menu.add_child(item)
 	}
 
-	item := ui.menu_item(text: 'Vide Default Dark', click_event_fn: on_theme_click)
+	item := ui.MenuItem.new(text: 'Vide Default Dark', click_event_fn: on_theme_click)
 	theme_menu.add_child(item)
 
-	item_ := ui.menu_item(text: 'Vide Light Theme', click_event_fn: on_theme_click)
+	item_ := ui.MenuItem.new(text: 'Vide Light Theme', click_event_fn: on_theme_click)
 	theme_menu.add_child(item_)
 
-	save_menu := ui.menu_item(
-		text: 'Save'
-		icon: save_icon
+	save_menu := ui.MenuItem.new(
+		// text:           'Save'
+		icon:           save_icon
+		uicon:          '\uE105'
 		click_event_fn: save_click
 	)
 
-	run_menu := ui.menu_item(
-		text: 'Run'
-		icon: run_icon
+	run_menu := ui.MenuItem.new(
+		// text:           'Run'
+		icon:           run_icon
+		uicon:          '\uEA16'
 		click_event_fn: run_click
 	)
 
-	fmt_menu := ui.menu_item(
-		text: 'v fmt'
-		icon: fmt_icon
+	fmt_menu := ui.MenuItem.new(
+		// text:           'v fmt'
+		icon:           fmt_icon
+		uicon:          '\uEA5D'
 		click_event_fn: fmt_click
 	)
 
@@ -183,24 +207,29 @@ fn dis_click(mut win ui.Window, com ui.MenuItem) {
 }
 
 fn about_click(mut win ui.Window, com ui.MenuItem) {
-	mut modal := ui.modal(win, 'About VIDE')
+	mut modal := ui.Modal.new(
+		title:  'About VIDE'
+		width:  380
+		height: 250
+	)
 
-	modal.in_width = 430
-	modal.in_height = 250
-
-	mut p := ui.Panel.new()
+	mut p := ui.Panel.new(
+		layout: ui.BoxLayout.new(ori: 1)
+	)
 	p.set_pos(8, 16)
 
 	mut label := ui.Label.new(
 		text: 'Simple IDE for the V Language made in V.\n\nVersion: ${version}\niUI: ${ui.version}'
 	)
 
-	label.set_pos(4, 16)
 	label.pack()
 
-	mut copy := ui.Label.new(text: 'Copyright © 2021-2023 by Isaiah.')
+	mut copy := ui.Label.new(
+		text:    'Copyright © 2021-2025 by Isaiah.'
+		em_size: 0.8
+		pack:    true
+	)
 	copy.set_pos(16, 175)
-	copy.set_config(14, true, false)
 
 	p.add_child(label)
 	modal.add_child(copy)

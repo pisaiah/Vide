@@ -13,7 +13,7 @@ mut:
 fn code_popup() &MyPopup {
 	mut p := ui.Panel.new(
 		layout: ui.BoxLayout.new(
-			ori: 1
+			ori:  1
 			vgap: 1
 			hgap: 1
 		)
@@ -21,12 +21,12 @@ fn code_popup() &MyPopup {
 	p.set_bounds(0, 0, 300, 150)
 
 	mut sv := ui.ScrollView.new(
-		view: p
+		view:   p
 		bounds: ui.Bounds{0, 0, 300, 150}
 	)
 
 	mut pop := &MyPopup{
-		p: p
+		p:  p
 		sv: sv
 	}
 

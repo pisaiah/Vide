@@ -355,28 +355,28 @@ fn (mut c Create) create_files_and_directories() {
 // ####################################### PROJECTS CONTENT AND PATH #######################################
 fn (mut c Create) set_hello_world_project_files() {
 	c.files << ProjectFiles{
-		path: '${c.name}/src/main.v'
+		path:    '${c.name}/src/main.v'
 		content: hello_world_content()
 	}
 }
 
 fn (mut c Create) set_basic_window_files() {
 	c.files << ProjectFiles{
-		path: '${c.name}/src/main.v'
+		path:    '${c.name}/src/main.v'
 		content: basic_window_content()
 	}
 }
 
 fn (mut c Create) set_border_layout_files() {
 	c.files << ProjectFiles{
-		path: '${c.name}/src/main.v'
+		path:    '${c.name}/src/main.v'
 		content: border_layout_content()
 	}
 }
 
 fn (mut c Create) set_web_project_files() {
 	c.files << ProjectFiles{
-		path: '${c.name}/src/databases/config_databases_sqlite.v'
+		path:    '${c.name}/src/databases/config_databases_sqlite.v'
 		content: "module databases
 
 import db.sqlite // can change to 'db.mysql', 'db.pg'
@@ -388,7 +388,7 @@ pub fn create_db_connection() !sqlite.DB {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/templates/header_component.html'
+		path:    '${c.name}/src/templates/header_component.html'
 		content: "<nav>
   <div class='nav-wrapper'>
     <a href='javascript:window.history.back();' class='left'>
@@ -407,7 +407,7 @@ pub fn create_db_connection() !sqlite.DB {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/templates/products.css'
+		path:    '${c.name}/src/templates/products.css'
 		content: 'h1.title {
     font-family: Arial, Helvetica, sans-serif;
     color: #3b7bbf;
@@ -421,7 +421,7 @@ div.products-table {
 }'
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/templates/products.html'
+		path:    '${c.name}/src/templates/products.html'
 		content: "<!DOCTYPE html>
 <head>
     <!--Let browser know website is optimized for mobile-->
@@ -517,7 +517,7 @@ div.products-table {
 </html>"
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/auth_controllers.v'
+		path:    '${c.name}/src/auth_controllers.v'
 		content: "module main
 
 import vweb
@@ -534,7 +534,7 @@ pub fn (mut app App) controller_auth(username string, password string) vweb.Resu
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/auth_dto.v'
+		path:    '${c.name}/src/auth_dto.v'
 		content: 'module main
 
 struct AuthRequestDto {
@@ -544,7 +544,7 @@ struct AuthRequestDto {
 '
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/auth_services.v'
+		path:    '${c.name}/src/auth_services.v'
 		content: "module main
 
 import crypto.hmac
@@ -638,7 +638,7 @@ fn auth_verify(token string) bool {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/index.html'
+		path:    '${c.name}/src/index.html'
 		content: "<!DOCTYPE html>
 <head>
    <!--Let browser know website is optimized for mobile-->
@@ -712,7 +712,7 @@ fn auth_verify(token string) bool {
 </html>"
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/main.v'
+		path:    '${c.name}/src/main.v'
 		content: "module main
 
 import vweb
@@ -756,7 +756,7 @@ pub fn (mut app App) index() vweb.Result {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/product_controller.v'
+		path:    '${c.name}/src/product_controller.v'
 		content: "module main
 
 import vweb
@@ -822,7 +822,7 @@ pub fn (mut app App) controller_create_product(product_name string) vweb.Result 
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/product_entities.v'
+		path:    '${c.name}/src/product_entities.v'
 		content: "module main
 
 [table: 'products']
@@ -835,7 +835,7 @@ struct Product {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/product_service.v'
+		path:    '${c.name}/src/product_service.v'
 		content: "module main
 
 import databases
@@ -882,7 +882,7 @@ fn (mut app App) service_get_all_products_from(user_id int) ?[]Product {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/product_view_api.v'
+		path:    '${c.name}/src/product_view_api.v'
 		content: "module main
 
 import json
@@ -921,7 +921,7 @@ pub fn get_product(token string) ![]User {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/product_view.v'
+		path:    '${c.name}/src/product_view.v'
 		content: "module main
 
 import vweb
@@ -943,7 +943,7 @@ pub fn (mut app App) products() !vweb.Result {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/user_controllers.v'
+		path:    '${c.name}/src/user_controllers.v'
 		content: "module main
 
 import vweb
@@ -1011,7 +1011,7 @@ pub fn (mut app App) controller_create_user(username string, password string) vw
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/user_entities.v'
+		path:    '${c.name}/src/user_entities.v'
 		content: "module main
 
 [table: 'users']
@@ -1026,7 +1026,7 @@ mut:
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/user_services.v'
+		path:    '${c.name}/src/user_services.v'
 		content: "module main
 
 import crypto.bcrypt
@@ -1095,7 +1095,7 @@ fn (mut app App) service_get_user(id int) ?User {
 "
 	}
 	c.files << ProjectFiles{
-		path: '${c.name}/src/user_view_api.v'
+		path:    '${c.name}/src/user_view_api.v'
 		content: "module main
 
 import json

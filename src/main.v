@@ -1,10 +1,9 @@
-// Vɪᴅᴇ - A simple IDE for V
+// VIDE - A simple IDE for V
 // (c) 2021-2024 Isaiah.
 module main
 
 import iui as ui
 import os
-import gx
 
 const version = '0.1-pre'
 
@@ -32,18 +31,18 @@ fn main() {
 	confg := make_config()
 
 	mut win := ui.Window.new(
-		width: 900
-		height: 550
-		title: 'Vide'
+		width:     900
+		height:    550
+		title:     'Vide'
 		font_size: confg.font_size
 		font_path: confg.font_path
-		ui_mode: true
+		ui_mode:   true
 	)
-	
+
 	$if windows {
 		ui.set_power_save(true)
 	}
-	
+
 	if os.exists(confg.workspace_dir) {
 		folder = confg.workspace_dir
 	}
@@ -51,8 +50,8 @@ fn main() {
 	win.set_theme(vide_dark_theme())
 
 	mut app := &App{
-		win: win
-		tb: ui.Tabbox.new()
+		win:   win
+		tb:    ui.Tabbox.new()
 		confg: confg
 		popup: code_popup()
 	}
@@ -78,8 +77,8 @@ fn main() {
 	// Search box
 	search := app.setup_search(mut win, folder)
 	hbox.add_child(search)
-	// end;
 
+	// end;
 	app.tb.set_id(mut win, 'main-tabs')
 	app.tb.set_bounds(0, 0, 400, 200)
 	app.welcome_tab('')
@@ -95,26 +94,27 @@ fn main() {
 	console_box.set_id(mut win, 'consolebox')
 
 	mut sv := ui.ScrollView.new(
-		view: console_box
+		view:      console_box
 		increment: 5
-		bounds: ui.Bounds{
-			width: 300
+		bounds:    ui.Bounds{
+			width:  300
 			height: 100
 		}
-		padding: 0
+		padding:   0
 	)
+	sv.noborder = true
 	sv.set_id(mut win, 'vermsv')
 
 	mut spv := ui.SplitView.new(
-		first: app.tb
-		second: sv
+		first:       app.tb
+		second:      sv
 		min_percent: 20
-		h1: 70
-		h2: 20
-		bounds: ui.Bounds{
-			y: 3
-			x: 2
-			width: 400
+		h1:          70
+		h2:          20
+		bounds:      ui.Bounds{
+			y:      3
+			x:      2
+			width:  400
 			height: 400
 		}
 	)
@@ -129,10 +129,59 @@ fn main() {
 	win.gg.run()
 }
 
-fn (mut app App) make_activity_bar() &ui.Panel {
+fn (mut app App) make_activity_bar() &ui.NavPane {
+	mut np := ui.NavPane.new(
+		pack:      true
+		collapsed: true
+	)
+
+	mut item1 := ui.NavPaneItem.new(
+		icon: '\uED43'
+		text: 'Workspace'
+	)
+
+	mut item2 := ui.NavPaneItem.new(
+		icon: '\uF002'
+		text: 'Search'
+	)
+
+	mut item3 := ui.NavPaneItem.new(
+		icon: '\uEAE7'
+		text: 'Git'
+	)
+
+	mut item4 := ui.NavPaneItem.new(
+		icon: '\uE713'
+		text: 'Settings'
+	)
+
+	item1.subscribe_event('mouse_up', app.calb_click)
+	item2.subscribe_event('mouse_up', app.serb_click)
+	item3.subscribe_event('mouse_up', app.calb_click)
+	item4.subscribe_event('mouse_up', app.settings_btn_click)
+
+	np.add_child(item1)
+	np.add_child(item2)
+	np.add_child(item3)
+	np.add_child(item4)
+
+	return np
+}
+
+fn (mut app App) settings_btn_click(e &ui.MouseEvent) {
+	mut tar := e.target
+	if mut tar is ui.NavPaneItem {
+		tar.unselect()
+	}
+
+	app.show_settings()
+}
+
+@[deprecated: 'Replaced by ui.NavPane']
+fn (mut app App) make_activity_bar_old() &ui.Panel {
 	mut activity_bar := ui.Panel.new(
 		layout: ui.BoxLayout.new(
-			ori: 1
+			ori:  1
 			hgap: 4
 		)
 	)
@@ -172,12 +221,13 @@ fn (mut app App) make_activity_bar() &ui.Panel {
 
 fn (mut app App) icon_btn(data []u8, win &ui.Window) &ui.Button {
 	mut ggc := win.gg
-	gg_im := ggc.create_image_from_byte_array(data) or { return ui.button(text: 'NO IMG') }
+	gg_im := ggc.create_image_from_byte_array(data) or { return ui.Button.new(text: 'NO IMG') }
 	cim := ggc.cache_image(gg_im)
 	mut btn := ui.Button.new(icon: cim)
 
 	btn.set_bounds(0, 5, 33, 46)
 	btn.z_index = 5
+
 	// btn.border_radius = -1
 	btn.set_area_filled(false)
 	btn.icon_height = 32
@@ -198,8 +248,9 @@ fn (mut app App) setup_tree(mut window ui.Window, folder string) &ui.ScrollView 
 	}
 
 	mut sv := ui.ScrollView.new(
-		view: tree2
-		bounds: ui.Bounds{1, 3, 250, 200}
+		view:    tree2
+		bounds:  ui.Bounds{1, 3, 250, 200}
+		padding: 0
 	)
 	sv.subscribe_event('draw', app.proj_tree_draw)
 	tree2.subscribe_event('draw', fn (mut e ui.DrawEvent) {
@@ -218,34 +269,32 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 	)
 
 	search_box.subscribe_event('draw', fn (mut e ui.DrawEvent) {
-		//e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
+		// e.ctx.gg.draw_rect_empty(e.target.x, e.target.y, e.target.width, e.target.height,
 		//	gx.blue)
 		e.target.width = 200
 		e.target.height = 100 + e.target.children[1].height
 	})
 
-
 	mut search_field := ui.text_field(
-		text: 'Search ...'
+		text:   'Search ...'
 		bounds: ui.Bounds{1, 1, 190, 25}
 	)
 	search_box.add_child(search_field)
-	
+
 	mut search_out := ui.Panel.new(layout: ui.BoxLayout.new(ori: 1))
 	search_box.add_child(search_out)
 	search_out.set_bounds(0, 0, 200, 0)
-	
+
 	search_field.subscribe_event('before_text_change', fn [mut app, mut search_field, mut search_out] (mut e ui.TextChangeEvent) {
-		
 		if search_field.last_letter != 'enter' {
 			return
 		}
 		search_out.children.clear()
-		
+
 		txt := e.target.text
 		dir := app.confg.workspace_dir
-		read_files(dir, txt, mut search_out)
-		
+		read_files(dir, txt, mut search_out, e.ctx)
+
 		dump(e.target.text)
 	})
 
@@ -253,11 +302,10 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 	stb.set_bounds(4, 4, 200, 250)
 
 	// hbox.add_child(stb)
-
 	mut sv := ui.ScrollView.new(
-		view: stb
-		bounds: ui.Bounds{1, 4, 240, 200}
-		// padding: 0
+		view:    stb
+		bounds:  ui.Bounds{1, 4, 240, 200}
+		padding: 0
 	)
 	sv.subscribe_event('draw', app.search_pane_draw)
 	stb.subscribe_event('draw', fn (mut e ui.DrawEvent) {
@@ -268,30 +316,33 @@ fn (mut app App) setup_search(mut window ui.Window, folder string) &ui.ScrollVie
 	return sv // tree2
 }
 
-fn read_files(dir string, txt string, mut search_out &ui.Panel) {
+fn read_files(dir string, txt string, mut search_out ui.Panel, ctx &ui.GraphicsContext) {
 	ls := os.ls(dir) or { [] }
-	
+
 	for file in ls {
 		jp := os.join_path(dir, file)
 		if os.is_dir(jp) {
-			read_files(jp, txt, mut search_out)
+			read_files(jp, txt, mut search_out, ctx)
 			continue
 		}
-		
+
 		if !(file.ends_with('.v') || file.ends_with('.md') || file.ends_with('.c')) {
 			continue
 		}
-		
+
 		lines := os.read_lines(jp) or { [] }
 		for i, line in lines {
 			if line.contains(txt) {
-				mut btn := ui.Button.new(text: '${file}: ${i+1}: ${line}')
+				mut btn := ui.Label.new(text: '${file}: ${i + 1}:\n${line.trim_space()}')
+				btn.pack_do(ctx)
 				search_out.add_child(btn)
 			}
 		}
 	}
 	if search_out.children.len > 0 {
-		search_out.set_bounds(0, 0, 200, search_out.children.len * search_out.children[0].height)
+		dump(search_out.children.len)
+		search_out.set_bounds(0, 0, 200, search_out.children.len * (search_out.children[0].height +
+			5))
 	}
 }
 
@@ -309,6 +360,7 @@ fn get_v_exe() string {
 			vexe = os.environ()['VEXE'].replace('\\', '/')
 		}
 		vexe = vexe.replace(os.home_dir().replace('\\', '/'), '~')
+
 		// config.set('v_exe', vexe)
 		// config.save()
 		return vexe

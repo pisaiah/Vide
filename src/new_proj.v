@@ -36,13 +36,13 @@ fn (mut app App) new_project(mut win ui.Window) {
 
 	modal.needs_init = false
 
-	mut close := ui.button(
-		text: 'Create'
+	mut close := ui.Button.new(
+		text:   'Create'
 		bounds: ui.Bounds{114, 334, 160, 28}
 	)
 
-	mut can := ui.button(
-		text: 'Cancel'
+	mut can := ui.Button.new(
+		text:   'Cancel'
 		bounds: ui.Bounds{10, 334, 100, 28}
 	)
 	can.set_area_filled(false)
@@ -71,12 +71,12 @@ fn (mut app App) new_project_click_close(mut e ui.MouseEvent) {
 	templ := win.extra_map['np-templ']
 
 	new_project(
-		name: name
+		name:        name
 		description: des
-		version: ver
-		license: lic
-		template: templ
-		app: app
+		version:     ver
+		license:     lic
+		template:    templ
+		app:         app
 	)
 
 	win.components = win.components.filter(mut it !is ui.Modal)
@@ -101,7 +101,7 @@ fn make_license_section() &ui.Panel {
 	]
 
 	mut box := ui.Selectbox.new(
-		text: 'MIT'
+		text:  'MIT'
 		items: choices
 	)
 	box.set_bounds(-5, 0, 200, 0)
@@ -123,7 +123,7 @@ fn make_templ_section() &ui.Panel {
 
 	mut group := ui.buttongroup[ui.Checkbox]()
 	for choice in choices {
-		mut box := ui.check_box(text: choice)
+		mut box := ui.Checkbox.new(text: choice)
 		box.set_bounds(0, 4, 190, 30)
 		box.subscribe_event('draw', checkbox_pack_height)
 

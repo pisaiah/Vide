@@ -10,8 +10,8 @@ fn (mut app App) welcome_tab(folder string) {
 
 	mut info_lbl := ui.Label.new(
 		text: 'Simple IDE for V made in V.'
+		bold: true
 	)
-	info_lbl.set_config(0, false, true)
 
 	padding_top := 5
 
@@ -74,11 +74,11 @@ fn (mut app App) start_with() &ui.Panel {
 	btn.subscribe_event('mouse_up', fn [mut app] (mut e ui.MouseEvent) {
 		app.new_project(mut e.ctx.win)
 	})
-	
+
 	mut btn2 := ui.Button.new(text: 'V Documentation')
 	btn2.set_bounds(0, 0, 150, 30)
 	btn2.subscribe_event('mouse_up', fn (mut e ui.MouseEvent) {
-		//app.new_project(mut e.ctx.win)
+		// app.new_project(mut e.ctx.win)
 		ui.open_url('https://vlang.io/docs')
 		// new_tab(e.ctx.win, 'C:\\v\\doc\\docs.md')
 	})
@@ -98,8 +98,10 @@ fn (mut app App) south_panel() &ui.Panel {
 		out = 'Error executing "v version"\nPlease see Settings'
 	}
 
-	mut btn := ui.Label.new(text: 'Compiler: ${out}')
-	btn.set_config(14, true, true)
+	mut btn := ui.Label.new(
+		text:    'Compiler: ${out}'
+		em_size: 0.85
+	)
 	btn.pack()
 
 	p.add_child(btn)
@@ -111,8 +113,10 @@ fn (mut app App) links_box() &ui.Panel {
 		layout: ui.BoxLayout.new(ori: 1, vgap: 6)
 	)
 
-	mut title := ui.Label.new(text: 'Useful Links:')
-	title.set_config(2, false, false)
+	mut title := ui.Label.new(
+		text:    'Useful Links:'
+		em_size: 1.2
+	)
 	title.pack()
 	box.add_child(title)
 
@@ -129,15 +133,17 @@ fn (mut app App) links_box() &ui.Panel {
 		spl := val.split('|')
 		mut link := ui.link(
 			text: spl[0]
-			url: 'https://' + spl[1]
+			url:  'https://' + spl[1]
 		)
 		link.set_bounds(4, 0, 150, 25)
 		box.add_child(link)
 	}
 
-	mut vv := ui.Label.new(text: 'Vide™ ${version}\niUI ${ui.version}')
+	mut vv := ui.Label.new(
+		text:    'Vide™ ${version} - iUI ${ui.version}'
+		em_size: 0.8
+	)
 	vv.set_pos(0, 10)
-	vv.set_config(14, true, false)
 	vv.set_bounds(5, 8, 150, 40)
 
 	box.add_child(vv)
@@ -168,16 +174,16 @@ fn new_tab(window &ui.Window, file string) {
 
 	lines := os.read_lines(file) or { ['ERROR while reading file contents'] }
 
-	mut code_box := ui.text_box(lines)
+	mut code_box := ui.Textbox.new(lines: lines)
 	code_box.text = file
 
 	code_box.set_bounds(0, 0, 620, 250)
 
 	mut scroll_view := ui.scroll_view(
-		bounds: ui.Bounds{0, 0, 620, 250}
-		view: code_box
+		bounds:    ui.Bounds{0, 0, 620, 250}
+		view:      code_box
 		increment: 16
-		padding: 0
+		padding:   0
 	)
 
 	scroll_view.set_border_painted(false)

@@ -145,7 +145,7 @@ fn tabbox_fill_width(mut e ui.DrawEvent) {
 		for i, name in app.confg.open_paths {
 			if name !in tb.kids.keys() {
 				app.confg.open_paths.delete(i)
-				//app.confg.open_paths.delete(name)
+				// app.confg.open_paths.delete(name)
 			}
 		}
 		app.confg.save()

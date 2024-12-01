@@ -1,6 +1,5 @@
 //
 // Verminal - Terminal Emulator in V
-// https://github.com/isaiahpatton/verminal
 //
 module main
 
@@ -11,7 +10,7 @@ pub fn create_box(mut win ui.Window) &ui.Textbox {
 	path := os.real_path(os.home_dir())
 	win.extra_map['path'] = path
 
-	mut box := ui.text_box([path + '>'])
+	mut box := ui.Textbox.new(lines: [path + '>'])
 	box.set_id(mut win, 'vermbox')
 
 	box.subscribe_event('draw', vermbox_draw)
@@ -118,7 +117,7 @@ fn on_cmd(mut win ui.Window, box ui.Textbox, cmd string) {
 		add_new_input_line(mut tbox, win)
 	} else if args[0] == 'loadfiles' {
 		$if emscripten ? {
-			C.emscripten_run_script(c'mui.trigger = "lloadfiles"')
+			C.emscripten_run_script(c'iui.trigger = "lloadfiles"')
 		}
 		mut com := win.get[&ui.Tree2]('proj-tree')
 		if args.len == 1 {
@@ -144,7 +143,7 @@ fn on_cmd(mut win ui.Window, box ui.Textbox, cmd string) {
 
 fn wasm_save_files() {
 	$if emscripten ? {
-		C.emscripten_run_script(c'mui.trigger = "savefiles"')
+		C.emscripten_run_script(c'iui.trigger = "savefiles"')
 	}
 }
 

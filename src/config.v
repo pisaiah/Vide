@@ -137,7 +137,7 @@ fn set_field_width(mut e ui.DrawEvent) {
 	tw := e.ctx.text_width(e.target.text) + 20
 	e.target.width = if tw > 100 { tw } else { 100 }
 	e.target.height = 30
-	
+
 	mut wid := 0
 	for kid in e.target.parent.children {
 		wid += kid.width
@@ -154,7 +154,7 @@ fn (mut app App) s_cfg_dir() &ui.SettingsCard {
 		app.confg.cfg_dir = tf.text
 		app.confg.save()
 	})
-	
+
 	tf.subscribe_event('draw', set_field_width)
 	sb.set_bounds(0, 0, 100, 30)
 
@@ -162,12 +162,12 @@ fn (mut app App) s_cfg_dir() &ui.SettingsCard {
 	p.add_child(sb)
 
 	mut card := ui.SettingsCard.new(
-		text: 'Config Directory'
+		text:        'Config Directory'
 		description: 'Where Vide stores files'
-		stretch: true
+		stretch:     true
 	)
 	card.add_child(p)
-	
+
 	return card
 }
 
@@ -185,11 +185,11 @@ fn (mut app App) s_workspace_dir() &ui.SettingsCard {
 
 	p.add_child(tf)
 	p.add_child(sb)
-	
+
 	mut card := ui.SettingsCard.new(
-		text: 'Workspace Directory'
+		text:        'Workspace Directory'
 		description: 'The directory that is opened in the file tree'
-		stretch: true
+		stretch:     true
 	)
 	card.add_child(p)
 	return card
@@ -204,11 +204,11 @@ fn (mut app App) s_vexe() &ui.SettingsCard {
 		app.confg.vexe = tf.text
 		app.confg.save()
 	})
-	
+
 	mut card := ui.SettingsCard.new(
-		text: 'V Executable Path'
+		text:        'V Executable Path'
 		description: 'Path to the V executable'
-		stretch: true
+		stretch:     true
 	)
 	card.add_child(p)
 
@@ -248,9 +248,9 @@ fn (mut app App) s_font_path() &ui.SettingsCard {
 	p.add_child(sb)
 
 	mut card := ui.SettingsCard.new(
-		text: 'Font Path'
+		text:        'Font Path'
 		description: 'Path to the font file used'
-		stretch: true
+		stretch:     true
 	)
 	card.add_child(p)
 	return card
@@ -286,9 +286,9 @@ fn (mut app App) s_font_size() &ui.SettingsCard {
 	p.add_child(db)
 
 	mut card := ui.SettingsCard.new(
-		text: 'Font Size'
+		text:        'Font Size'
 		description: 'The font size used'
-		stretch: true
+		stretch:     true
 	)
 	card.add_child(p)
 	return card
