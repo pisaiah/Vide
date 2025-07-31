@@ -118,7 +118,7 @@ fn (mut app App) make_menubar() {
 		uicon: '\uE9D7'
 	)
 
-	themes := ui.get_all_themes()
+	themes := tmanager.get_themes()
 	for theme2 in themes {
 		item := ui.MenuItem.new(text: theme2.name, click_event_fn: on_theme_click)
 		theme_menu.add_child(item)
@@ -178,6 +178,8 @@ fn settings_click(mut win ui.Window, com ui.MenuItem) {
 	app.show_settings()
 }
 
+const tmanager = ui.ThemeManager.new()
+
 fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 	if com.text == 'Vide Default Dark' {
 		mut vt := vide_dark_theme()
@@ -190,8 +192,7 @@ fn on_theme_click(mut win ui.Window, com ui.MenuItem) {
 		return
 	}
 
-	theme := ui.theme_by_name(com.text)
-
+	theme := tmanager.get_theme(com.text)
 	mut app := win.get[&App]('app')
 	app.confg.theme = com.text
 	app.confg.save()
