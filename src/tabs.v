@@ -280,11 +280,11 @@ fn text_change(mut w ui.Window, cb ui.Textbox) bool {
 	}
 
 	if cb.ctrl_down && cb.last_letter == 'c' {
-		mut x0 := cb.sel.x0
-		mut y0 := cb.sel.y0
+		mut x0 := cb.sel or { ui.Selection{} }.x0
+		mut y0 := cb.sel or { ui.Selection{} }.y0
 
-		mut x1 := cb.sel.x1
-		mut y1 := cb.sel.y1
+		mut x1 := cb.sel or { ui.Selection{} }.x1
+		mut y1 := cb.sel or { ui.Selection{} }.y1
 
 		if y1 > cb.lines.len - 1 {
 			y1 = cb.lines.len - 1
